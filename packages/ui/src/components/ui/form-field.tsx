@@ -1,0 +1,35 @@
+import * as React from "react";
+
+import { cn } from "@repo/ui/lib/utils";
+
+export interface FormFieldProps {
+  /** Label text for the field */
+  label: string;
+  /** id for the input – must match the controlled input’s id for accessibility */
+  id: string;
+  /** The input element (e.g. Input, EmailField, PasswordField, Textarea) */
+  children: React.ReactNode;
+  /** Optional class for the wrapper div */
+  className?: string;
+}
+
+/**
+ * Wraps a form input with a label. Use with Input, EmailField, PasswordField, or Textarea.
+ */
+function FormField({ label, id, children, className }: FormFieldProps) {
+  return (
+    <div data-slot="form-field" className={cn("space-y-1", className)}>
+      <label
+        htmlFor={id}
+        className="block text-sm font-medium text-foreground"
+      >
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+FormField.displayName = "FormField";
+
+export { FormField };
