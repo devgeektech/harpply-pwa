@@ -50,6 +50,7 @@ import {
   Toaster,
   toast,
 } from "@repo/ui";
+import { SignInForm, type SignInFormValues } from "./components/sign-in-form";
 
 const ROLE_OPTIONS = [
   { value: "admin", label: "Admin" },
@@ -249,6 +250,34 @@ function App() {
               </Button>
             </CardFooter>
           </form>
+        </Card>
+      </section>
+
+      {/* Section: Sign in (shared SignInForm from @repo/ui) */}
+      <section>
+        <h2 className="mb-4 text-lg font-semibold text-foreground">
+          Sign in
+        </h2>
+        <Card>
+          <CardHeader>
+            <CardTitle>Sign in</CardTitle>
+            <CardDescription>
+              Sign-in form using local useSigninForm hook.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SignInForm
+              onSubmit={async (values: SignInFormValues) => {
+                // Replace with your auth API call
+                await new Promise((r) => setTimeout(r, 800));
+                toast.success("Signed in", {
+                  description: `Welcome, ${values.email}. Remember me: ${values.remember}.`,
+                });
+              }}
+              submitLabel="Sign in"
+              idPrefix="admin-signin"
+            />
+          </CardContent>
         </Card>
       </section>
 
