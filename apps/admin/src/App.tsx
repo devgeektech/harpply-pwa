@@ -47,6 +47,8 @@ import {
   SidebarFooter,
   SidebarInset,
   SidebarTrigger,
+  Toaster,
+  toast,
 } from "@repo/ui";
 
 const ROLE_OPTIONS = [
@@ -89,10 +91,14 @@ function App() {
       newsletter,
       contactPreference,
     });
+    toast.success("Form submitted", {
+      description: `Welcome, ${name}. We've received your details.`,
+    });
   }
 
   return (
     <SidebarProvider>
+      <Toaster position="top-right" richColors closeButton />
       <Sidebar>
         <SidebarHeader>
           <SidebarMenu>
