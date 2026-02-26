@@ -18,26 +18,16 @@ export interface SelectOption {
 
 export interface SelectFieldProps {
   id?: string;
-  /** Options to render */
   options?: ReadonlyArray<SelectOption>;
-  /** Placeholder when nothing selected */
   placeholder?: string;
-  /** Current value (controlled) */
   value?: string;
-  /** Called when value changes – receives synthetic change event for compatibility */
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  /** Optional error state */
   error?: boolean;
   disabled?: boolean;
   className?: string;
-  /** Optional custom item children instead of options */
   children?: React.ReactNode;
 }
 
-/**
- * Common component for select (dropdown) using shadcn/Radix Select.
- * Use with options prop or pass SelectItem children.
- */
 const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
   (
     {
@@ -72,6 +62,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
           ref={ref}
           id={id}
           className={cn(
+            "w-full",
             className,
             error &&
               "border-destructive ring-destructive/20 aria-invalid:ring-destructive/20"

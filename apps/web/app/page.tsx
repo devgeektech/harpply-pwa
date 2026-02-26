@@ -12,7 +12,6 @@ import {
   CardFooter,
   FormField,
   Input,
-  EmailField,
   PasswordField,
   Textarea,
   SelectField,
@@ -89,11 +88,14 @@ export default function Home() {
         </FormField>
 
         <FormField label="Email" id="email">
-          <EmailField
+          <Input
             id="email"
+            type="email"
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+            inputMode="email"
           />
         </FormField>
 
@@ -170,7 +172,7 @@ export default function Home() {
               <SheetTitle>About this form</SheetTitle>
               <SheetDescription>
                 This form uses all common components from @repo/ui: Input,
-                EmailField, PasswordField, Textarea, SelectField, MultiSelectField,
+                Input, PasswordField, Textarea, SelectField, MultiSelectField,
                 FormField, SubmitButton, and Button.
               </SheetDescription>
             </SheetHeader>

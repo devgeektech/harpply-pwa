@@ -2,30 +2,24 @@ import * as React from "react";
 import { ChevronDown, X } from "lucide-react";
 
 import { cn } from "@repo/ui/lib/utils";
-import type { SelectOption } from "./select-field";
+
+export interface SelectOption {
+  value: string;
+  label: string;
+}
 
 export interface MultiSelectFieldProps {
   id?: string;
-  /** Available options */
   options: ReadonlyArray<SelectOption>;
-  /** Currently selected values */
   value: string[];
-  /** Called when selection changes */
   onChange: (value: string[]) => void;
-  /** Shown when no selection */
   placeholder?: string;
-  /** Optional error state */
   error?: boolean;
   disabled?: boolean;
   className?: string;
-  /** Accessible label for the dropdown (e.g. "Select roles") */
   "aria-label"?: string;
 }
 
-/**
- * Common component for multi-select. Shows selected items as chips and a dropdown to add/remove.
- * Same approach as Input/Textarea: native patterns, cn(), design tokens.
- */
 function MultiSelectField({
   id,
   options,
@@ -64,7 +58,11 @@ function MultiSelectField({
   }, [open]);
 
   return (
-    <div ref={containerRef} data-slot="multi-select-field" className={cn("relative", className)}>
+    <div
+      ref={containerRef}
+      data-slot="multi-select-field"
+      className={cn("relative", className)}
+    >
       <button
         type="button"
         id={id}
@@ -96,20 +94,31 @@ function MultiSelectField({
                   className="inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground"
                 >
                   {label}
-                  <button
-                    type="button"
-                    className="rounded p-0.5 hover:bg-secondary-foreground/20"
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    className="rounded p-0.5 hover:bg-secondary-foreground/20 cursor-pointer"
                     onClick={(e) => remove(e, v)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        onChange(value.filter((val) => val !== v));
+                      }
+                    }}
                     aria-label={`Remove ${label}`}
                   >
                     <X className="size-3" aria-hidden />
-                  </button>
+                  </span>
                 </span>
               );
             })
           )}
           <ChevronDown
-            className={cn("ml-auto size-4 shrink-0 text-muted-foreground", open && "rotate-180")}
+            className={cn(
+              "ml-auto size-4 shrink-0 text-muted-foreground",
+              open && "rotate-180"
+            )}
             aria-hidden
           />
         </span>
@@ -137,12 +146,20 @@ function MultiSelectField({
                 <span
                   className={cn(
                     "flex size-4 shrink-0 items-center justify-center rounded border border-input",
-                    selected ? "bg-primary border-primary text-primary-foreground" : "bg-background"
+                    selected
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "bg-background"
                   )}
                   aria-hidden
                 >
                   {selected ? (
-                    <svg className="size-2.5" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg
+                      className="size-2.5"
+                      viewBox="0 0 12 12"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       <path d="M2 6l3 3 5-6" />
                     </svg>
                   ) : null}
