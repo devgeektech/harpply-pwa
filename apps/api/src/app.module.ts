@@ -11,11 +11,13 @@ import { AppService } from './app.service';
 
 // ← Import here
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
+    UserModule,
     // ... other modules
   ],
   controllers: [AppController],
