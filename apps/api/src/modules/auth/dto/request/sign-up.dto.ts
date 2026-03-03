@@ -17,7 +17,6 @@ export class SignUpDto {
   @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.PASSWORD_REQUIRED })
   password: string;
 
-  @IsEnum(Role, { message: ERROR_MESSAGES.AUTH.INVALID_ROLE })
-  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'ROLE') })
-  role: Role;
+  @IsNotEmpty()
+  confirmPassword: string;
 }

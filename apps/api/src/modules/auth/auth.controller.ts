@@ -15,12 +15,10 @@ import { SignInDto } from './dto/request/sign-in.dto';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-  @Post('register')
+ 
+ 
+  @Post('signup')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({
-    summary: 'User registration',
-    description: 'Creates new user account with specified role',
-  })
   async register(@Body() dto: SignUpDto) {
     return this.authService.signUp(dto);
   }
