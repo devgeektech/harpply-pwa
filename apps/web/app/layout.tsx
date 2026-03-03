@@ -10,7 +10,20 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Harpply",
-  description: "Where Christian Singles Meet",
+  description: "Harpply PWA",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Harpply",
+  },
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#000000",
 };
 
 export default function RootLayout({
@@ -20,6 +33,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="apple-touch-icon" href="/icon-192.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+      </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         {children}
       </body>
