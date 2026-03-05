@@ -9,8 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-// ← Import here
-import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { UserModule } from './modules/user/user.module';
 
 @Module({
@@ -34,10 +33,9 @@ import { UserModule } from './modules/user/user.module';
       }),
     },
 
-    // Global exception filter
     {
       provide: APP_FILTER,
-      useClass: HttpExceptionFilter,
+      useClass: AllExceptionsFilter,
     },
   ],
 })
