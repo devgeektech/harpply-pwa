@@ -1,10 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg'; // or import your existing pool config if you have one
 
 @Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+export class PrismaService
+  extends PrismaClient
+  implements OnModuleInit, OnModuleDestroy
+{
   constructor() {
     const connectionString = process.env.DATABASE_URL;
     if (!connectionString) {
@@ -12,6 +17,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
         'DATABASE_URL is not set. Create apps/api/.env with DATABASE_URL (e.g. postgresql://postgres:postgres@localhost:5432/app_db). See .env.example.',
       );
     }
+
     // Create a pg Pool (you can customize it a lot — pooling, ssl, etc)
     const pool = new Pool({
       connectionString,
