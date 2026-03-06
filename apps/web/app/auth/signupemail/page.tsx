@@ -24,7 +24,7 @@ export default function SignupEmail() {
   return (
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex items-center justify-center px-4">
       <Card className=" md:d-block md:bg-[url('/images/bg_auth_center.png')] bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
-        <CardContent className="flex items-center flex-col gap-12 sm:p-10 px-3 space-y-8 text-center">
+        <CardContent className="flex items-center flex-col sm:p-10 px-3 space-y-8 text-center">
           {/* Logo */}
           <div className="space-y-3">
             <div className="flex justify-center mb-[1rem]">
@@ -42,7 +42,7 @@ export default function SignupEmail() {
           </div>
 
           {/* Buttons */}
-          <div className="w-full space-y-4 my-[65px]">
+          <div className="w-full space-y-4 mt-[] mb-[67px] md:my-[67px]">
             <Button
               onClick={handleGoogle}
               disabled={loading}
