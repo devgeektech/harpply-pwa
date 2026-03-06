@@ -20,11 +20,9 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@repo/ui/*": ["./src/*"]
+      "@repo/ui/*": ["./src/*"],
+      "@/*": ["./*"]
     }
-    // "paths": {
-    //   "@/*": ["./*"]
-    // }
   },
   "include": [
     "next-env.d.ts",
