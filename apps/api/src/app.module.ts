@@ -25,13 +25,15 @@ import { UserModule } from './modules/user/user.module';
     AppService,
     PrismaService,
 
+    
     {
       provide: APP_PIPE,
-      useFactory: () => new ValidationPipe({
-        whitelist: true,
-        transform: true,
-        forbidNonWhitelisted: true,
-      }),
+      useFactory: () =>
+        new ValidationPipe({
+          whitelist: true,
+          transform: true,
+          forbidNonWhitelisted: true,
+        }),
     },
 
     // Global exception filter
