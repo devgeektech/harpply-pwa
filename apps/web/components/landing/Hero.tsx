@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FadeIn } from "./FadeIn";
-
 type HeroProps = {
   onOpenModal: () => void;
 };
@@ -12,10 +11,17 @@ export function Hero({ onOpenModal }: HeroProps) {
   return (
     <section className="harpply-hero harpply-section" id="home">
       <div className="harpply-hero-bg-cross" />
-      <div style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto" }}>
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          maxWidth: 900,
+          margin: "0 auto",
+        }}
+      >
         <FadeIn className="harpply-hero-logo-wrap">
           <Image
-            src="/harpply-logo.png"
+            src="/images/logo.svg"
             alt="Harpply"
             className="harpply-hero-logo-img"
             width={320}
@@ -25,7 +31,9 @@ export function Hero({ onOpenModal }: HeroProps) {
         </FadeIn>
 
         <FadeIn>
-          <p className="harpply-hero-tagline-main">Where Christian Singles Meet</p>
+          <p className="harpply-hero-tagline-main">
+            Where Christian Singles Meet
+          </p>
         </FadeIn>
 
         <FadeIn>
@@ -42,7 +50,8 @@ export function Hero({ onOpenModal }: HeroProps) {
               style={{
                 flex: 1,
                 height: 1,
-                background: "linear-gradient(90deg, transparent, rgba(201,149,42,0.6), transparent)",
+                background:
+                  "linear-gradient(90deg, transparent, rgba(201,149,42,0.6), transparent)",
               }}
             />
             <span
@@ -60,7 +69,8 @@ export function Hero({ onOpenModal }: HeroProps) {
               style={{
                 flex: 1,
                 height: 1,
-                background: "linear-gradient(90deg, transparent, rgba(201,149,42,0.6), transparent)",
+                background:
+                  "linear-gradient(90deg, transparent, rgba(201,149,42,0.6), transparent)",
               }}
             />
           </div>
@@ -68,8 +78,8 @@ export function Hero({ onOpenModal }: HeroProps) {
 
         <FadeIn>
           <p className="harpply-hero-tagline">
-            Meaningful connections rooted in shared faith, biblical values, and a
-            sincere commitment to God-honouring relationships.
+            Meaningful connections rooted in shared faith, biblical values, and
+            a sincere commitment to God-honouring relationships.
           </p>
         </FadeIn>
 

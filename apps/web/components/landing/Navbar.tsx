@@ -13,7 +13,7 @@ export function Navbar({ onOpenModal }: NavbarProps) {
       <div className="harpply-nav-inner">
         <Link className="harpply-logo-wrap" href="#">
           <Image
-            src="/harpply-logo.png"
+            src="/images/logo.svg"
             alt="Harpply"
             className="harpply-logo-img"
             width={140}
