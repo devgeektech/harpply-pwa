@@ -1,5 +1,5 @@
 import { IsString, IsNumber, IsIn, IsNotEmpty, Min, Max } from 'class-validator';
-import { ERROR_MESSAGES } from '../../../../common/constants/error-messages';
+import { ERROR_MESSAGES } from '../../../common/constants/error-messages';
 
 export class IdentityDto {
   @IsString()

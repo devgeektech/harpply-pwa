@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
-import { ERROR_MESSAGES } from '../../../../common/constants/error-messages';
+import { ERROR_MESSAGES } from '../../../common/constants/error-messages';
 
 export class VerifyOtpDto {
   @IsEmail({}, { message: ERROR_MESSAGES.VALIDATION.EMAIL_INVALID })

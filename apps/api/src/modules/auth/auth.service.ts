@@ -2,18 +2,18 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { SignUpDto } from './dto/request/sign-up.dto';
-import { SignInDto } from './dto/request/sign-in.dto';
+import { SignUpDto } from './dto/sign-up.dto';
+import { SignInDto } from './dto/sign-in.dto';
 import {
   ConflictException,
   UnauthorizedException,
 } from '../../common/exceptions';
 import { ERROR_MESSAGES } from '../../common/constants/error-messages';
-import { ForgotPasswordDto } from './dto/request/forgot-password.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { randomBytes, randomUUID } from 'crypto';
 import type { Prisma } from '@prisma/client';
-import { VerifyOtpDto } from './dto/request/verify-otp.dto';
-import { ResetPasswordDto } from './dto/request/reset-password.dto';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SUCCESS_MESSAGES } from '../../common/constants/success-messages';
 import { successResponse } from '../../common/response/api-response';
 

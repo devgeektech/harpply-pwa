@@ -7,6 +7,8 @@ import { UpdateBasicDto } from './dto/update-basic.dto';
 import { UpdateFaithLifestyleDto } from './dto/update-faith-lifestyle.dto';
 import { UpdateFaithValuesDto } from './dto/update-faith-values.dto';
 import { UpdateLifestyleDto } from './dto/update-lifestyle.dto';
+import { ERROR_MESSAGES } from 'src/common/constants/error-messages';
+import { SUCCESS_MESSAGES } from 'src/common/constants/success-messages';
 
 const profileSelect = {
   id: true,
@@ -42,7 +44,7 @@ const profileSelect = {
 
 @Injectable()
 export class ProfileService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async getProfile(userId: string) {
     const user = await this.prisma.user.findUnique({
@@ -50,9 +52,9 @@ export class ProfileService {
       select: profileSelect,
     });
     if (!user) {
-      throw new NotFoundException('Profile not found.');
+      throw new NotFoundException(ERROR_MESSAGES.USER.PROFILE_NOT_FOUND);
     }
-    return successResponse('Profile retrieved.', { data: user });
+    return successResponse(SUCCESS_MESSAGES.PROFILE.PROFILE_RETRIEVED, { data: user });
   }
 
   async updateBasic(userId: string, dto: UpdateBasicDto) {
@@ -66,7 +68,7 @@ export class ProfileService {
         profilePhoto: dto.profilePhoto,
       } as Prisma.UserUpdateInput,
     });
-    return successResponse('Basic profile updated.');
+    return successResponse(SUCCESS_MESSAGES.PROFILE.PROFILE_UPDATED);
   }
 
   async updateFaithLifestyle(userId: string, dto: UpdateFaithLifestyleDto) {
@@ -79,7 +81,7 @@ export class ProfileService {
         churchAttendance: dto.churchAttendance,
       } as Prisma.UserUpdateInput,
     });
-    return successResponse('Faith & lifestyle updated.');
+    return successResponse(SUCCESS_MESSAGES.PROFILE.FAITH_LIFESTYLE_UPDATED);
   }
 
   async updateFaithValues(userId: string, dto: UpdateFaithValuesDto) {
@@ -90,7 +92,7 @@ export class ProfileService {
         partnerValues: dto.partnerValues as Prisma.InputJsonValue | undefined,
       } as Prisma.UserUpdateInput,
     });
-    return successResponse('Faith values updated.');
+    return successResponse(SUCCESS_MESSAGES.PROFILE.FAITH_UPDATED);
   }
 
   async updateLifestyle(userId: string, dto: UpdateLifestyleDto) {
@@ -102,6 +104,6 @@ export class ProfileService {
         dietaryPreference: dto.dietaryPreference,
       } as Prisma.UserUpdateInput,
     });
-    return successResponse('Lifestyle updated.');
+    return successResponse(SUCCESS_MESSAGES.PROFILE.LIFESTYLE_UPDATED);
   }
 }

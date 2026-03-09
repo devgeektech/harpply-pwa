@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -9,16 +10,16 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
-import { SignUpDto } from './dto/request/sign-up.dto';
-import { SignInDto } from './dto/request/sign-in.dto';
-import { ForgotPasswordDto } from './dto/request/forgot-password.dto';
-import { VerifyOtpDto } from './dto/request/verify-otp.dto';
-import { ResetPasswordDto } from './dto/request/reset-password.dto';
-import { IdentityDto } from './dto/request/Identity.dto';
-import { LocationDto } from './dto/request/location.dto';
-import { StoryDto } from './dto/request/story.dto';
-import { FaithLifestyleDto } from './dto/request/faith-lifestyle.dto';
-import { InterestsDto } from './dto/request/interests.dto';
+import { SignUpDto } from './dto/sign-up.dto';
+import { SignInDto } from './dto/sign-in.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { IdentityDto } from './dto/identity.dto';
+import { LocationDto } from './dto/location.dto';
+import { StoryDto } from './dto/story.dto';
+import { FaithLifestyleDto } from './dto/faith-lifestyle.dto';
+import { InterestsDto } from './dto/interests.dto';
 import { OnboardingService } from './onboarding.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUserId, CurrentUser } from './decorators/current-user.decorator';
@@ -124,6 +125,14 @@ export class AuthController {
     @Body() dto: InterestsDto,
   ) {
     return this.onboardingService.saveInterests(userId, dto);
+  }
+
+  @Get('onboarding/review')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get onboarding review data' })
+  getOnboardingReview(@CurrentUserId() userId: string) {
+    return this.onboardingService.getOnboardingReview(userId);
   }
 
   @Post('onboarding/complete')

@@ -1,12 +1,14 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from '../../../prisma/prisma.service';
-import { IdentityDto } from "./dto/request/Identity.dto";
+import { IdentityDto } from './dto/identity.dto';
 import type { Prisma } from '@prisma/client';
-import { LocationDto } from "./dto/request/location.dto";
-import { StoryDto } from "./dto/request/story.dto";
-import { FaithLifestyleDto } from "./dto/request/faith-lifestyle.dto";
-import { InterestsDto } from "./dto/request/interests.dto";
+import { LocationDto } from './dto/location.dto';
+import { StoryDto } from './dto/story.dto';
+import { FaithLifestyleDto } from './dto/faith-lifestyle.dto';
+import { InterestsDto } from './dto/interests.dto';
 import { successResponse } from '../../common/response/api-response';
+import { SUCCESS_MESSAGES } from "src/common/constants/success-messages";
+import { ERROR_MESSAGES } from "src/common/constants/error-messages";
 
 @Injectable()
 export class OnboardingService {
@@ -21,7 +23,7 @@ export class OnboardingService {
         gender: dto.gender,
       } as Prisma.UserUpdateInput,
     });
-    return successResponse('Identity saved successfully.');
+    return successResponse(SUCCESS_MESSAGES.ONBOARDING.IDENTITY_SAVED);
   }
 
   async saveLocation(userId: string, dto: LocationDto) {
@@ -33,20 +35,17 @@ export class OnboardingService {
         locationEnabled: dto.locationEnabled,
       } as Prisma.UserUpdateInput,
     });
-    return successResponse('Location saved successfully.');
+    return successResponse(SUCCESS_MESSAGES.ONBOARDING.LOCATION);
   }
 
   async saveStory(userId: string, dto: StoryDto) {
     await this.prisma.user.update({
       where: { id: userId },
       data: {
-        bio: dto.aboutMe,
-        jobTitle: dto.jobTitle,
-        company: dto.company,
-        school: dto.school,
+        bio: dto.bio
       } as Prisma.UserUpdateInput,
     });
-    return successResponse('Story saved successfully.');
+    return successResponse(SUCCESS_MESSAGES.ONBOARDING.STORY);
   }
 
   async saveFaithLifestyle(userId: string, dto: FaithLifestyleDto) {
@@ -63,7 +62,7 @@ export class OnboardingService {
         dietaryPreference: dto.dietaryPreference,
       } as Prisma.UserUpdateInput,
     });
-    return successResponse('Faith & lifestyle saved successfully.');
+    return successResponse(SUCCESS_MESSAGES.ONBOARDING.FAITH_LIFESTYLE);
   }
 
   async saveInterests(userId: string, dto: InterestsDto) {
@@ -73,7 +72,7 @@ export class OnboardingService {
         interests: dto.interests as Prisma.InputJsonValue,
       } as Prisma.UserUpdateInput,
     });
-    return successResponse('Interests saved successfully.');
+    return successResponse(SUCCESS_MESSAGES.ONBOARDING.INTEREST);
   }
 
   async completeOnboarding(userId: string) {
@@ -81,6 +80,39 @@ export class OnboardingService {
       where: { id: userId },
       data: { onboardingCompleted: true } as Prisma.UserUpdateInput,
     });
-    return successResponse('Onboarding completed successfully.');
+    return successResponse(SUCCESS_MESSAGES.ONBOARDING.ONBOARDING_COMPLETED);
+  }
+
+  async getOnboardingReview(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        fullName: true,
+        age: true,
+        location: true,
+        profilePhoto: true,
+        bio: true,
+
+        churchInvolvement: true,
+        yearsInFaith: true,
+        churchAttendance: true,
+
+        myFaithValues: true,
+        partnerValues: true,
+
+        lifestyleSmoking: true,
+        lifestyleDrinking: true,
+        lifestylePartying: true,
+        dietaryPreference: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(ERROR_MESSAGES.USER.USER_NOT_FOUND);
+    }
+
+    return successResponse(SUCCESS_MESSAGES.ONBOARDING.REVIEW_DATA, {
+      data: user,
+    });
   }
 }

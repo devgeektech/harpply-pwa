@@ -13,14 +13,12 @@ import { AppService } from './app.service';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { NotEmptyBodyGuard } from './common/guards/not-empty-body.guard';
 import { NotEmptyBodyMiddleware } from './common/middleware/not-empty-body.middleware';
-import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
-    ProfileModule,
-    UserModule,
+    ProfileModule
     // ... other modules
   ],
   controllers: [AppController],

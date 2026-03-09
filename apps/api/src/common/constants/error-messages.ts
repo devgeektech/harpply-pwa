@@ -37,6 +37,7 @@ export const ERROR_MESSAGES = {
 
   USER: {
     PROFILE_NOT_FOUND: 'User profile not found.',
+    USER_NOT_FOUND: 'User not found.',
     UPDATE_FAILED: 'Failed to update user profile. Please try again.',
   },
 

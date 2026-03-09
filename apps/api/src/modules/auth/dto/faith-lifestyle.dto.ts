@@ -1,5 +1,5 @@
 import { IsString, IsBoolean, IsInt, IsNotEmpty, IsIn, Min, Max } from 'class-validator';
-import { ERROR_MESSAGES } from '../../../../common/constants/error-messages';
+import { ERROR_MESSAGES } from '../../../common/constants/error-messages';
 
 export class FaithLifestyleDto {
   @IsString()
