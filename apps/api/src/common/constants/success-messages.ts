@@ -2,6 +2,7 @@ export const SUCCESS_MESSAGES = {
   AUTH: {
     REGISTER_SUCCESS: 'User registered successfully.',
     LOGIN_SUCCESS: 'Login successful.',
+    LOGOUT_SUCCESS: 'Logged out successfully.',
     OTP_SENT: 'OTP sent successfully.',
     OTP_VERIFIED: 'OTP verified successfully.',
     PASSWORD_RESET_SUCCESS: 'Password updated successfully.',

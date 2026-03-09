@@ -7,6 +7,9 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { errorResponse } from '../response/api-response';
+import { BusinessException } from '../exceptions/business.exception';
+
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name);
@@ -25,6 +28,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
       message = typeof res === 'object' && res && typeof (res as any).message !== 'undefined'
         ? (res as any).message
         : (res as string) || exception.message;
+    } else if (exception instanceof BusinessException) {
+      status = exception.status;
+      message = exception.message;
     } else if (exception && typeof exception === 'object') {
       const err = exception as any;
       const code = err.code;
@@ -38,20 +44,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
       }
     }
 
-    this.logger.warn(
-      `${request.method} ${request.url} ${status} - ${Array.isArray(message) ? message.join(', ') : message}`,
-    );
+    const messageStr = Array.isArray(message) ? message.join(', ') : message;
+    this.logger.warn(`${request.method} ${request.url} ${status} - ${messageStr}`);
 
-    const errorResponse = {
-      statusCode: status,
-      timestamp: new Date().toISOString(),
-      path: request.url,
-      message: Array.isArray(message) ? message.join(', ') : message,
-      ...(process.env.NODE_ENV !== 'production' && exception instanceof Error && {
-        error: exception.stack,
-      }),
-    };
-
-    response.status(status).json(errorResponse);
+    const body = errorResponse(messageStr, status);
+    response.status(status).json(body);
   }
 }

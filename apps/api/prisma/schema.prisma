@@ -14,10 +14,53 @@ model User {
   password  String
   createdAt DateTime @default(now())
 
+  // Auth
+  token              String?     // current session token (jti); cleared on logout
+  loggedOutAt        DateTime?
   resetOtp           String?
   resetOtpExpires    DateTime?
   resetToken         String?
   resetTokenExpires  DateTime?
+
+  // Onboarding - Identity
+  fullName   String?
+  age        Int?
+  gender     Gender?
+
+  // Onboarding - Location
+  latitude   Float?
+  longitude  Float?
+  locationEnabled Boolean? @default(false)
+
+  // Onboarding - Bio / Story
+  bio        String?
+  jobTitle   String?
+  company    String?
+  school     String?
+
+  // Onboarding - Faith & Lifestyle
+  churchInvolvement    String?
+  yearsInFaith         Int?
+  churchAttendance     String?
+  lifestyleSmoking     Boolean?
+  lifestyleDrinking    Boolean?
+  lifestylePartying    Boolean?
+  dietaryPreference    String?
+  exercise             String?
+  role                 String?
+
+  // Onboarding - Choose 3 (stored as JSON array of selected keys)
+  interests            Json?
+
+  onboardingCompleted  Boolean @default(false)
+
+  @@schema("auth")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
 
   @@schema("auth")
 }
