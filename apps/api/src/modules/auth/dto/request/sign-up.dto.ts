@@ -16,6 +16,11 @@ export class SignUpDto {
   @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.PASSWORD_REQUIRED })
   password: string;
 
-  @IsNotEmpty()
+  @IsString()
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'confirmPassword') })
   confirmPassword: string;
 }
+
+// So together they mean:
+// Not sent → valid (optional).
+// Sent but empty (e.g. "") → invalid (fails @IsNotEmpty()).

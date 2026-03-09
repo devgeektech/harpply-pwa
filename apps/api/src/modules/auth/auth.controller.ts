@@ -22,6 +22,7 @@ import { InterestsDto } from './dto/request/interests.dto';
 import { OnboardingService } from './onboarding.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUserId, CurrentUser } from './decorators/current-user.decorator';
+import { AllowEmptyBody } from '../../common/decorators/allow-empty-body.decorator';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -126,6 +127,7 @@ export class AuthController {
   }
 
   @Post('onboarding/complete')
+  @AllowEmptyBody()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Complete onboarding – auth by token, update user by decoded sub' })

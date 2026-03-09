@@ -14,7 +14,7 @@ export class SignInDto {
   email: string;
 
   @IsString({
-    message: 'PASSWORD MUST BE A VALID STRING', // can also be moved to constant if needed
+    message: ERROR_MESSAGES.VALIDATION.PASSWORD_MUST_BE_STRING,
   })
   @IsNotEmpty({
     message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'PASSWORD'),

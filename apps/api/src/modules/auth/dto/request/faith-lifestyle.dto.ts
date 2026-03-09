@@ -1,41 +1,42 @@
-import { IsString, IsBoolean, IsInt, IsOptional, IsIn, Min, Max } from 'class-validator';
+import { IsString, IsBoolean, IsInt, IsNotEmpty, IsIn, Min, Max } from 'class-validator';
+import { ERROR_MESSAGES } from '../../../../common/constants/error-messages';
 
 export class FaithLifestyleDto {
-  @IsOptional()
   @IsString()
-  myFaith?: string;
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'myFaith') })
+  myFaith: string;
 
-  @IsOptional()
   @IsString()
-  churchInvolvement?: string;
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'churchInvolvement') })
+  churchInvolvement: string;
 
-  @IsOptional()
   @IsInt()
   @Min(0)
   @Max(100)
-  yearsInFaith?: number;
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'yearsInFaith') })
+  yearsInFaith: number;
 
-  @IsOptional()
   @IsString()
-  churchAttendance?: string;
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'churchAttendance') })
+  churchAttendance: string;
 
-  @IsOptional()
   @IsIn(['Active', 'Sometimes', 'Never'])
-  exercise?: string;
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'exercise') })
+  exercise: string;
 
-  @IsOptional()
   @IsBoolean()
-  lifestyleSmoking?: boolean;
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'lifestyleSmoking') })
+  lifestyleSmoking: boolean;
 
-  @IsOptional()
   @IsBoolean()
-  lifestyleDrinking?: boolean;
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'lifestyleDrinking') })
+  lifestyleDrinking: boolean;
 
-  @IsOptional()
   @IsBoolean()
-  lifestylePartying?: boolean;
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'lifestylePartying') })
+  lifestylePartying: boolean;
 
-  @IsOptional()
   @IsString()
-  dietaryPreference?: string;
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'dietaryPreference') })
+  dietaryPreference: string;
 }

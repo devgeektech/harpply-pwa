@@ -18,7 +18,13 @@ export const ERROR_MESSAGES = {
     EMAIL_REQUIRED: 'Email is required.',
     PASSWORD_REQUIRED: 'Password is required.',
     PASSWORD_TOO_SHORT: 'Password must be at least 8 characters long.',
+    PASSWORD_MUST_BE_STRING: 'Password must be a valid string.',
     REQUIRED_FIELD: '{FIELD} is required.',
+    FIELD_REQUIRED: 'This field is required and cannot be empty.',
+    /** Use with .replace('{FIELD}', fieldName) for optional fields that must not be empty when provided */
+    CANNOT_BE_EMPTY_WHEN_PROVIDED: '{FIELD} cannot be empty when provided.',
+    INTERESTS_REQUIRED: 'interests is required and must contain at least one item.',
+    INTERESTS_MIN_ONE: 'interests must contain at least one item.',
   },
 
   GENERAL: {

@@ -1,18 +1,20 @@
-import { IsNumber, IsBoolean, IsOptional, Min, Max } from 'class-validator';
+import { IsNumber, IsBoolean, IsNotEmpty, Min, Max } from 'class-validator';
+import { ERROR_MESSAGES } from '../../../../common/constants/error-messages';
 
 export class LocationDto {
-  @IsOptional()
   @IsNumber()
   @Min(-90)
   @Max(90)
-  latitude?: number;
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'latitude') })
+  latitude: number;
 
-  @IsOptional()
   @IsNumber()
   @Min(-180)
   @Max(180)
-  longitude?: number;
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'longitude') })
+  longitude: number;
 
   @IsBoolean()
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'locationEnabled') })
   locationEnabled: boolean;
 }

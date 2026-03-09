@@ -1,23 +1,24 @@
-import { IsString, IsOptional, MaxLength } from 'class-validator';
+import { IsString, IsNotEmpty, MaxLength } from 'class-validator';
+import { ERROR_MESSAGES } from '../../../../common/constants/error-messages';
 
 export class StoryDto {
-  @IsOptional()
   @IsString()
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'aboutMe') })
   @MaxLength(2000)
-  aboutMe?: string;
+  aboutMe: string;
 
-  @IsOptional()
   @IsString()
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'jobTitle') })
   @MaxLength(200)
-  jobTitle?: string;
+  jobTitle: string;
 
-  @IsOptional()
   @IsString()
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'company') })
   @MaxLength(200)
-  company?: string;
+  company: string;
 
-  @IsOptional()
   @IsString()
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'school') })
   @MaxLength(200)
-  school?: string;
+  school: string;
 }
