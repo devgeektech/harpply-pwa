@@ -75,7 +75,7 @@ export class ProfileService {
     await this.prisma.user.update({
       where: { id: userId },
       data: {
-        spiritualJourney: dto.spiritualJourney,
+        spiritualJourney: dto.denomination,
         yearsInFaith: dto.yearsInFaith,
         churchInvolvement: dto.churchInvolvement,
         churchAttendance: dto.churchAttendance,

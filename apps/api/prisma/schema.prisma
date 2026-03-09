@@ -41,7 +41,7 @@ model User {
   school     String?
 
   // Onboarding - Faith & Lifestyle / Profile
-  spiritualJourney     String?
+  denomination     String?
   churchInvolvement    String?
   yearsInFaith         Int?
   churchAttendance     String?

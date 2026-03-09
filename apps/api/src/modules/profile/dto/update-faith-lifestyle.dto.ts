@@ -5,7 +5,7 @@ export class UpdateFaithLifestyleDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.CANNOT_BE_EMPTY_WHEN_PROVIDED.replace('{FIELD}', 'spiritualJourney') })
-  spiritualJourney?: string;
+  denomination?: string;
 
   @IsOptional()
   @IsInt()
@@ -19,7 +19,7 @@ export class UpdateFaithLifestyleDto {
   churchInvolvement?: string;
 
   @IsOptional()
-  @IsIn(['Never', 'Monthly', 'Bi-Annually', 'Regularly'])
+  // @IsIn(['Never', 'Monthly', 'Bi-Annually', 'Regularly'])
   @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.CANNOT_BE_EMPTY_WHEN_PROVIDED.replace('{FIELD}', 'churchAttendance') })
   churchAttendance?: string;
 }
