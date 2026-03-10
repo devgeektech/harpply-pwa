@@ -18,11 +18,11 @@ export default function OnboardingPage() {
           </div>
 
           {/* Title */}
-          <h1 className="text-3xl font-serif text-white mb-2">
+          <h1 className="text-[24px] font-light font-serif text-white mb-2 w-full">
             Tell us about you
           </h1>
 
-          <p className="text-gray-400 mb-6">
+          <p className="text-gray-400 mb-6 w-full">
             We'd love to get to know you better to personalize your journey.
           </p>
 
@@ -51,21 +51,22 @@ export default function OnboardingPage() {
           {/* Gender */}
           <div className="mb-8 w-full">
             <label className="text-gray-300 text-sm">Gender</label>
-
-            <div className="flex gap-3 mt-3">
-              {["Male", "Female", "Other"].map((g) => (
-                <button
-                  key={g}
-                  onClick={() => setGender(g)}
-                  className={`flex-1 rounded-lg py-2 text-sm border transition ${
-                    gender === g
-                      ? "bg-yellow-400 text-black border-yellow-400"
-                      : "bg-white/10 text-white border-white/20"
-                  }`}
-                >
-                  {g}
-                </button>
-              ))}
+            <div className="border border-[#E7ECF214] p-4 w-full mt-3">
+              <div className="flex gap-3">
+                {["Male", "Female", "Other"].map((g) => (
+                  <button
+                    key={g}
+                    onClick={() => setGender(g)}
+                    className={`flex-1 rounded-lg py-2 text-sm border transition ${
+                      gender === g
+                        ? "bg-yellow-400 text-black border-yellow-400"
+                        : "bg-white/10 text-white border-white/20"
+                    }`}
+                  >
+                    {g}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
