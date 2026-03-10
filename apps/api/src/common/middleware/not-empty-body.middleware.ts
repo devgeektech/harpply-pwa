@@ -5,9 +5,10 @@ import {
 } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 
-/** Routes that may have an empty body (e.g. POST with no payload). */
+/** Routes that may have an empty body (e.g. POST with no payload or multipart upload). */
 const ALLOW_EMPTY_BODY_PATHS: { method: string; path: string }[] = [
   { method: 'POST', path: '/auth/onboarding/complete' },
+  { method: 'POST', path: '/profile/photos' }, // multipart file upload
 ];
 
 @Injectable()
@@ -23,6 +24,10 @@ export class NotEmptyBodyMiddleware implements NestMiddleware {
       (p) => p.method === method && (path === p.path || path.endsWith(p.path)),
     );
     if (allowed) return next();
+
+    // multipart/form-data: body is populated by multer later; skip strict empty-body check
+    const contentType = (req.headers['content-type'] ?? '').toLowerCase();
+    if (contentType.includes('multipart/form-data')) return next();
 
     const body = req.body;
     // Reject when body is missing or not an object (e.g. no JSON sent)

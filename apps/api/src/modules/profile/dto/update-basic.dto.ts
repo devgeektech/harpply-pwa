@@ -1,5 +1,6 @@
 import { IsString, IsNumber, IsIn, IsOptional, IsNotEmpty, IsUrl, Min, Max } from 'class-validator';
-import { ERROR_MESSAGES } from 'src/common/constants/error-messages';
+import { Transform } from 'class-transformer';
+import { ERROR_MESSAGES } from '../../../common/constants/error-messages';
 
 export class UpdateBasicDto {
   @IsOptional()
@@ -8,6 +9,7 @@ export class UpdateBasicDto {
   fullName?: string;
 
   @IsOptional()
+  @Transform(({ value }) => (value === '' || value === undefined ? undefined : Number(value)))
   @IsNumber()
   @Min(1)
   @Max(120)

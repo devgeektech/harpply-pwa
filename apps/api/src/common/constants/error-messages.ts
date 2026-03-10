@@ -41,6 +41,14 @@ export const ERROR_MESSAGES = {
     UPDATE_FAILED: 'Failed to update user profile. Please try again.',
   },
 
+  PHOTOS: {
+    UPLOAD_FAILED: 'Upload failed. Please try again.',
+    PHOTO_NOT_FOUND: 'Photo not found.',
+    INVALID_FILE_TYPE: 'Invalid file type. Only JPEG, PNG and WebP are allowed.',
+    FILE_TOO_LARGE: 'File size must not exceed 5MB.',
+    MIN_PHOTOS_REQUIRED: 'Minimum 3 photos are required.',
+  },
+
   JOB: {
     NOT_FOUND: 'Job posting not found.',
     ALREADY_APPLIED: 'You have already applied for this job.',

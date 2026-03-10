@@ -24,5 +24,8 @@ export const SUCCESS_MESSAGES = {
     FAITH_LIFESTYLE_UPDATED: 'Faith & lifestyle updated.',
     LIFESTYLE_UPDATED: 'Lifestyle updated.',
     FAITH_UPDATED: 'Faith values updated.',
+    PHOTO_SAVED: 'Photo saved successfully.',
+    PHOTO_DELETED: 'Photo deleted successfully.',
+    PHOTOS_RETRIEVED: 'Photos retrieved successfully.',
   }
 };

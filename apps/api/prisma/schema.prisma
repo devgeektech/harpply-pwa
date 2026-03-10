@@ -26,7 +26,8 @@ model User {
   fullName   String?
   age        Int?
   gender     Gender?
-  profilePhoto String?
+  profilePhoto   String?
+  profilePhotos  Json?    // array of { key: string, url: string } for S3
 
   // Onboarding - Location
   latitude   Float?

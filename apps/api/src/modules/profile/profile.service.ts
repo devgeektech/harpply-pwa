@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { successResponse } from '../../common/response/api-response';
 import { NotFoundException } from '../../common/exceptions';
@@ -7,8 +8,15 @@ import { UpdateBasicDto } from './dto/update-basic.dto';
 import { UpdateFaithLifestyleDto } from './dto/update-faith-lifestyle.dto';
 import { UpdateFaithValuesDto } from './dto/update-faith-values.dto';
 import { UpdateLifestyleDto } from './dto/update-lifestyle.dto';
-import { ERROR_MESSAGES } from 'src/common/constants/error-messages';
-import { SUCCESS_MESSAGES } from 'src/common/constants/success-messages';
+import { ERROR_MESSAGES } from '../../common/constants/error-messages';
+import { SUCCESS_MESSAGES } from '../../common/constants/success-messages';
+import { AwsS3Service } from '../../common/aws-s3/aws-s3.service';
+
+const PHOTO_MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+const ALLOWED_PHOTO_MIMES = ['image/jpeg', 'image/png', 'image/webp'];
+const MIN_PHOTOS_REQUIRED = 3;
+
+export type ProfilePhotoItem = { key: string; url: string };
 
 const profileSelect = {
   id: true,
@@ -17,6 +25,7 @@ const profileSelect = {
   age: true,
   gender: true,
   profilePhoto: true,
+  profilePhotos: true,
   latitude: true,
   longitude: true,
   location: true,
@@ -25,7 +34,7 @@ const profileSelect = {
   jobTitle: true,
   company: true,
   school: true,
-  spiritualJourney: true,
+  denomination: true,
   churchInvolvement: true,
   yearsInFaith: true,
   churchAttendance: true,
@@ -44,7 +53,11 @@ const profileSelect = {
 
 @Injectable()
 export class ProfileService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly awsS3: AwsS3Service,
+    private readonly config: ConfigService,
+  ) { }
 
   async getProfile(userId: string) {
     const user = await this.prisma.user.findUnique({
@@ -57,7 +70,63 @@ export class ProfileService {
     return successResponse(SUCCESS_MESSAGES.PROFILE.PROFILE_RETRIEVED, { data: user });
   }
 
-  async updateBasic(userId: string, dto: UpdateBasicDto) {
+  async updateBasic(
+    userId: string,
+    dto: UpdateBasicDto,
+    file?: Express.Multer.File,
+  ) {
+    const hasField =
+      dto.fullName !== undefined ||
+      dto.age !== undefined ||
+      dto.location !== undefined ||
+      dto.gender !== undefined ||
+      dto.profilePhoto !== undefined;
+    if (!hasField && !file) {
+      throw new BadRequestException(
+        'Provide at least one field to update (fullName, age, location, gender, or profilePhoto file).',
+      );
+    }
+
+    const bucket = this.config.get<string>('AWS_S3_BUCKET_PROFILE_PHOTOS')!;
+
+    let profilePhotoUrl: string | undefined;
+
+    if (file) {
+      if (!ALLOWED_PHOTO_MIMES.includes(file.mimetype)) {
+        throw new BadRequestException(ERROR_MESSAGES.PHOTOS.INVALID_FILE_TYPE);
+      }
+
+      if (file.size > PHOTO_MAX_SIZE_BYTES) {
+        throw new BadRequestException(ERROR_MESSAGES.PHOTOS.FILE_TOO_LARGE);
+      }
+
+      const keyPrefix =
+        this.config.get<string>('AWS_S3_KEY_PREFIX_PROFILE_PHOTOS') ??
+        'profile-photo';
+
+      const ext =
+        file.mimetype === 'image/png'
+          ? 'png'
+          : file.mimetype === 'image/webp'
+            ? 'webp'
+            : 'jpg';
+
+      const key = `${keyPrefix}/${userId}/${Date.now()}.${ext}`;
+
+      const publicBaseUrl =
+        this.config.get<string>('AWS_S3_PUBLIC_URL_PROFILE_PHOTOS') ?? null;
+
+      const { url } = await this.awsS3.upload(
+        bucket,
+        key,
+        file.buffer,
+        file.mimetype,
+        { publicBaseUrl },
+      );
+
+      profilePhotoUrl = url;
+    }
+
     await this.prisma.user.update({
       where: { id: userId },
       data: {
@@ -65,9 +134,11 @@ export class ProfileService {
         age: dto.age,
         location: dto.location,
         gender: dto.gender,
-        profilePhoto: dto.profilePhoto,
-      } as Prisma.UserUpdateInput,
+        ...(profilePhotoUrl && { profilePhoto: profilePhotoUrl }),
+        ...(dto.profilePhoto && !profilePhotoUrl && { profilePhoto: dto.profilePhoto }),
+      },
     });
+
     return successResponse(SUCCESS_MESSAGES.PROFILE.PROFILE_UPDATED);
   }
 
@@ -105,5 +176,102 @@ export class ProfileService {
       } as Prisma.UserUpdateInput,
     });
     return successResponse(SUCCESS_MESSAGES.PROFILE.LIFESTYLE_UPDATED);
+  }
+
+  /** Get current user's profile photos (S3 keys + URLs). */
+  async getPhotos(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { profilePhotos: true },
+    });
+    if (!user) {
+      throw new NotFoundException(ERROR_MESSAGES.USER.PROFILE_NOT_FOUND);
+    }
+    const photos = (user.profilePhotos as ProfilePhotoItem[] | null) ?? [];
+    const meetsMinimum = photos.length >= MIN_PHOTOS_REQUIRED;
+    return successResponse(SUCCESS_MESSAGES.PROFILE.PHOTOS_RETRIEVED, {
+      data: { photos, meetsMinimum, minPhotosRequired: MIN_PHOTOS_REQUIRED },
+    });
+  }
+
+  /** Upload one photo to S3 (bucket: profile-photos) and append to user's profilePhotos. */
+  async addPhoto(userId: string, file: Express.Multer.File): Promise<{ photos: string[] }> {
+    const bucket = this.config.get<string>('AWS_S3_BUCKET_PROFILE_PHOTOS');
+    if (!this.awsS3.isConfigured() || !bucket) {
+      throw new BadRequestException(ERROR_MESSAGES.PHOTOS.UPLOAD_FAILED);
+    }
+    if (!file?.buffer) {
+      throw new BadRequestException(ERROR_MESSAGES.PHOTOS.UPLOAD_FAILED);
+    }
+    if (!ALLOWED_PHOTO_MIMES.includes(file.mimetype)) {
+      throw new BadRequestException(ERROR_MESSAGES.PHOTOS.INVALID_FILE_TYPE);
+    }
+    if (file.size > PHOTO_MAX_SIZE_BYTES) {
+      throw new BadRequestException(ERROR_MESSAGES.PHOTOS.FILE_TOO_LARGE);
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { profilePhotos: true },
+    });
+    if (!user) {
+      throw new NotFoundException(ERROR_MESSAGES.USER.PROFILE_NOT_FOUND);
+    }
+    console.log('file==>>', file)
+    const keyPrefix = this.config.get<string>('AWS_S3_KEY_PREFIX_PROFILE_PHOTOS') ?? 'profile-photos';
+    const ext = file.mimetype === 'image/png' ? 'png' : file.mimetype === 'image/webp' ? 'webp' : 'jpg';
+    const key = `${keyPrefix}/${userId}/${Date.now()}.${ext}`;
+
+    const publicBaseUrl = this.config.get<string>('AWS_S3_PUBLIC_URL_PROFILE_PHOTOS') ?? null;
+    const { key: uploadedKey, url } = await this.awsS3.upload(
+      bucket,
+      key,
+      file.buffer,
+      file.mimetype,
+      { publicBaseUrl },
+    );
+    console.log('===>>>', uploadedKey)
+    console.log('===>>>url', url)
+    const current = (user.profilePhotos as string[] | null) ?? [];
+    const updated: string[] = [...current, uploadedKey];
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { profilePhotos: updated as Prisma.InputJsonValue },
+    });
+
+    return {
+      photos: updated,
+    };
+  }
+
+  /** Delete photo by index (0-based) and remove from S3. */
+  async deletePhoto(userId: string, index: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { profilePhotos: true },
+    });
+    if (!user) {
+      throw new NotFoundException(ERROR_MESSAGES.USER.PROFILE_NOT_FOUND);
+    }
+    const photos = (user.profilePhotos as ProfilePhotoItem[] | null) ?? [];
+    if (index < 0 || index >= photos.length) {
+      throw new BadRequestException(ERROR_MESSAGES.PHOTOS.PHOTO_NOT_FOUND);
+    }
+
+    const item = photos[index];
+    const bucket = this.config.get<string>('AWS_S3_BUCKET_PROFILE_PHOTOS');
+    if (this.awsS3.isConfigured() && bucket) {
+      await this.awsS3.delete(bucket, item.key);
+    }
+    const updated = photos.filter((_, i) => i !== index);
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { profilePhotos: updated as Prisma.InputJsonValue },
+    });
+
+    return successResponse(SUCCESS_MESSAGES.PROFILE.PHOTO_DELETED, {
+      data: { photos: updated, meetsMinimum: updated.length >= MIN_PHOTOS_REQUIRED },
+    });
   }
 }

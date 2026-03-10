@@ -13,12 +13,14 @@ import { AppService } from './app.service';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { NotEmptyBodyGuard } from './common/guards/not-empty-body.guard';
 import { NotEmptyBodyMiddleware } from './common/middleware/not-empty-body.middleware';
+import { AwsS3Module } from './common/aws-s3/aws-s3.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    AwsS3Module,
     AuthModule,
-    ProfileModule
+    ProfileModule,
     // ... other modules
   ],
   controllers: [AppController],
