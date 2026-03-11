@@ -10,17 +10,18 @@
   },
   "dependencies": {
     "@repo/ui": "workspace:*",
+    "lucide-react": "^0.468.0",
     "next": "catalog:",
     "next-pwa": "^5.6.0",
-    "react": "catalog:react19",
-    "react-dom": "catalog:react19",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
     "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "catalog:",
     "@types/node": "catalog:",
-    "@types/react": "catalog:react19",
-    "@types/react-dom": "catalog:react19",
+    "@types/react": "^19.2.3",
+    "@types/react-dom": "^19.2.3",
     "eslint": "catalog:",
     "typescript": "catalog:"
   }

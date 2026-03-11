@@ -135,6 +135,10 @@ pnpm add -w typescript
 
 # Add a package to shared packages/
 pnpm --filter @harpply/ui add clsx
+
+# Update lockfile to match current catalog config and dependencies.
+pnpm install --no-frozen-lockfile
+
 ```
 
 
