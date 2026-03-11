@@ -8,8 +8,8 @@ catalog:
   '@tailwindcss/postcss': ^4.1.17
   '@types/eslint': ^9
   '@types/node': ^24
-  '@types/react': ^19.2
-  '@types/react-dom': ^19.2
+  '@types/react': ^19.2.3
+  '@types/react-dom': ^19.2.3
   eslint: ^9.39.1
   lucide-react: ^0.468.0
   next: 16.0.10
