@@ -10,6 +10,7 @@ import { UpdateFaithValuesDto } from './dto/update-faith-values.dto';
 import { UpdateLifestyleDto } from './dto/update-lifestyle.dto';
 import { ERROR_MESSAGES } from '../../common/constants/error-messages';
 import { SUCCESS_MESSAGES } from '../../common/constants/success-messages';
+import { decodeEmailSafe } from '../../common/utils/email-encode';
 import { AwsS3Service } from '../../common/aws-s3/aws-s3.service';
 
 const PHOTO_MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
@@ -67,7 +68,10 @@ export class ProfileService {
     if (!user) {
       throw new NotFoundException(ERROR_MESSAGES.USER.PROFILE_NOT_FOUND);
     }
-    return successResponse(SUCCESS_MESSAGES.PROFILE.PROFILE_RETRIEVED, { data: user });
+    const data = user.email
+      ? { ...user, email: decodeEmailSafe(user.email) }
+      : user;
+    return successResponse(SUCCESS_MESSAGES.PROFILE.PROFILE_RETRIEVED, { data });
   }
 
   async updateBasic(

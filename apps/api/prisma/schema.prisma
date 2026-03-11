@@ -55,7 +55,6 @@ model User {
   lifestylePartying    Boolean?
   dietaryPreference    String?
   exercise             String?
-  role                 String?
 
   // Onboarding - Choose 3 (stored as JSON array of selected keys)
   interests            Json?

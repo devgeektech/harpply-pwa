@@ -9,6 +9,7 @@ import {
   UnauthorizedException,
 } from '../../common/exceptions';
 import { ERROR_MESSAGES } from '../../common/constants/error-messages';
+import { encodeEmail, decodeEmail } from '../../common/utils/email-encode';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { randomBytes, randomUUID } from 'crypto';
 import type { Prisma } from '@prisma/client';
@@ -32,9 +33,11 @@ export class AuthService {
       throw new BadRequestException(ERROR_MESSAGES.AUTH.PASSWORD_MISMATCH);
     }
 
+    const emailEncoded = encodeEmail(email);
+
     // Check existing user
     const existingUser = await this.prisma.user.findUnique({
-      where: { email },
+      where: { email: emailEncoded },
     });
 
     if (existingUser) {
@@ -44,10 +47,10 @@ export class AuthService {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
+    // Create user (store encoded email in DB)
     const user = await this.prisma.user.create({
       data: {
-        email,
+        email: emailEncoded,
         password: hashedPassword,
       },
       select: {
@@ -57,10 +60,11 @@ export class AuthService {
       },
     });
 
+    const emailDecoded = decodeEmail(user.email);
     const jti = randomUUID();
     const token = this.jwtService.sign({
       sub: user.id,
-      email: user.email,
+      email: emailDecoded,
       jti,
     });
 
@@ -71,13 +75,14 @@ export class AuthService {
 
     return successResponse(SUCCESS_MESSAGES.AUTH.REGISTER_SUCCESS, {
       statusCode: 201,
-      data: { accessToken: token, user },
+      data: { accessToken: token, user: { ...user, email: emailDecoded } },
     });
   }
 
   async signIn(dto: SignInDto) {
+    const emailEncoded = encodeEmail(dto.email);
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email },
+      where: { email: emailEncoded },
       select: { id: true, email: true, password: true, createdAt: true },
     });
 
@@ -99,11 +104,13 @@ export class AuthService {
       );
     }
 
-    const { password, ...safeUser } = user;
+    const emailDecoded = decodeEmail(user.email);
+    const { password, ...rest } = user;
+    const safeUser = { ...rest, email: emailDecoded };
     const jti = randomUUID();
     const token = this.jwtService.sign({
       sub: user.id,
-      email: user.email,
+      email: emailDecoded,
       jti,
     });
 
@@ -133,8 +140,9 @@ export class AuthService {
   }
 
   async forgotPassword(dto: ForgotPasswordDto) {
+    const emailEncoded = encodeEmail(dto.email);
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email },
+      where: { email: emailEncoded },
     });
 
     if (!user) {
@@ -149,7 +157,7 @@ export class AuthService {
     const resetToken = randomBytes(32).toString('hex');
 
     await this.prisma.user.update({
-      where: { email: dto.email },
+      where: { email: emailEncoded },
       data: {
         resetOtp: otp,
         resetOtpExpires: new Date(Date.now() + 10 * 60 * 1000), // 10 mins
@@ -167,8 +175,9 @@ export class AuthService {
   }
 
   async verifyOtp(dto: VerifyOtpDto) {
+    const emailEncoded = encodeEmail(dto.email);
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email },
+      where: { email: emailEncoded },
     });
 
     if (
@@ -188,8 +197,9 @@ export class AuthService {
       throw new BadRequestException(ERROR_MESSAGES.AUTH.PASSWORD_MISMATCH);
     }
 
+    const emailEncoded = encodeEmail(dto.email);
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email },
+      where: { email: emailEncoded },
     });
 
     if (!user) {
@@ -199,7 +209,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
     await this.prisma.user.update({
-      where: { email: dto.email },
+      where: { email: emailEncoded },
       data: {
         password: hashedPassword,
         token: null,
