@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg'; // or import your existing pool config if you have one
+import { Pool } from 'pg';
+import path from 'path';
+
+// Load generated client from api package (works when compiled to dist/prisma/prisma.service.js)
+const clientPath = path.join(__dirname, '..', '..', 'node_modules', '.prisma', 'client');
+const { PrismaClient } = require(clientPath);
 
 @Injectable()
 export class PrismaService

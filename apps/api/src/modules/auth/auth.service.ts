@@ -1,67 +1,224 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { SignUpDto } from './dto/request/sign-up.dto';
-import { SignInDto } from './dto/request/sign-in.dto';
+import { SignUpDto } from './dto/sign-up.dto';
+import { SignInDto } from './dto/sign-in.dto';
 import {
   ConflictException,
-  NotFoundException,
   UnauthorizedException,
 } from '../../common/exceptions';
 import { ERROR_MESSAGES } from '../../common/constants/error-messages';
+import { encodeEmail, decodeEmail } from '../../common/utils/email-encode';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { randomBytes, randomUUID } from 'crypto';
+import type { Prisma } from '@prisma/client';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { SUCCESS_MESSAGES } from '../../common/constants/success-messages';
+import { successResponse } from '../../common/response/api-response';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async signUp(dto: SignUpDto) {
-    const { email, password, role } = dto;
+    const { email, password, confirmPassword } = dto;
 
-    const existing = await this.prisma.user.findUnique({ where: { email } });
+    // Check password match
+    if (password !== confirmPassword) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.PASSWORD_MISMATCH);
+    }
 
-    if (existing) {
+    const emailEncoded = encodeEmail(email);
+
+    // Check existing user
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: emailEncoded },
+    });
+
+    if (existingUser) {
       throw new ConflictException(ERROR_MESSAGES.AUTH.EMAIL_ALREADY_EXISTS);
     }
 
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Create user (store encoded email in DB)
     const user = await this.prisma.user.create({
-      data: { email, password: hashedPassword, role },
-      select: { id: true, email: true, role: true, createdAt: true },
+      data: {
+        email: emailEncoded,
+        password: hashedPassword,
+      },
+      select: {
+        id: true,
+        email: true,
+        createdAt: true,
+      },
     });
 
-    const token = this.jwtService.sign({ sub: user.id, email: user.email, role });
+    const emailDecoded = decodeEmail(user.email);
+    const jti = randomUUID();
+    const token = this.jwtService.sign({
+      sub: user.id,
+      email: emailDecoded,
+      jti,
+    });
 
-    return { accessToken: token, user };
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { token: jti },
+    });
+
+    return successResponse(SUCCESS_MESSAGES.AUTH.REGISTER_SUCCESS, {
+      statusCode: 201,
+      data: { accessToken: token, user: { ...user, email: emailDecoded } },
+    });
   }
 
   async signIn(dto: SignInDto) {
+    const emailEncoded = encodeEmail(dto.email);
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email },
-      select: { id: true, email: true, password: true, role: true, createdAt: true },
+      where: { email: emailEncoded },
+      select: { id: true, email: true, password: true, createdAt: true },
+    });
+
+    // Always use same error message
+    if (!user) {
+      throw new UnauthorizedException(
+        ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS,
+      );
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      dto.password,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException(
+        ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS,
+      );
+    }
+
+    const emailDecoded = decodeEmail(user.email);
+    const { password, ...rest } = user;
+    const safeUser = { ...rest, email: emailDecoded };
+    const jti = randomUUID();
+    const token = this.jwtService.sign({
+      sub: user.id,
+      email: emailDecoded,
+      jti,
+    });
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { token: jti },
+    });
+
+    return successResponse(SUCCESS_MESSAGES.AUTH.LOGIN_SUCCESS, {
+      data: { accessToken: token, user: safeUser },
+    });
+  }
+
+  async logout(jti: string, userId?: string) {
+    if (jti) {
+      await this.prisma.user.updateMany({
+        where: { token: jti },
+        data: { token: null },
+      });
+    } else if (userId) {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { token: null },
+      });
+    }
+    return successResponse(SUCCESS_MESSAGES.AUTH.LOGOUT_SUCCESS);
+  }
+
+  async forgotPassword(dto: ForgotPasswordDto) {
+    const emailEncoded = encodeEmail(dto.email);
+    const user = await this.prisma.user.findUnique({
+      where: { email: emailEncoded },
     });
 
     if (!user) {
-      throw new NotFoundException(ERROR_MESSAGES.AUTH.USER_NOT_FOUND);
+      return successResponse(ERROR_MESSAGES.AUTH.USER_NOT_FOUND, {
+        data: {},
+      });
     }
 
-    const isPasswordValid = await bcrypt.compare(dto.password, user.password);
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    if (!isPasswordValid) {
-      throw new UnauthorizedException(ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS);
-    }
+    // Create secure reset token
+    const resetToken = randomBytes(32).toString('hex');
 
-    const { password, ...safeUser } = user;
-    const token = this.jwtService.sign({
-      sub: user.id,
-      email: user.email,
-      role: user.role,
+    await this.prisma.user.update({
+      where: { email: emailEncoded },
+      data: {
+        resetOtp: otp,
+        resetOtpExpires: new Date(Date.now() + 10 * 60 * 1000), // 10 mins
+        resetToken: resetToken,
+        resetTokenExpires: new Date(Date.now() + 15 * 60 * 1000), // 15 mins
+      } as Prisma.UserUpdateInput,
     });
 
-    return { accessToken: token, user: safeUser };
+    console.log('OTP:', otp);
+    console.log('Reset Token:', resetToken);
+
+    return successResponse(SUCCESS_MESSAGES.AUTH.OTP_SENT, {
+      data: { resetToken, otp },
+    });
   }
+
+  async verifyOtp(dto: VerifyOtpDto) {
+    const emailEncoded = encodeEmail(dto.email);
+    const user = await this.prisma.user.findUnique({
+      where: { email: emailEncoded },
+    });
+
+    if (
+      !user ||
+      user.resetOtp !== dto.otp ||
+      !user.resetOtpExpires ||
+      user.resetOtpExpires < new Date()
+    ) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.INVALID_OR_EXPIRED_OTP);
+    }
+
+    return successResponse(SUCCESS_MESSAGES.AUTH.OTP_VERIFIED);
+  }
+
+  async resetPassword(dto: ResetPasswordDto) {
+    if (dto.password !== dto.confirmPassword) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.PASSWORD_MISMATCH);
+    }
+
+    const emailEncoded = encodeEmail(dto.email);
+    const user = await this.prisma.user.findUnique({
+      where: { email: emailEncoded },
+    });
+
+    if (!user) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.USER_NOT_FOUND);
+    }
+
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+
+    await this.prisma.user.update({
+      where: { email: emailEncoded },
+      data: {
+        password: hashedPassword,
+        token: null,
+        resetOtp: null,
+        resetOtpExpires: null,
+      },
+    });
+
+    return successResponse(SUCCESS_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS);
+  }
+
 }

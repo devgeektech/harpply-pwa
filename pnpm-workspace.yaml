@@ -21,3 +21,10 @@ catalog:
   tailwindcss: ^4.1.17
   typescript: ^5.9.3
   zustand: ^5.0.9
+
+catalogs:
+  react19:
+    '@types/react': ^19.2
+    '@types/react-dom': ^19.2
+    react: 19.2.3
+    react-dom: 19.2.3

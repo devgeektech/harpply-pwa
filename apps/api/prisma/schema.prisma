@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -7,20 +8,66 @@ datasource db {
   schemas  = ["public", "auth"]
 }
 
-enum Role {
-  ADMIN
-  EMPLOYER
-  INDIVIDUAL
-  
-  @@schema("auth")
-}
-
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
   password  String
-  role      Role     @default(INDIVIDUAL)
   createdAt DateTime @default(now())
+
+  // Auth
+  token              String?     // current session token (jti); cleared on logout
+  loggedOutAt        DateTime?
+  resetOtp           String?
+  resetOtpExpires    DateTime?
+  resetToken         String?
+  resetTokenExpires  DateTime?
+
+  // Onboarding - Identity / Profile
+  fullName   String?
+  age        Int?
+  gender     Gender?
+  profilePhoto   String?
+  profilePhotos  Json?    // array of { key: string, url: string } for S3
+
+  // Onboarding - Location
+  latitude   Float?
+  longitude  Float?
+  location   String?   // display e.g. "Nashville, TN"
+  locationEnabled Boolean? @default(false)
+
+  // Onboarding - Bio / Story
+  bio        String?
+  jobTitle   String?
+  company    String?
+  school     String?
+
+  // Onboarding - Faith & Lifestyle / Profile
+  denomination     String?
+  churchInvolvement    String?
+  yearsInFaith         Int?
+  churchAttendance     String?
+  myFaithValues        Json?     // array of strings
+  partnerValues        Json?     // array of strings
+  lifestyleSmoking     Boolean?
+  lifestyleDrinking    Boolean?
+  smokingPreference    String?   // Never, Socially, Regularly
+  alcoholPreference    String?   // Never, Socially, Regularly
+  lifestylePartying    Boolean?
+  dietaryPreference    String?
+  exercise             String?
+
+  // Onboarding - Choose 3 (stored as JSON array of selected keys)
+  interests            Json?
+
+  onboardingCompleted  Boolean @default(false)
+
+  @@schema("auth")
+}
+
+enum Gender {
+  male
+  female
+  other
 
   @@schema("auth")
 }
