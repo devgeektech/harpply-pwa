@@ -28,13 +28,15 @@ import { AwsS3Module } from './common/aws-s3/aws-s3.module';
     AppService,
     PrismaService,
 
+    
     {
       provide: APP_PIPE,
-      useFactory: () => new ValidationPipe({
-        whitelist: true,
-        transform: true,
-        forbidNonWhitelisted: true,
-      }),
+      useFactory: () =>
+        new ValidationPipe({
+          whitelist: true,
+          transform: true,
+          forbidNonWhitelisted: true,
+        }),
     },
 
     {

@@ -22,4 +22,6 @@ export * from "./components/ui/sheet";
 export * from "./components/ui/sidebar";
 export * from "./components/ui/sonner";
 export * from "./components/ui/textarea";
-export { toast } from "sonner";
+export * from "./components/ui/sonner";
+export * from "./components/ui/label";
+export * from "./components/ui/progress";

@@ -2,7 +2,7 @@ import * as React from "react";
 import { Loader2 } from "lucide-react";
 
 import { Button } from "./button";
-import { cn } from "@repo/ui/lib/utils";
+import { cn } from "../../lib/utils";
 
 export interface SubmitButtonProps
   extends Omit<React.ComponentProps<"button">, "type"> {

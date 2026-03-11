@@ -2,7 +2,7 @@ import * as React from "react";
 import { Eye, EyeOff } from "lucide-react";
 
 import { Input } from "./input";
-import { cn } from "@repo/ui/lib/utils";
+import { cn } from "../../lib/utils";
 
 export interface PasswordFieldProps extends Omit<React.ComponentProps<typeof Input>, "type"> {
   /** Whether to show the visibility toggle button */
