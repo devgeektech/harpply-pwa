@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useAuthStore } from "store/useAuthStore";
 import { Button, Card, CardContent, Input, Label } from "@repo/ui";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-
 export default function SignupPage() {
   const {
     email,
