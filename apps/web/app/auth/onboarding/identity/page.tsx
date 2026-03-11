@@ -3,7 +3,7 @@
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { Button, Card, CardContent, Input, Progress } from "@repo/ui";
 
-export default function OnboardingPage() {
+export default function Identity() {
   const { name, age, gender, setName, setAge, setGender } =
     useOnboardingStore();
 
@@ -22,45 +22,45 @@ export default function OnboardingPage() {
             Tell us about you
           </h1>
 
-          <p className="text-gray-400 mb-6 w-full">
+          <p className="text-white mb-6 font-light w-full">
             We'd love to get to know you better to personalize your journey.
           </p>
 
           {/* Name */}
           <div className="mb-4 w-full">
-            <label className="text-gray-300 text-sm">Full Name</label>
+            <label className="text-white font-normal text-sm">Full Name</label>
             <Input
               placeholder="Enter your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-2 bg-white border-white/10 h-[52px] border border-[#E7ECF2] rounded-[12px] md:rounded-[8px] text-[#3B3B3B] placeholder:text-[#3B3B3B] focus-visible:ring-0"
+              className="mt-2 bg-white border-[#FBFAF9] h-[52px] border border-[#E7ECF2] rounded-[12px] md:rounded-[8px] text-[#3B3B3B] placeholder:text-[#3B3B3B] focus-visible:ring-0"
             />
           </div>
 
           {/* Age */}
           <div className="mb-4 w-full">
-            <label className="text-gray-300 text-sm">Age</label>
+            <label className="text-white font-normal text-sm">Age</label>
             <Input
               placeholder="How old are you?"
               value={age}
               onChange={(e) => setAge(e.target.value)}
-              className="mt-2 bg-white border-white/10 h-[52px] border border-[#E7ECF2] rounded-[12px] md:rounded-[8px] text-[#3B3B3B] placeholder:text-[#3B3B3B] focus-visible:ring-0"
+              className="mt-2 bg-white border-[#FBFAF9] h-[52px] border border-[#E7ECF2] rounded-[12px] md:rounded-[8px] text-[#3B3B3B] placeholder:text-[#3B3B3B] focus-visible:ring-0"
             />
           </div>
 
           {/* Gender */}
-          <div className="mb-8 w-full">
-            <label className="text-gray-300 text-sm">Gender</label>
-            <div className="border border-[#E7ECF214] p-4 w-full mt-3">
+          <div className="mb-6 w-full">
+            <label className="text-white font-normal text-sm">Gender</label>
+            <div className="border border-[#E7ECF214] sm:bg-transparent bg-white sm:rounded-[12px] rounded-[8px] p-2 sm:p-4 w-full mt-3">
               <div className="flex gap-3">
                 {["Male", "Female", "Other"].map((g) => (
                   <button
                     key={g}
                     onClick={() => setGender(g)}
-                    className={`flex-1 rounded-lg py-2 text-sm border transition ${
+                    className={`flex-1 rounded-full sm:rounded-lg py-2 text-base font-medium border transition cursor-pointer ${
                       gender === g
-                        ? "bg-yellow-400 text-black border-yellow-400"
-                        : "bg-white/10 text-white border-white/20"
+                        ? "bg-white text-[#C39936] border-[#C39936]"
+                        : "bg-white text-black border-white/20"
                     }`}
                   >
                     {g}
@@ -71,7 +71,7 @@ export default function OnboardingPage() {
           </div>
 
           {/* Continue Button */}
-          <Button className="cursor-pointer w-full text-base h-[52px] mt-[12px] rounded-[12px] md:rounded-[8px] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60">
+          <Button className="cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60">
             Continue
           </Button>
         </CardContent>
