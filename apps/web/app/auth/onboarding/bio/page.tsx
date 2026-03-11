@@ -31,7 +31,7 @@ export default function Bio() {
           {/* Progress */}
           <div className="mb-6 w-full">
             <p className="text-sm text-gray-300 mb-2 text-left">Step 3 of 5</p>
-            <Progress value={33} />
+            <Progress value={60} />
           </div>
 
           {/* Title */}

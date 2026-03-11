@@ -23,7 +23,7 @@ export default function Location() {
           {/* Progress */}
           <div className="mb-6 w-full">
             <p className="text-sm text-gray-300 mb-2 text-left">Step 2 of 5</p>
-            <Progress value={20} />
+            <Progress value={40} />
           </div>
 
           <div className="container-fluid">
