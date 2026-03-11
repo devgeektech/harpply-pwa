@@ -5,6 +5,9 @@
     "build": "turbo run build",
     "db": "docker compose up -d db",
     "dev": "docker compose up -d db && turbo run dev",
+    "docker:up": "docker compose up -d --build",
+    "docker:up:logs": "docker compose up --build",
+    "docker:down": "docker compose down",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"
