@@ -11,7 +11,7 @@ import {
   Progress,
   Textarea,
 } from "@repo/ui";
-import { Send, ChevronLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 
 export default function Bio() {
@@ -22,7 +22,7 @@ export default function Bio() {
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex  sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
       <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
         <CardContent className="flex items-center flex-col gap-2 sm:p-10 px-3 text-center">
-          <div className="text-left text-white w-full md:hidden">
+          <div className="text-left text-white w-full">
             <Link href={"/"}>
               {" "}
               <ChevronLeft size={24} />
@@ -51,7 +51,7 @@ export default function Bio() {
             <Textarea
               id="message"
               className="bg-white resize-none h-[200px] text-sm text-[#3B3B3B] font-light 
-  focus-visible:ring-0 focus-visible:ring-offset-0 focus:!border-[#F3D35D]"
+                focus-visible:ring-0 focus-visible:ring-offset-0 focus:!border-[#F3D35D]"
               placeholder="I’m a believer who finds peace in..."
             />
             <p className="text-sm text-white font-light flex justify-end">
