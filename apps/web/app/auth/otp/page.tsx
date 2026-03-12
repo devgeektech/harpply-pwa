@@ -61,7 +61,9 @@ export default function OTPVerification() {
             {otp.map((digit, index) => (
               <Input
                 key={index}
-                ref={(el) => (inputs.current[index] = el)}
+                ref={(el) => {
+                  inputs.current[index] = el;
+                }}
                 value={digit}
                 maxLength={1}
                 onChange={(e) => handleChange(index, e.target.value)}

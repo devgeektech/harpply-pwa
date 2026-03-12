@@ -1,23 +1,26 @@
-import { Module } from '@nestjs/common';
-import { APP_FILTER, APP_PIPE } from '@nestjs/core';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 
 import { AuthModule } from './modules/auth/auth.module';
+import { ProfileModule } from './modules/profile/profile.module';
 import { PrismaService } from '../prisma/prisma.service';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-// ← Import here
-import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-import { UserModule } from './modules/user/user.module';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { NotEmptyBodyGuard } from './common/guards/not-empty-body.guard';
+import { NotEmptyBodyMiddleware } from './common/middleware/not-empty-body.middleware';
+import { AwsS3Module } from './common/aws-s3/aws-s3.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    AwsS3Module,
     AuthModule,
-    UserModule,
+    ProfileModule,
     // ... other modules
   ],
   controllers: [AppController],
@@ -36,11 +39,21 @@ import { UserModule } from './modules/user/user.module';
         }),
     },
 
-    // Global exception filter
     {
       provide: APP_FILTER,
-      useClass: HttpExceptionFilter,
+      useClass: AllExceptionsFilter,
+    },
+
+    {
+      provide: APP_GUARD,
+      useClass: NotEmptyBodyGuard,
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(NotEmptyBodyMiddleware)
+      .forRoutes('auth', 'profile');
+  }
+}
