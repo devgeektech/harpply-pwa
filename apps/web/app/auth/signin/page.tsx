@@ -50,8 +50,13 @@ export default function Signin() {
                 </div>
               </div>
 
-              <div className="text-right text-sm text-yellow-400 cursor-pointer hover:underline">
-                Forgot Password?
+              <div className="text-right text-sm">
+                <Link
+                  href="/auth/forgotpassword"
+                  className="text-yellow-400 hover:underline"
+                >
+                  Forgot Password?
+                </Link>
               </div>
 
               <Button
