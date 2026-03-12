@@ -26,3 +26,4 @@ export * from "./components/ui/sonner";
 export * from "./components/ui/label";
 export * from "./components/ui/progress";
 export * from "./components/ui/avatar";
+export * from "./components/ui/dialog";
