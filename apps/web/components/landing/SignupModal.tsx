@@ -41,7 +41,7 @@ function EmailIcon() {
 
 export function SignupModal({ isOpen, onClose }: SignupModalProps) {
   const router = useRouter();
-  
+
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) onClose();
   };
@@ -53,51 +53,73 @@ export function SignupModal({ isOpen, onClose }: SignupModalProps) {
 
   return (
     <div
-      className={`harpply-signup-modal ${isOpen ? "open" : ""}`}
+      className={`fixed inset-0 z-[300] flex items-end justify-center bg-black/75 ${isOpen ? "flex" : "hidden"}`}
       onClick={handleBackdropClick}
       role="dialog"
       aria-modal="true"
       aria-label="Sign up"
     >
-      <div className="harpply-modal-panel">
+      <div
+        className="relative w-full max-w-[430px] rounded-t-[20px] border-t border-[rgba(201,149,42,0.2)] bg-gradient-to-b from-[#1b0b42] to-[#0d0622] px-8 pb-14 pt-9"
+        style={{
+          animation: "harpply-panelUp 0.32s cubic-bezier(0.22, 1, 0.36, 1) both",
+        }}
+      >
         <button
           type="button"
-          className="harpply-modal-close-btn"
+          className="absolute right-6 top-5 flex h-[30px] w-[30px] items-center justify-center rounded-full border-none bg-white/[0.07] text-base text-white/75 transition-colors duration-200 hover:bg-white/[0.14]"
           onClick={onClose}
           aria-label="Close"
         >
           ✕
         </button>
-        <div className="harpply-modal-handle" />
-        <div className="harpply-modal-logo">
-          <span className="harpply-modal-logo-txt">
+        <div className="mx-auto mb-9 h-0.5 w-9 rounded-sm bg-white/20" />
+        <div className="mb-1.5 text-center">
+          <span className="font-[var(--font-cormorant),'Cormorant_Garamond',serif] text-[2.2rem] font-bold text-white [&_em]:font-normal [&_em]:bg-gradient-to-br [&_em]:from-[#f3d88a] [&_em]:to-[#c8952a] [&_em]:bg-clip-text [&_em]:[-webkit-text-fill-color:transparent]">
             <em>H</em>arpply
           </span>
         </div>
-        <p className="harpply-modal-sub">Where Christian Singles Meet</p>
+        <p className="mb-8 text-center text-[0.88rem] font-light text-white/75">
+          Where Christian Singles Meet
+        </p>
 
-        <button type="button" className="harpply-modal-btn">
+        <button
+          type="button"
+          className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-full border-none bg-white/[0.96] px-4 py-4 font-[var(--font-inter),'Inter',sans-serif] text-[0.88rem] font-semibold text-[#18182a] transition-colors duration-200 hover:bg-[#efefef]"
+        >
           <GoogleIcon />
           Continue with Google
         </button>
 
-        <div className="harpply-modal-or">
-          <span />
-          <p>or</p>
-          <span />
+        <div className="my-4 flex items-center gap-4">
+          <span className="h-px flex-1 bg-white/10" />
+          <p className="text-[0.74rem] text-white/45">or</p>
+          <span className="h-px flex-1 bg-white/10" />
         </div>
 
-        <button onClick={()=>handleContinueWithEmail()} type="button" className="harpply-modal-btn">
+        <button
+          onClick={() => handleContinueWithEmail()}
+          type="button"
+          className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-full border-none bg-white/[0.96] px-4 py-4 font-[var(--font-inter),'Inter',sans-serif] text-[0.88rem] font-semibold text-[#18182a] transition-colors duration-200 hover:bg-[#efefef]"
+        >
           <EmailIcon />
           Continue with Email
         </button>
 
-        <p className="harpply-modal-legal">
-          By continuing, you agree to our <a href="#">Terms of Service</a>. Please
-          review our <a href="#">Privacy Policy</a> to understand how we handle
-          your information.
+        <p className="mt-5 text-center text-[0.7rem] font-light leading-[1.7] text-white/45">
+          By continuing, you agree to our{" "}
+          <a href="#" className="text-white/75 underline underline-offset-2">
+            Terms of Service
+          </a>
+          . Please review our{" "}
+          <a href="#" className="text-white/75 underline underline-offset-2">
+            Privacy Policy
+          </a>{" "}
+          to understand how we handle your information.
         </p>
-        <div className="harpply-modal-a11y">Two-finger long press anywhere to open menu</div>
+        <div className="mt-5 rounded-lg bg-[#2563eb] px-4 py-2.5 text-center text-[0.7rem] tracking-[0.02em] text-white/80">
+          Two-finger long press anywhere to open menu
+        </div>
       </div>
     </div>
   );

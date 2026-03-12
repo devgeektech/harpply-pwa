@@ -23,8 +23,9 @@ export default function AttributeCard({ title, desc }: Props) {
         <div className="text-lg font-semibold">{title}</div>
 
         <CheckboxField
+          label=""
           checked={active}
-          onCheckedChange={() => toggle(title)}
+          onChange={() => toggle(title)}
           className="data-[state=checked]:bg-yellow-400 rounded-full data-[state=checked]:border-yellow-400"
         />
       </div>
