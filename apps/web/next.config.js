@@ -17,4 +17,4 @@ const nextConfig = {
   outputFileTracingRoot: path.join(__dirname, "../.."),
 };
 
-module.exports = withPWA(nextConfig);
+module.exports = nextConfig;
