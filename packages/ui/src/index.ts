@@ -25,3 +25,4 @@ export * from "./components/ui/textarea";
 export * from "./components/ui/sonner";
 export * from "./components/ui/label";
 export * from "./components/ui/progress";
+export * from "./components/ui/avatar";

@@ -3,8 +3,10 @@ import { Check } from "lucide-react";
 
 import { cn } from "../../lib/utils";
 
-export interface CheckboxFieldProps
-  extends Omit<React.ComponentProps<"input">, "type"> {
+export interface CheckboxFieldProps extends Omit<
+  React.ComponentProps<"input">,
+  "type"
+> {
   /** Label shown next to the checkbox */
   label: string;
   /** Optional error state */
@@ -41,14 +43,18 @@ const CheckboxField = React.forwardRef<HTMLInputElement, CheckboxFieldProps>(
           />
           <span
             className={cn(
-              "flex size-4 items-center justify-center rounded border border-input bg-background shadow-xs transition-colors",
+              "flex size-5 items-center justify-center rounded-full border border-input bg-background shadow-xs transition-colors",
               "peer-focus-visible:outline-none peer-focus-visible:border-ring peer-focus-visible:ring-ring/50 peer-focus-visible:ring-[3px]",
               "peer-disabled:pointer-events-none peer-disabled:opacity-50",
-              "peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground peer-checked:[&_svg]:opacity-100",
-              error && "border-destructive ring-destructive/20 dark:ring-destructive/40"
+              "peer-checked:border-[#C39936] peer-checked:bg-[#C39936] peer-checked:text-primary-foreground peer-checked:[&_svg]:opacity-100",
+              error &&
+                "border-destructive ring-destructive/20 dark:ring-destructive/40"
             )}
           >
-            <Check className="size-2.5 opacity-0 transition-opacity" aria-hidden />
+            <Check
+              className="size-4 opacity-0 transition-opacity"
+              aria-hidden
+            />
           </span>
         </span>
         {label}
