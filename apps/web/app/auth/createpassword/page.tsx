@@ -117,7 +117,7 @@ function CreatePasswordForm() {
           <p className="text-base text-gray-300 text-left w-full">
             Enter and confirm your new password (min {MIN_PASSWORD_LENGTH}{" "}
             characters)
-          </p>
+          </p> 
 
           <Form
             onSubmit={onPasswordSubmit}
