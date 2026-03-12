@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { Button, Card, CardContent } from "@repo/ui";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
@@ -20,7 +21,7 @@ function maskEmail(email: string): string {
   return `${maskedLocal}@${maskedDomain}`;
 }
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const emailFromUrl = searchParams.get("email") ?? "";
   const { email: emailFromStore, setEmail } = useSignupStore();
@@ -84,5 +85,25 @@ export default function VerifyEmailPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function VerifyEmailFallback() {
+  return (
+    <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
+      <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
+        <CardContent className="flex items-center flex-col gap-3 sm:p-10 px-3 text-left">
+          <p className="text-white">Loading...</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<VerifyEmailFallback />}>
+      <VerifyEmailContent />
+    </Suspense>
   );
 }

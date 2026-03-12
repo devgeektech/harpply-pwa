@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { Form, Field } from "react-final-form";
 import { Button, Card, CardContent, Input, Label } from "@repo/ui";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
@@ -60,7 +60,7 @@ function FieldError({ name }: { name: string }) {
 const inputClass =
   "bg-white border-white/10 h-[52px] border border-[#E7ECF2] rounded-[12px] md:rounded-[8px] text-[#3B3B3B] placeholder:text-[#3B3B3B] focus-visible:ring-0 pr-10 w-full";
 
-export default function CreatePasswordPage() {
+function CreatePasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const emailFromUrl = searchParams.get("email") ?? "";
@@ -221,5 +221,25 @@ export default function CreatePasswordPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function CreatePasswordFallback() {
+  return (
+    <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
+      <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
+        <CardContent className="flex items-center flex-col gap-3 sm:p-10 px-3 text-left">
+          <p className="text-white">Loading...</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+export default function CreatePasswordPage() {
+  return (
+    <Suspense fallback={<CreatePasswordFallback />}>
+      <CreatePasswordForm />
+    </Suspense>
   );
 }
