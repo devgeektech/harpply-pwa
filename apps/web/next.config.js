@@ -14,7 +14,15 @@ const nextConfig = {
   turbopack: {
     root: path.join(__dirname, "../.."),
   },
+
   outputFileTracingRoot: path.join(__dirname, "../.."),
+
+  // Fix for cross-origin dev warning
+  allowedDevOrigins: [
+    "www.harpply.com",
+    "harpply.com",
+    "localhost",
+  ],
 };
 
 module.exports = nextConfig;
