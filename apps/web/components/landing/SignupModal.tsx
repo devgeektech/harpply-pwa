@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 type SignupModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -38,8 +40,15 @@ function EmailIcon() {
 }
 
 export function SignupModal({ isOpen, onClose }: SignupModalProps) {
+  const router = useRouter();
+  
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) onClose();
+  };
+
+  const handleContinueWithEmail = () => {
+    onClose();
+    router.push("/auth/signin");
   };
 
   return (
@@ -78,7 +87,7 @@ export function SignupModal({ isOpen, onClose }: SignupModalProps) {
           <span />
         </div>
 
-        <button type="button" className="harpply-modal-btn">
+        <button onClick={()=>handleContinueWithEmail()} type="button" className="harpply-modal-btn">
           <EmailIcon />
           Continue with Email
         </button>
