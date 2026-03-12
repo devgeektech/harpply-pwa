@@ -31,34 +31,50 @@ const FEATURES = [
   },
 ];
 
+const goldGradientText =
+  "bg-gradient-to-br from-[#f3d88a] via-[#e6b645] to-[#c8952a] bg-clip-text text-transparent [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]";
+
 export function WhyHarpply() {
   return (
-    <section className="harpply-section" id="why" style={{ background: "var(--deep)" }}>
-      <div className="harpply-section-inner">
-        <div className="harpply-section-header">
+    <section className="bg-[#0c0520] px-8 py-24" id="why">
+      <div className="mx-auto max-w-[1180px]">
+        <div className="mb-16 text-center">
           <FadeIn>
-            <span className="harpply-eyebrow">Our Commitment</span>
+            <span className="mb-4 block text-[0.68rem] font-medium uppercase tracking-[0.22em] text-[#e6b645]">
+              Our Commitment
+            </span>
           </FadeIn>
           <FadeIn>
-            <h2 className="harpply-sec-title">
-              Built on <span className="harpply-gold-text">Principle</span>
+            <h2 className="font-[var(--font-cormorant),'Cormorant_Garamond',serif] text-[clamp(2rem,4.5vw,3.2rem)] font-semibold leading-[1.15] tracking-[-0.01em]">
+              Built on <span className={goldGradientText}>Principle</span>
             </h2>
           </FadeIn>
           <FadeIn>
-            <p className="harpply-sec-sub">
+            <p className="mx-auto mt-4 max-w-[500px] text-[0.9rem] font-light leading-[1.85] text-white/75">
               Harpply was founded by believers who understand that the foundation
               of a lasting, flourishing relationship begins with shared faith.
             </p>
           </FadeIn>
         </div>
         <FadeIn>
-          <div className="harpply-features-grid">
+          <div className="grid overflow-hidden rounded-[14px] border border-[rgba(201,149,42,0.15)] bg-[rgba(201,149,42,0.15)] max-[900px]:grid-cols-1 min-[901px]:grid-cols-2" style={{ gap: "1.5px" }}>
             {FEATURES.map((feat) => (
-              <div key={feat.num} className="harpply-feature-card">
-                <div className="harpply-feat-num">{feat.num}</div>
-                <h3>{feat.title}</h3>
-                <p>{feat.description}</p>
-                <div className="harpply-feat-verse">{feat.verse}</div>
+              <div
+                key={feat.num}
+                className="bg-[#0c0520] px-10 py-12 transition-colors duration-300 hover:bg-[rgba(201,149,42,0.04)]"
+              >
+                <div className="font-[var(--font-cormorant),'Cormorant_Garamond',serif] mb-6 text-[3.5rem] font-bold leading-none text-[rgba(201,149,42,0.14)]">
+                  {feat.num}
+                </div>
+                <h3 className="font-[var(--font-cormorant),'Cormorant_Garamond',serif] mb-3 text-[1.4rem] font-semibold tracking-[-0.01em]">
+                  {feat.title}
+                </h3>
+                <p className="text-[0.88rem] font-light leading-[1.82] text-white/75">
+                  {feat.description}
+                </p>
+                <p className="mt-5 font-[var(--font-cormorant),'Cormorant_Garamond',serif] text-[0.8rem] italic tracking-[0.02em] text-[#c8952a]">
+                  {feat.verse}
+                </p>
               </div>
             ))}
           </div>

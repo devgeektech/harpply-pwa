@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 
-const VISIBLE_CLASS = "harpply-fi v";
-const HIDDEN_CLASS = "harpply-fi";
+const HIDDEN_CLASSES =
+  "opacity-0 translate-y-[18px] transition-[opacity,transform] duration-[0.6s] ease-out";
 
 type FadeInProps = {
   children: ReactNode;
@@ -11,7 +11,11 @@ type FadeInProps = {
   delayIndex?: number;
 };
 
-export function FadeIn({ children, className = "", delayIndex = 0 }: FadeInProps) {
+export function FadeIn({
+  children,
+  className = "",
+  delayIndex = 0,
+}: FadeInProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -26,8 +30,8 @@ export function FadeIn({ children, className = "", delayIndex = 0 }: FadeInProps
           if (entry.isIntersecting) {
             const delay = delayIndex * 65;
             timeoutId = setTimeout(() => {
-              el.classList.remove("harpply-fi");
-              el.classList.add("harpply-fi", "v");
+              el.classList.remove("opacity-0", "translate-y-[18px]");
+              el.classList.add("opacity-100", "translate-y-0");
             }, delay);
             observer.unobserve(entry.target);
           }
@@ -44,7 +48,10 @@ export function FadeIn({ children, className = "", delayIndex = 0 }: FadeInProps
   }, [delayIndex]);
 
   return (
-    <div ref={ref} className={[HIDDEN_CLASS, className].filter(Boolean).join(" ")}>
+    <div
+      ref={ref}
+      className={`${HIDDEN_CLASSES} ${className}`.trim()}
+    >
       {children}
     </div>
   );

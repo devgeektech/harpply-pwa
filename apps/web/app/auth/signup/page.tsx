@@ -1,59 +1,78 @@
 "use client";
 
-import { useState } from "react";
-import { useAuthStore } from "store/useAuthStore";
-import {
-  Button,
-  Card,
-  CardContent,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  Input,
-  Label,
-} from "@repo/ui";
+import { Form, Field } from "react-final-form";
+import { Button, Card, CardContent, Input, Label } from "@repo/ui";
 import { Loader2 } from "lucide-react";
-import Link from "next/link";
-export default function SignupPage() {
-  const { email, setEmail, reset, loading, setLoading, error, setError } =
-    useAuthStore();
+import * as yup from "yup";
+import { useRouter } from "next/navigation";
+import { registerEmail as apiRegisterEmail } from "@/lib/api/auth";
+import { useSignupStore } from "store/useSignupStore";
 
-  const [open, setOpen] = useState(false); // ✅ modal state
+const registerEmailSchema = yup.object({
+  email: yup
+    .string()
+    .required("Email is required.")
+    .email("Please enter a valid email address."),
+});
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    setError(null);
-
-    // validation
-    if (!email) {
-      setError("Email field is required.");
-      return;
-    }
-
-    if (!email.includes("@")) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-
+// --- Final-form validator from yup ---
+function makeYupValidator<T extends yup.AnyObjectSchema>(schema: T) {
+  return (values: Record<string, unknown>) => {
     try {
-      setLoading(true);
-
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      console.log({ email });
-
-      reset();
-
-      setOpen(true); // ✅ open modal after success
+      schema.validateSync(values, { abortEarly: false });
+      return {};
     } catch (err) {
-      setError("Something went wrong. Please try again.");
+      if (err instanceof yup.ValidationError) {
+        const inner = err.inner?.length ? err.inner : [err];
+        return inner.reduce<Record<string, string>>((acc, e) => {
+          const path = e.path ?? "unknown";
+          acc[path] = e.message ?? "Invalid";
+          return acc;
+        }, {});
+      }
+      throw err;
+    }
+  };
+}
+
+const validateEmail = makeYupValidator(registerEmailSchema);
+
+// --- Field wrapper to show error ---
+function FieldError({ name }: { name: string }) {
+  return (
+    <Field name={name} subscription={{ error: true, touched: true }}>
+      {({ meta }) =>
+        meta.touched && meta.error ? (
+          <div className="text-sm text-red-400 mt-1">{meta.error}</div>
+        ) : null
+      }
+    </Field>
+  );
+}
+
+export default function SignupPage() {
+  const router = useRouter();
+  const { setEmail, setLoading, setError, loading, error: submitError } =
+    useSignupStore();
+
+  const onEmailSubmit = async (values: { email: string }) => {
+    setError(null);
+    setLoading(true);
+    try {
+      await apiRegisterEmail(values.email);
+      setEmail(values.email);
+      router.push(`/auth/verify?email=${encodeURIComponent(values.email)}`);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Something went wrong. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
+
+  const inputClass =
+    "bg-white h-[52px] border border-[#E7ECF2] rounded-[12px] md:rounded-[8px] text-[#3B3B3B] placeholder:text-[#3B3B3B] focus-visible:ring-0 w-full";
 
   return (
     <>
@@ -64,48 +83,51 @@ export default function SignupPage() {
               Create your account
             </h1>
 
-            <form
-              onSubmit={handleSubmit}
-              className="space-y-5 md:my-[50px] w-full"
+            <Form
+              onSubmit={onEmailSubmit}
+              validate={validateEmail}
+              initialValues={{ email: "" }}
             >
-              {/* Email */}
-              <div className="space-y-2">
-                <Label className="text-gray-300 text-sm font-normal">
-                  Email
-                </Label>
-                <Input
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-white h-[52px] border border-[#E7ECF2] rounded-[12px] md:rounded-[8px] text-[#3B3B3B] placeholder:text-[#3B3B3B] focus-visible:ring-0"
-                />
-              </div>
+              {({ handleSubmit }) => (
+                <form onSubmit={handleSubmit} className="space-y-5 md:my-[50px] w-full">
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 text-sm font-normal">Email</Label>
+                    <Field name="email">
+                      {({ input }) => (
+                        <Input
+                          {...input}
+                          type="email"
+                          placeholder="Email"
+                          className={inputClass}
+                        />
+                      )}
+                    </Field>
+                    <FieldError name="email" />
+                  </div>
 
-              {/* Error */}
-              {error && (
-                <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">
-                  {error}
-                </div>
+                  {submitError && (
+                    <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">
+                      {submitError}
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="cursor-pointer w-full text-base h-[52px] mt-[12px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60"
+                  >
+                    {loading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Creating...
+                      </span>
+                    ) : (
+                      "Sign up"
+                    )}
+                  </Button>
+                </form>
               )}
-
-              {/* Submit */}
-              <Button
-                onClick={() => setOpen(true)}
-                type="submit"
-                disabled={loading}
-                className="cursor-pointer w-full text-base h-[52px] mt-[12px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60"
-              >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Creating...
-                  </span>
-                ) : (
-                  "Sign up"
-                )}
-              </Button>
-            </form>
+            </Form>
 
             <p className="text-center text-sm text-white mt-[20px]">
               Already have an account?{" "}
@@ -116,28 +138,6 @@ export default function SignupPage() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Modal */}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[550px] ">
-          <DialogHeader className="mb-6">
-            <DialogTitle className="text-center text-[24px] font-normal font-serif">
-              Verify your email
-            </DialogTitle>
-
-            <DialogDescription className="text-center text-[18px] text-gray-500 mt-2">
-              OTP sent to your email
-              <span className="ms-2 font-medium text-black">
-                abc***@*****.com
-              </span>
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="cursor-pointer text-center flex items-center justify-center w-full text-base h-[52px] mt-[12px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60">
-            <Link href={"/"}>Resend</Link>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }

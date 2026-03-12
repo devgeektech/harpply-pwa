@@ -6,9 +6,11 @@ import Logo from "public/images/logo.svg";
 import { Card, CardContent, Button } from "@repo/ui";
 import { useAuthStore } from "store/useAuthStore";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function SignupEmail() {
   const { loading, setLoading } = useAuthStore();
+  const router = useRouter();
 
   const handleGoogle = async () => {
     setLoading(true);
@@ -59,7 +61,7 @@ export default function SignupEmail() {
             </Button>
 
             <Button
-              onClick={handleEmail}
+              onClick={() => router.push("/auth/signin")}
               variant="secondary"
               className="cursor-pointer relative w-full rounded-full h-[56px] text-[#1A1A1A] text-base font-normal bg-white/90 hover:bg-white"
             >

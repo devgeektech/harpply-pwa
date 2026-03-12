@@ -1,6 +1,9 @@
 export const SUCCESS_MESSAGES = {
   AUTH: {
     REGISTER_SUCCESS: 'User registered successfully.',
+    EMAIL_REGISTERED:
+      'Email registered. Please set your password to complete signup.',
+    PASSWORD_SET_SUCCESS: 'Password set successfully. You can now sign in.',
     LOGIN_SUCCESS: 'Login successful.',
     LOGOUT_SUCCESS: 'Logged out successfully.',
     OTP_SENT: 'OTP sent successfully.',

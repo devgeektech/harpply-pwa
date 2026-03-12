@@ -10,7 +10,8 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
-import { SignUpDto } from './dto/sign-up.dto';
+import { RegisterEmailDto } from './dto/register-email.dto';
+import { SetPasswordDto } from './dto/set-password.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
@@ -35,8 +36,14 @@ export class AuthController {
 
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
-  async register(@Body() dto: SignUpDto) {
-    return this.authService.signUp(dto);
+  async registerEmail(@Body() dto: RegisterEmailDto) {
+    return this.authService.registerEmail(dto);
+  }
+
+  @Post('set-password')
+  @HttpCode(HttpStatus.OK)
+  async setPassword(@Body() dto: SetPasswordDto) {
+    return this.authService.setPassword(dto);
   }
 
   @Post('login')

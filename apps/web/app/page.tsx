@@ -32,7 +32,13 @@ export default function Home() {
   }, [modalOpen]);
 
   return (
-    <div className="harpply-landing harpply-page-bg">
+    <div
+      className="min-h-screen overflow-x-hidden bg-[#0c0520] text-white font-[var(--font-inter),'Inter',sans-serif"
+      style={{
+        background:
+          "radial-gradient(ellipse 70% 55% at 50% -5%, #2a1468 0%, transparent 65%), radial-gradient(ellipse 40% 30% at 90% 20%, #1c0a50 0%, transparent 55%), radial-gradient(ellipse 30% 25% at 10% 50%, #140640 0%, transparent 60%), #0c0520",
+      }}
+    >
       <Navbar onOpenModal={openModal} />
       <main>
         <Hero onOpenModal={openModal} />
