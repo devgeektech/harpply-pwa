@@ -3,11 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FadeIn } from "./FadeIn";
+import { useRouter } from "next/navigation";
+
 type HeroProps = {
   onOpenModal: () => void;
 };
 
 export function Hero({ onOpenModal }: HeroProps) {
+  const router = useRouter();
+
   return (
     <section className="harpply-hero harpply-section" id="home">
       <div className="harpply-hero-bg-cross" />
@@ -88,7 +92,7 @@ export function Hero({ onOpenModal }: HeroProps) {
             <button
               type="button"
               className="harpply-btn-hero"
-              onClick={onOpenModal}
+              onClick={() => router.push("/auth/signup")}
             >
               Create Your Profile
             </button>

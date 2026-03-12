@@ -53,33 +53,28 @@ export function Footer() {
             <Link href="#">
               Pricing <span className="harpply-soon">Soon</span>
             </Link>
-            <Link href="#">
-              iOS App <span className="harpply-soon">Soon</span>
-            </Link>
-            <Link href="#">
-              Android <span className="harpply-soon">Soon</span>
-            </Link>
           </div>
+
           <div className="harpply-footer-col">
             <span className="harpply-footer-col-head">Community</span>
             <Link href="#stories">Testimonials</Link>
             <Link href="#community">Devotionals</Link>
             <Link href="#community">Prayer Circles</Link>
-            <Link href="#">Blog</Link>
-            <Link href="#">Newsletter</Link>
+            <Link href="#">Blog <span className="harpply-soon">Soon</span></Link>
+            <Link href="#">Newsletter <span className="harpply-soon">Soon</span></Link>
           </div>
           <div className="harpply-footer-col">
             <span className="harpply-footer-col-head">Company</span>
-            <Link href="#">About Us</Link>
-            <Link href="#">Our Mission</Link>
-            <Link href="#">Safety Centre</Link>
-            <Link href="#">Privacy Policy</Link>
-            <Link href="#">Terms of Service</Link>
-            <Link href="#">Contact</Link>
+            <Link href="#">About Us <span className="harpply-soon">Soon</span></Link>
+            <Link href="#">Our Mission <span className="harpply-soon">Soon</span></Link>
+            <Link href="#">Safety Centre <span className="harpply-soon">Soon</span></Link>
+            <Link href="#">Privacy Policy <span className="harpply-soon">Soon</span></Link>
+            <Link href="#">Terms of Service <span className="harpply-soon">Soon</span></Link>
+            <Link href="#">Contact <span className="harpply-soon">Soon</span></Link>
           </div>
         </div>
         <div className="harpply-footer-bottom">
-          <p>&copy; 2025 Harpply Inc. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Harpply Inc. All rights reserved.</p>
           <p className="harpply-footer-verse">
             &quot;He who finds a wife finds a good thing.&quot; — Proverbs 18:22
           </p>
