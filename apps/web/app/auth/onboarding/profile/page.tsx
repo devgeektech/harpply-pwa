@@ -127,7 +127,6 @@ export default function ReviewProfilePage() {
     </div>
   );
 }
-
 /* Row component */
 
 function InfoRow({ label, value, className }: { label: string; value: string; className?: string }) {
@@ -138,3 +137,4 @@ function InfoRow({ label, value, className }: { label: string; value: string; cl
     </div>
   );
 }
+

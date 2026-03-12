@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
 interface OnboardingState {
+  denomination: string;
   churchRole: string;
   yearsInFaith: string;
   attendance: string;
@@ -12,6 +13,7 @@ interface OnboardingState {
 }
 
 export const useOnboardingStore = create<OnboardingState>((set) => ({
+  denomination: "",
   churchRole: "",
   yearsInFaith: "",
   attendance: "",
