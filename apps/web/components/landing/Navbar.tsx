@@ -2,12 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type NavbarProps = {
   onOpenModal: () => void;
 };
 
 export function Navbar({ onOpenModal }: NavbarProps) {
+  const router = useRouter();
+  
   return (
     <header className="harpply-navbar">
       <div className="harpply-nav-inner">
@@ -31,14 +34,14 @@ export function Navbar({ onOpenModal }: NavbarProps) {
           <button
             type="button"
             className="harpply-btn-ghost"
-            onClick={onOpenModal}
+            onClick={() => router.push("/auth/signin")}
           >
             Sign In
           </button>
           <button
             type="button"
             className="harpply-btn-primary"
-            onClick={onOpenModal}
+            onClick={() => router.push("/auth/signup")}
           >
             Get Started
           </button>
