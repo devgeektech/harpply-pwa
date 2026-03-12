@@ -2,7 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { SignUpDto } from './dto/sign-up.dto';
+import { RegisterEmailDto } from './dto/register-email.dto';
+import { SetPasswordDto } from './dto/set-password.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import {
   ConflictException,
@@ -25,17 +26,10 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) { }
 
-  async signUp(dto: SignUpDto) {
-    const { email, password, confirmPassword } = dto;
+  /** Step 1: Register email only. User must call set-password to complete signup. */
+  async registerEmail(dto: RegisterEmailDto) {
+    const emailEncoded = encodeEmail(dto.email);
 
-    // Check password match
-    if (password !== confirmPassword) {
-      throw new BadRequestException(ERROR_MESSAGES.AUTH.PASSWORD_MISMATCH);
-    }
-
-    const emailEncoded = encodeEmail(email);
-
-    // Check existing user
     const existingUser = await this.prisma.user.findUnique({
       where: { email: emailEncoded },
     });
@@ -44,20 +38,42 @@ export class AuthService {
       throw new ConflictException(ERROR_MESSAGES.AUTH.EMAIL_ALREADY_EXISTS);
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create user (store encoded email in DB)
-    const user = await this.prisma.user.create({
+    await this.prisma.user.create({
       data: {
         email: emailEncoded,
-        password: hashedPassword,
+        password: null,
       },
-      select: {
-        id: true,
-        email: true,
-        createdAt: true,
-      },
+    });
+
+    return successResponse(SUCCESS_MESSAGES.AUTH.EMAIL_REGISTERED, {
+      statusCode: 201,
+      data: { email: dto.email },
+    });
+  }
+
+  /** Step 2: Set password (and optionally log in) for a user who registered email only. */
+  async setPassword(dto: SetPasswordDto) {
+    const { email, password, confirmPassword } = dto;
+
+    if (password !== confirmPassword) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.PASSWORD_MISMATCH);
+    }
+
+    const emailEncoded = encodeEmail(email);
+    const user = await this.prisma.user.findUnique({
+      where: { email: emailEncoded },
+      select: { id: true, email: true, password: true, createdAt: true },
+    });
+
+    if (!user || user.password != null) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.SIGNUP_NOT_PENDING);
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { password: hashedPassword },
     });
 
     const emailDecoded = decodeEmail(user.email);
@@ -73,9 +89,13 @@ export class AuthService {
       data: { token: jti },
     });
 
+    const { password: _p, ...rest } = user;
     return successResponse(SUCCESS_MESSAGES.AUTH.REGISTER_SUCCESS, {
-      statusCode: 201,
-      data: { accessToken: token, user: { ...user, email: emailDecoded } },
+      statusCode: 200,
+      data: {
+        accessToken: token,
+        user: { ...rest, email: emailDecoded },
+      },
     });
   }
 
@@ -86,11 +106,14 @@ export class AuthService {
       select: { id: true, email: true, password: true, createdAt: true },
     });
 
-    // Always use same error message
     if (!user) {
       throw new UnauthorizedException(
         ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS,
       );
+    }
+
+    if (user.password == null) {
+      throw new UnauthorizedException(ERROR_MESSAGES.AUTH.COMPLETE_SIGNUP);
     }
 
     const isPasswordValid = await bcrypt.compare(

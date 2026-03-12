@@ -3,6 +3,10 @@ export const ERROR_MESSAGES = {
     EMAIL_ALREADY_EXISTS: 'An account with this email already exists.',
     USER_NOT_FOUND: 'No account found with this email address.',
     PASSWORD_MISMATCH: 'Passwords do not match.',
+    SIGNUP_NOT_PENDING:
+      'No pending signup for this email, or password was already set.',
+    COMPLETE_SIGNUP:
+      'Please complete your signup by setting your password.',
     INVALID_CREDENTIALS: 'Invalid email or password.',
     INVALID_ROLE: 'Invalid role selected. Please choose Admin, Employer, or Individual.',
     ACCOUNT_INACTIVE: 'Your account is currently inactive. Please contact support.',
