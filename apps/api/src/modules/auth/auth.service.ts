@@ -62,7 +62,7 @@ export class AuthService {
     const emailEncoded = encodeEmail(email);
     const user = await this.prisma.user.findUnique({
       where: { email: emailEncoded },
-      select: { id: true, email: true, password: true, createdAt: true },
+      select: { id: true, email: true, password: true, createdAt: true, onboardingCompleted: true },
     });
 
     if (!user || user.password != null) {
@@ -103,7 +103,7 @@ export class AuthService {
     const emailEncoded = encodeEmail(dto.email);
     const user = await this.prisma.user.findUnique({
       where: { email: emailEncoded },
-      select: { id: true, email: true, password: true, createdAt: true },
+      select: { id: true, email: true, password: true, createdAt: true, onboardingCompleted: true },
     });
 
     if (!user) {

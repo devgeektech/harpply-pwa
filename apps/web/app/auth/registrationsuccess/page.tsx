@@ -1,5 +1,6 @@
 "use client";
 
+import { AUTH_STORAGE_KEYS } from "@/lib/api/auth";
 import { useRegistrationStore } from "@/store/useRegistrationStore";
 import { Button, Card, CardContent } from "@repo/ui";
 import { ChevronLeft } from "lucide-react";
@@ -13,6 +14,14 @@ export default function RegistrationSuccess() {
 
   const handleContinue = () => {
     setRegistered(true);
+    const onboardingCompleted =
+      typeof window !== "undefined"
+        ? window.localStorage.getItem(AUTH_STORAGE_KEYS.ONBOARDING_COMPLETED) === "true"
+        : false;
+    if (!onboardingCompleted) {
+      router.push("/auth/onboarding/identity");
+      return;
+    }
     router.push("/");
   };
 

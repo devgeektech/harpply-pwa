@@ -8,7 +8,7 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import * as yup from "yup";
-import { setPassword as apiSetPassword } from "@/lib/api/auth";
+import { setPassword as apiSetPassword, AUTH_STORAGE_KEYS } from "@/lib/api/auth";
 import { useSignupStore } from "store/useSignupStore";
 
 const MIN_PASSWORD_LENGTH = 8;
@@ -84,8 +84,15 @@ function CreatePasswordForm() {
 
     setLoading(true);
     try {
-      await apiSetPassword(email.trim(), values.password, values.confirmPassword);
+      const result = await apiSetPassword(email.trim(), values.password, values.confirmPassword);
       reset();
+      if (typeof window !== "undefined" && result?.data) {
+        window.localStorage.setItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN, result.data.accessToken);
+        window.localStorage.setItem(
+          AUTH_STORAGE_KEYS.ONBOARDING_COMPLETED,
+          String(result.data.user?.onboardingCompleted ?? false)
+        );
+      }
       router.push("/auth/registrationsuccess");
     } catch (err) {
       setError(
