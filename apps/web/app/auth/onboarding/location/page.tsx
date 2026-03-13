@@ -5,10 +5,16 @@ import { useOnboardingStore } from "@/store/onboardingStore";
 import { Button, Card, CardContent, Input, Progress } from "@repo/ui";
 import { Send, ChevronLeft } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Location() {
   const { name, age, gender, setName, setAge, setGender } =
     useOnboardingStore();
+  const router = useRouter();
+
+  const skipLocation = () => {
+    router.push("/auth/onboarding/bio");
+  }
 
   return (
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex  sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
@@ -57,7 +63,7 @@ export default function Location() {
           <Button className="cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60">
             <Send /> Enable Location
           </Button>
-          <Button className="cursor-pointer text-base bg-transparent hover:bg-transparent text-white font-semibold hover:opacity-90 transition disabled:opacity-60">
+          <Button onClick={()=>skipLocation()} className="cursor-pointer text-base bg-transparent hover:bg-transparent text-white font-semibold hover:opacity-90 transition disabled:opacity-60">
             Skip for Now
           </Button>
         </CardContent>

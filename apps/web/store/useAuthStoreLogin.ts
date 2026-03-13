@@ -29,7 +29,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const result = await apiSignIn(email.trim(), password);
       if (typeof window !== "undefined" && result?.data) {
-        window.localStorage.setItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN, result.data.accessToken);
         window.localStorage.setItem(
           AUTH_STORAGE_KEYS.ONBOARDING_COMPLETED,
           String(result.data.user?.onboardingCompleted ?? false)

@@ -6,6 +6,8 @@ const getAuthBaseUrl = () =>
     ? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000"
     : process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
+    const authFetchOptions: RequestInit = { credentials: "include" };
+
 export interface RegisterEmailResponse {
   message: string;
   data: { email: string };
@@ -32,7 +34,6 @@ export interface SignInResponse {
 
 /** localStorage keys for registration/onboarding status (used for post-login and post-registration redirects). */
 export const AUTH_STORAGE_KEYS = {
-  ACCESS_TOKEN: "harpply_access_token",
   ONBOARDING_COMPLETED: "harpply_onboarding_completed",
 } as const;
 
@@ -63,6 +64,7 @@ export async function registerEmail(email: string): Promise<RegisterEmailRespons
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
+      ...authFetchOptions,
     });
   } catch (err) {
     const msg =
@@ -92,6 +94,7 @@ export async function setPassword(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password, confirmPassword }),
+      ...authFetchOptions,
     });
   } catch (err) {
     const msg =
@@ -117,6 +120,7 @@ export async function signIn(email: string, password: string): Promise<SignInRes
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
+      ...authFetchOptions,
     });
   } catch (err) {
     const msg =
