@@ -12,7 +12,7 @@ export default function Sidebar() {
   ]
 
   return (
-    <aside className="h-screen w-[90px] bg-[#1D0746] flex flex-col items-center py-6 border-r border-[#FFFFFF14]">
+    <aside className="hidden md:block h-screen w-[90px] bg-[#1D0746] flex flex-col items-center py-6 border-r border-[#FFFFFF14]">
 
       {/* Menu */}
       <nav className="flex flex-col gap-6">

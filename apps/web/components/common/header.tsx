@@ -48,10 +48,15 @@ export default function Header() {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="border-none h-auto relative bg-[#F5F3ED] py-[10px] px-[10px] rounded-[8px] cursor-pointer whitespace-nowrap">
-            <span className="text-sm font-medium text-[#C39936] flex items-center gap-2">
-          Sarah Jensen <Image src="/images/circle-down.svg" alt="dropdown" width={24} height={24} />
-        </span>
+            <Button variant="outline" className="border-none h-auto relative bg-[#F5F3ED] py-[10px] px-[10px] md:rounded-[8px] rounded-full cursor-pointer whitespace-nowrap">
+            <span className="hidden md:flex text-sm font-medium text-[#C39936] flex items-center gap-2 whitespace-nowrap">
+              Sarah Jensen <Image src="/images/circle-down.svg" alt="dropdown" width={24} height={24} />
+            </span>
+            <span className="block md:hidden text-[18px] font-medium text-[#C39936] flex items-center gap-2 whitespace-nowrap">
+              <Avatar>
+                <AvatarFallback className="text-[18px] font-medium text-[#C39936]">SJ</AvatarFallback>
+              </Avatar>
+            </span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
