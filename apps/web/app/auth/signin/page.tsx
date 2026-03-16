@@ -2,14 +2,25 @@
 
 import { Button, Card, CardContent, Input, Label } from "@repo/ui";
 import Link from "next/link";
-import Image from "next/image";
 import { useAuthStore } from "store/useAuthStoreLogin";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 export default function Signin() {
   const [showPassword, setShowPassword] = useState(false);
-  const { email, password, setEmail, setPassword, login } = useAuthStore();
+  const router = useRouter();
+  const { email, password, setEmail, setPassword, login, loading, error, setError } = useAuthStore();
+
+  const handleLogin = async () => {
+    setError(null);
+    try {
+      const redirectTo = await login();
+      router.push(redirectTo);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Sign in failed.");
+    }
+  };
 
   return (
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex items-center justify-center px-4">
@@ -19,7 +30,12 @@ export default function Signin() {
             <h2 className="w-full text-[24px] font-light text-white font-serif tracking-wider mb-[32px] md:mb-0">
               Sign In
             </h2>
-            <form className="space-y-5 md:my-[50px] w-full">
+            <form className="space-y-5 md:my-[50px] w-full" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+              {error && (
+                <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">
+                  {error}
+                </div>
+              )}
               <div className="space-y-2">
                 <Label className="text-gray-300">Email</Label>
                 <Input
@@ -60,10 +76,18 @@ export default function Signin() {
               </div>
 
               <Button
-                onClick={login}
+                type="submit"
+                disabled={loading}
                 className="cursor-pointer w-full text-base h-[52px] mt-[12px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60"
               >
-                Sign In
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Signing in...
+                  </span>
+                ) : (
+                  "Sign In"
+                )}
               </Button>
             </form>
             <p className="bottom_text text-center text-sm text-gray-300">

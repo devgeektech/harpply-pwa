@@ -1,3 +1,6 @@
+/**
+ * Centralized error messages. Kept in sync with API error-messages for consistency.
+ */
 export const ERROR_MESSAGES = {
   AUTH: {
     EMAIL_ALREADY_EXISTS: 'An account with this email already exists.',
@@ -27,7 +30,6 @@ export const ERROR_MESSAGES = {
     PASSWORD_MUST_BE_STRING: 'Password must be a valid string.',
     REQUIRED_FIELD: '{FIELD} is required.',
     FIELD_REQUIRED: 'This field is required and cannot be empty.',
-    /** Use with .replace('{FIELD}', fieldName) for optional fields that must not be empty when provided */
     CANNOT_BE_EMPTY_WHEN_PROVIDED: '{FIELD} cannot be empty when provided.',
     INTERESTS_REQUIRED: 'interests is required and must contain at least one item.',
     INTERESTS_MIN_ONE: 'interests must contain at least one item.',

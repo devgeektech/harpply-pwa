@@ -49,16 +49,18 @@ export class OnboardingService {
   }
 
   async saveFaithLifestyle(userId: string, dto: FaithLifestyleDto) {
+    const lifestyleSmoking = dto.smokingPreference !== 'Never';
+    const lifestyleDrinking = dto.alcoholPreference !== 'Never';
     await this.prisma.user.update({
       where: { id: userId },
       data: {
-        churchInvolvement: dto.myFaith ?? dto.churchInvolvement,
+        churchInvolvement: dto.churchInvolvement,
         yearsInFaith: dto.yearsInFaith,
         churchAttendance: dto.churchAttendance,
-        exercise: dto.exercise,
-        lifestyleSmoking: dto.lifestyleSmoking,
-        lifestyleDrinking: dto.lifestyleDrinking,
-        lifestylePartying: dto.lifestylePartying,
+        smokingPreference: dto.smokingPreference,
+        alcoholPreference: dto.alcoholPreference,
+        lifestyleSmoking,
+        lifestyleDrinking,
         dietaryPreference: dto.dietaryPreference,
       } as Prisma.UserUpdateInput,
     });
@@ -83,36 +85,50 @@ export class OnboardingService {
     return successResponse(SUCCESS_MESSAGES.ONBOARDING.ONBOARDING_COMPLETED);
   }
 
-  async getOnboardingReview(userId: string) {
+  /** Select for all onboarding screens (identity, location, story, faith, interests). */
+  private readonly onboardingDataSelect = {
+    fullName: true,
+    age: true,
+    gender: true,
+    latitude: true,
+    longitude: true,
+    location: true,
+    locationEnabled: true,
+    profilePhoto: true,
+    bio: true,
+    churchInvolvement: true,
+    yearsInFaith: true,
+    churchAttendance: true,
+    myFaithValues: true,
+    partnerValues: true,
+    lifestyleSmoking: true,
+    lifestyleDrinking: true,
+    lifestylePartying: true,
+    smokingPreference: true,
+    alcoholPreference: true,
+    dietaryPreference: true,
+    interests: true,
+  } as const;
+
+  /**
+   * Returns all onboarding screen values for pre-fill and review.
+   * Used by GET onboarding/review and included in login/setPassword responses.
+   */
+  async getOnboardingData(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: {
-        fullName: true,
-        age: true,
-        location: true,
-        profilePhoto: true,
-        bio: true,
-
-        churchInvolvement: true,
-        yearsInFaith: true,
-        churchAttendance: true,
-
-        myFaithValues: true,
-        partnerValues: true,
-
-        lifestyleSmoking: true,
-        lifestyleDrinking: true,
-        lifestylePartying: true,
-        dietaryPreference: true,
-      },
+      select: this.onboardingDataSelect,
     });
-
     if (!user) {
       throw new NotFoundException(ERROR_MESSAGES.USER.USER_NOT_FOUND);
     }
+    return user;
+  }
 
+  async getOnboardingReview(userId: string) {
+    const data = await this.getOnboardingData(userId);
     return successResponse(SUCCESS_MESSAGES.ONBOARDING.REVIEW_DATA, {
-      data: user,
+      data,
     });
   }
 }

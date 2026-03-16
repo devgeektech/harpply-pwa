@@ -4,17 +4,43 @@ import { useOnboardingStore } from "@/store/onboardingStore";
 import { Button, Card, CardContent, Input, Progress } from "@repo/ui";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 export default function Identity() {
-  const { name, age, gender, setName, setAge, setGender } =
-    useOnboardingStore();
+
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  const {
+    name,
+    age,
+    gender,
+    setName,
+    setAge,
+    setGender,
+    submitIdentity,
+  } = useOnboardingStore();
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+
+      await submitIdentity();
+
+      router.push("/auth/onboarding/location"); // next step
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex  sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
       <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
         <CardContent className="flex items-center flex-col gap-2 sm:p-10 px-3 text-left">
           <div className="text-left text-white w-full">
-            <Link href={"/"}>
-              {" "}
+            <Link href="/">
               <ChevronLeft size={24} />
             </Link>
           </div>
@@ -48,6 +74,7 @@ export default function Identity() {
           <div className="mb-4 w-full">
             <label className="text-white font-normal text-sm">Age</label>
             <Input
+              type="number"
               placeholder="How old are you?"
               value={age}
               onChange={(e) => setAge(e.target.value)}
@@ -62,13 +89,13 @@ export default function Identity() {
               <div className="flex gap-3">
                 {["Male", "Female", "Other"].map((g) => (
                   <button
+                    type="button"
                     key={g}
                     onClick={() => setGender(g)}
-                    className={`flex-1 rounded-full sm:rounded-lg py-2 text-base font-medium border transition cursor-pointer ${
-                      gender === g
-                        ? "bg-white text-[#C39936] border-[#C39936]"
-                        : "bg-white text-black border-white/20"
-                    }`}
+                    className={`flex-1 rounded-full sm:rounded-lg py-2 text-base font-medium border transition cursor-pointer ${gender === g
+                      ? "bg-white text-[#C39936] border-[#C39936]"
+                      : "bg-white text-black border-white/20"
+                      }`}
                   >
                     {g}
                   </button>
@@ -78,8 +105,12 @@ export default function Identity() {
           </div>
 
           {/* Continue Button */}
-          <Button className="cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60">
-            Continue
+          <Button
+            onClick={handleSubmit}
+            disabled={!name || !age || !gender || loading}
+            className="cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60"
+          >
+            {loading ? "Submitting..." : "Continue"}
           </Button>
         </CardContent>
       </Card>

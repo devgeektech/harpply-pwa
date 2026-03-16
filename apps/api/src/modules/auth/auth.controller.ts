@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -25,6 +26,8 @@ import { OnboardingService } from './onboarding.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUserId, CurrentUser } from './decorators/current-user.decorator';
 import { AllowEmptyBody } from '../../common/decorators/allow-empty-body.decorator';
+import { ACCESS_TOKEN_COOKIE, accessTokenCookieOptions } from './auth-cookie.constants';
+import * as Express from 'express';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -42,26 +45,45 @@ export class AuthController {
 
   @Post('set-password')
   @HttpCode(HttpStatus.OK)
-  async setPassword(@Body() dto: SetPasswordDto) {
-    return this.authService.setPassword(dto);
+  async setPassword(
+    @Body() dto: SetPasswordDto,
+    @Res({ passthrough: true }) res: Express.Response,
+  ) {
+    const result = await this.authService.setPassword(dto);
+    const token = result?.data?.accessToken;
+    if (token) {
+      res.cookie(ACCESS_TOKEN_COOKIE, token, accessTokenCookieOptions);
+    }
+     return result;
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() dto: SignInDto) {
-    return this.authService.signIn(dto);
+  async login(
+    @Body() dto: SignInDto,
+    @Res({ passthrough: true }) res: Express.Response,
+  ) {
+    const result = await this.authService.signIn(dto);
+    const token = result?.data?.accessToken;
+    if (token) {
+      res.cookie(ACCESS_TOKEN_COOKIE, token, accessTokenCookieOptions);
+    }
+    return result;
   }
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Logout – removes token from DB; client should discard it' })
+  @ApiOperation({ summary: 'Logout – removes token from DB; clears HttpOnly cookie' })
   async logout(
     @CurrentUser('jti') jti: string,
     @CurrentUserId() userId: string,
+    @Res({ passthrough: true }) res: Express.Response,
   ) {
-    return this.authService.logout(jti, userId);
+    const result = await this.authService.logout(jti, userId);
+    res.clearCookie(ACCESS_TOKEN_COOKIE, { path: '/' });
+    return result;
   }
 
   @Post('forgot-password')

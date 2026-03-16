@@ -18,12 +18,14 @@ import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SUCCESS_MESSAGES } from '../../common/constants/success-messages';
 import { successResponse } from '../../common/response/api-response';
+import { OnboardingService } from './onboarding.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly onboardingService: OnboardingService,
   ) { }
 
   /** Step 1: Register email only. User must call set-password to complete signup. */
@@ -62,7 +64,7 @@ export class AuthService {
     const emailEncoded = encodeEmail(email);
     const user = await this.prisma.user.findUnique({
       where: { email: emailEncoded },
-      select: { id: true, email: true, password: true, createdAt: true },
+      select: { id: true, email: true, password: true, createdAt: true, onboardingCompleted: true },
     });
 
     if (!user || user.password != null) {
@@ -90,11 +92,13 @@ export class AuthService {
     });
 
     const { password: _p, ...rest } = user;
+    const onboarding = await this.onboardingService.getOnboardingData(user.id);
     return successResponse(SUCCESS_MESSAGES.AUTH.REGISTER_SUCCESS, {
       statusCode: 200,
       data: {
         accessToken: token,
         user: { ...rest, email: emailDecoded },
+        onboarding,
       },
     });
   }
@@ -103,7 +107,7 @@ export class AuthService {
     const emailEncoded = encodeEmail(dto.email);
     const user = await this.prisma.user.findUnique({
       where: { email: emailEncoded },
-      select: { id: true, email: true, password: true, createdAt: true },
+      select: { id: true, email: true, password: true, createdAt: true, onboardingCompleted: true },
     });
 
     if (!user) {
@@ -142,8 +146,9 @@ export class AuthService {
       data: { token: jti },
     });
 
+    const onboarding = await this.onboardingService.getOnboardingData(user.id);
     return successResponse(SUCCESS_MESSAGES.AUTH.LOGIN_SUCCESS, {
-      data: { accessToken: token, user: safeUser },
+      data: { accessToken: token, user: safeUser, onboarding },
     });
   }
 

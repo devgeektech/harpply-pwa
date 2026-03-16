@@ -1,11 +1,7 @@
-import { IsString, IsBoolean, IsInt, IsNotEmpty, IsIn, Min, Max } from 'class-validator';
+import { IsString, IsInt, IsNotEmpty, IsIn, Min, Max } from 'class-validator';
 import { ERROR_MESSAGES } from '../../../common/constants/error-messages';
 
 export class FaithLifestyleDto {
-  @IsString()
-  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'myFaith') })
-  myFaith: string;
-
   @IsString()
   @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'churchInvolvement') })
   churchInvolvement: string;
@@ -20,21 +16,15 @@ export class FaithLifestyleDto {
   @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'churchAttendance') })
   churchAttendance: string;
 
-  @IsIn(['Active', 'Sometimes', 'Never'])
-  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'exercise') })
-  exercise: string;
+  @IsString()
+  @IsIn(['Never', 'Socially', 'Regularly'], { message: 'Smoking preference must be Never, Socially, or Regularly.' })
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'smokingPreference') })
+  smokingPreference: string;
 
-  @IsBoolean()
-  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'lifestyleSmoking') })
-  lifestyleSmoking: boolean;
-
-  @IsBoolean()
-  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'lifestyleDrinking') })
-  lifestyleDrinking: boolean;
-
-  @IsBoolean()
-  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'lifestylePartying') })
-  lifestylePartying: boolean;
+  @IsString()
+  @IsIn(['Never', 'Socially', 'Regularly'], { message: 'Alcohol preference must be Never, Socially, or Regularly.' })
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'alcoholPreference') })
+  alcoholPreference: string;
 
   @IsString()
   @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'dietaryPreference') })

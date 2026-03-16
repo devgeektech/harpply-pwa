@@ -6,13 +6,14 @@ import { Loader2 } from "lucide-react";
 import * as yup from "yup";
 import { useRouter } from "next/navigation";
 import { registerEmail as apiRegisterEmail } from "@/lib/api/auth";
+import { ERROR_MESSAGES } from "@/lib/messages";
 import { useSignupStore } from "store/useSignupStore";
 
 const registerEmailSchema = yup.object({
   email: yup
     .string()
-    .required("Email is required.")
-    .email("Please enter a valid email address."),
+    .required(ERROR_MESSAGES.VALIDATION.EMAIL_REQUIRED)
+    .email(ERROR_MESSAGES.VALIDATION.EMAIL_INVALID),
 });
 
 // --- Final-form validator from yup ---
@@ -26,7 +27,7 @@ function makeYupValidator<T extends yup.AnyObjectSchema>(schema: T) {
         const inner = err.inner?.length ? err.inner : [err];
         return inner.reduce<Record<string, string>>((acc, e) => {
           const path = e.path ?? "unknown";
-          acc[path] = e.message ?? "Invalid";
+          acc[path] = e.message ?? ERROR_MESSAGES.VALIDATION.INVALID;
           return acc;
         }, {});
       }
@@ -64,7 +65,7 @@ export default function SignupPage() {
       router.push(`/auth/verify?email=${encodeURIComponent(values.email)}`);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Something went wrong. Please try again."
+        err instanceof Error ? err.message : ERROR_MESSAGES.GENERAL.REQUEST_FAILED
       );
     } finally {
       setLoading(false);

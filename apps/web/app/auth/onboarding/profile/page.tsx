@@ -12,15 +12,41 @@ import {
 } from "@repo/ui";
 import { Pencil } from "lucide-react";
 import Image from "next/image";
+import { AUTH_STORAGE_KEYS } from "@/lib/constants";
+import { completeOnboarding } from "@/lib/api/auth";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function ReviewProfilePage() {
   const { name, age, location, church, bio } = useProfileStore();
+  const router = useRouter();
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleComplete = async () => {
+    if (submitting) return;
+    const token =
+      typeof window !== "undefined"
+        ? window.localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN)
+        : null;
+    setSubmitting(true);
+    try {
+      if (token) {
+        await completeOnboarding(token);
+        window.localStorage.setItem(AUTH_STORAGE_KEYS.ONBOARDING_COMPLETED, "true");
+      }
+      router.push("/");
+    } catch {
+      router.push("/");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex  sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
       <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
         <CardContent className="flex flex-col md:gap-6 gap-3 sm:p-10 px-3">
-          {/* Progress */}
+                    {/* Progress */}
           <div className="space-y-2 mb-6">
             <p className="text-xs text-white/60">FINAL STEP</p>
             <Progress value={100} className="h-1" />
@@ -119,9 +145,12 @@ export default function ReviewProfilePage() {
           </div>
 
           {/* Button */}
-          <Button className="cursor-pointer w-full text-base h-[52px] mt-[12px] rounded-[12px] md:rounded-[8px] 
-          bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60">
-            Complete Setup
+          <Button
+            onClick={handleComplete}
+            disabled={submitting}
+            className="cursor-pointer w-full text-base h-[52px] mt-[12px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60"
+          >
+            {submitting ? "Completing..." : "Complete Setup"}
           </Button>
         </CardContent>
       </Card>
