@@ -163,7 +163,7 @@ export default function EditProfilePage() {
           </div>
           <div className="w-full mt-[16px]">
               <label className="mb-1.5 block text-sm font-medium text-white/80">
-                About Me
+                Location
               </label>
                 <Textarea
                     placeholder="Write about yourself"

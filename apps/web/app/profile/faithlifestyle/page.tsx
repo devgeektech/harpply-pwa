@@ -5,7 +5,7 @@
 import { Church, Calendar, RefreshCcw, Home } from "lucide-react"
 
 import { useFaithStore } from "@/store/useFaithStore"
-import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@repo/ui"
+import { Button, Card, CardContent, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@repo/ui"
 import AttendanceCard from "@/components/common/attendance-card"
 import Link from "next/link"
 import { ChevronLeft } from "lucide-react";
@@ -22,10 +22,10 @@ export default function FaithLifestylePage() {
   } = useFaithStore()
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#150028] to-[#070012]">
-
-      <div className="w-[420px] rounded-2xl border border-white/10 bg-[#120021] p-8 text-white">
-      <div className="flex items-center px-0 pt-4 pb-2 w-full">
+    <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex  sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
+      <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
+        <CardContent className="flex flex-col md:gap-6 gap-3 sm:p-10 px-3 text-white">
+      <div className="flex items-center px-0 pb-2 w-full">
         <Link
           href="/profile"
           className="flex items-center justify-center size-10 rounded-full text-white/90 hover:bg-white/10 transition-colors"
@@ -34,23 +34,23 @@ export default function FaithLifestylePage() {
           <ChevronLeft className="size-6" />
         </Link>
       </div>
-        <p className="text-[24px] font-serif font-normal mb-6">
+        <p className="text-[24px] font-serif font-normal">
           Faith & Lifestyle
         </p>
 
-        <p className="text-[20px] font-normal mb-4">
+        <p className="text-[20px] font-light">
           Spiritual Journey
         </p>
 
         {/* Denomination */}
-        <div className="mb-4">
+        <div className="">
           <p className="text-sm mb-1 text-white">Denomination</p>
 
           <Select
             value={denomination}
             onValueChange={setDenomination}
           >
-            <SelectTrigger className="bg-white w-full h-[52px] rounded-[8px] text-black">
+            <SelectTrigger className="w-full bg-[#FBFAF9] !h-[52px] rounded-[8px] text-[#1A1A1A] text-sm">
               <SelectValue placeholder="Non-denominational" />
             </SelectTrigger>
 
@@ -63,14 +63,14 @@ export default function FaithLifestylePage() {
         </div>
 
         {/* Years in faith */}
-        <div className="mb-4">
-          <p className="text-xs mb-1 opacity-70">Years in Faith</p>
+        <div className="">
+          <p className="text-sm mb-1 text-white">Years in Faith</p>
 
           <Select
             value={yearsInFaith}
             onValueChange={setYearsInFaith}
           >
-            <SelectTrigger className="bg-gray-200 text-black">
+            <SelectTrigger className="w-full bg-[#FBFAF9] !h-[52px] rounded-[8px] text-[#1A1A1A] text-sm">
               <SelectValue placeholder="Life-long" />
             </SelectTrigger>
 
@@ -83,14 +83,14 @@ export default function FaithLifestylePage() {
         </div>
 
         {/* Church involvement */}
-        <div className="mb-6">
-          <p className="text-xs mb-1 opacity-70">Church Involvement</p>
+        <div className="">
+          <p className="text-sm mb-1 text-white">Church Involvement</p>
 
           <Select
             value={churchInvolvement}
             onValueChange={setChurchInvolvement}
           >
-            <SelectTrigger className="bg-gray-200 text-black">
+            <SelectTrigger className="w-full bg-[#FBFAF9] !h-[52px] rounded-[8px] text-[#1A1A1A] text-sm">
               <SelectValue placeholder="Member" />
             </SelectTrigger>
 
@@ -103,13 +103,13 @@ export default function FaithLifestylePage() {
         </div>
 
         {/* Attendance */}
-        <div className="mb-6">
+        <div className="mb-4">
 
-          <p className="text-sm font-medium mb-1">
+          <p className="text-[20px] font-light mb-4 text-white ">
             Church Attendance Frequency
           </p>
 
-          <p className="text-xs opacity-70 mb-4">
+          <p className="text-sm mb-1 font-light text-white mb-4">
             How often do you participate in community worship?
           </p>
 
@@ -117,28 +117,28 @@ export default function FaithLifestylePage() {
 
             <AttendanceCard
               label="Weekly"
-              icon={<Church size={28} />}
+              icon={<Church size={36} />}
               active={attendance === "weekly"}
               onClick={() => setAttendance("weekly")}
             />
 
             <AttendanceCard
               label="Monthly"
-              icon={<Calendar size={28} />}
+              icon={<Calendar size={36} />}
               active={attendance === "monthly"}
               onClick={() => setAttendance("monthly")}
             />
 
             <AttendanceCard
               label="Occasionally"
-              icon={<RefreshCcw size={28} />}
+              icon={<RefreshCcw size={36} />}
               active={attendance === "occasionally"}
               onClick={() => setAttendance("occasionally")}
             />
 
             <AttendanceCard
               label="Remote/Home"
-              icon={<Home size={28} />}
+              icon={<Home size={36} />}
               active={attendance === "remote"}
               onClick={() => setAttendance("remote")}
             />
@@ -150,20 +150,12 @@ export default function FaithLifestylePage() {
         {/* Next Button */}
 
         <Button
-          className="
-          w-full
-          bg-gradient-to-r
-          from-yellow-400
-          to-orange-600
-          text-black
-          font-semibold
-          rounded-lg
-          "
-        >
+          className="cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60">
           Next
         </Button>
 
-      </div>
+      </CardContent>
+      </Card>
     </div>
   )
 }

@@ -17,17 +17,17 @@ export default function AttendanceCard({
     <button
       onClick={onClick}
       className={`
-      flex flex-col items-center justify-center gap-3
+      flex flex-col cursor-pointer items-center justify-center gap-3
       rounded-xl p-6 border transition
       ${
         active
-          ? "border-yellow-500 bg-[#2a143f] text-yellow-400"
+          ? "border-[#C39936] bg-[#C3993614] text-[#C39936]"
           : "border-transparent bg-gray-200 text-black"
       }
       `}
     >
       {icon}
-      <p className="text-sm font-medium">{label}</p>
+      <p className="text-[20px] font-normal">{label}</p>
     </button>
   )
 }

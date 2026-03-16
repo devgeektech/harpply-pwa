@@ -156,13 +156,6 @@ export default function ProfileIdentityPage() {
           <span className="text-sm font-light uppercase tracking-wider text-[#C8A851]">
             About Me
           </span>
-          <button
-            type="button"
-            className="p-1 rounded-full hover:bg-white/10 transition-colors"
-            aria-label="Edit about me"
-          >
-            <Pencil className="size-4" style={{ color: ACCENT }} />
-          </button>
         </div>
         <p className="text-sm leading-[160%] text-white tracking-wider font-light italic">{aboutMe}</p>
       </div>
