@@ -8,6 +8,7 @@ import {
   DIETARY_PREFERENCE_OPTIONS,
   SMOKING_OPTIONS,
 } from "@/lib/constants";
+import { ERROR_MESSAGES } from "@/lib/messages";
 import { useFaithStore } from "@/store/onboardingStore";
 import {
   Button,
@@ -59,7 +60,7 @@ export default function FaithLifestylePage() {
       await submitFaith();
       router.push("/auth/onboarding/attributes");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save. Please try again.");
+      setError(err instanceof Error ? err.message : ERROR_MESSAGES.AUTH.SAVE_FAILED);
     } finally {
       setSubmitting(false);
     }

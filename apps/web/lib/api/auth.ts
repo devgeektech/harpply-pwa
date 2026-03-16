@@ -32,11 +32,7 @@ export interface SignInResponse {
   statusCode?: number;
 }
 
-/** localStorage keys for registration/onboarding status and auth token. */
-export const AUTH_STORAGE_KEYS = {
-  ACCESS_TOKEN: "harpply_access_token",
-  ONBOARDING_COMPLETED: "harpply_onboarding_completed",
-} as const;
+export { AUTH_STORAGE_KEYS } from "@/lib/constants";
 
 /** Parse error message from API error response (JSON or text). */
 async function getErrorMessage(

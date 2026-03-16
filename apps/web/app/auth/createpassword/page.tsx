@@ -9,19 +9,19 @@ import { ChevronLeft } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import * as yup from "yup";
 import { setPassword as apiSetPassword, AUTH_STORAGE_KEYS } from "@/lib/api/auth";
+import { MIN_PASSWORD_LENGTH } from "@/lib/constants";
+import { ERROR_MESSAGES } from "@/lib/messages";
 import { useSignupStore } from "store/useSignupStore";
-
-const MIN_PASSWORD_LENGTH = 8;
 
 const setPasswordSchema = yup.object({
   password: yup
     .string()
-    .required("Password is required.")
-    .min(MIN_PASSWORD_LENGTH, "Password must be at least 8 characters long."),
+    .required(ERROR_MESSAGES.VALIDATION.PASSWORD_REQUIRED)
+    .min(MIN_PASSWORD_LENGTH, ERROR_MESSAGES.VALIDATION.PASSWORD_TOO_SHORT),
   confirmPassword: yup
     .string()
-    .required("Please confirm your password.")
-    .oneOf([yup.ref("password")], "Passwords do not match."),
+    .required(ERROR_MESSAGES.VALIDATION.CONFIRM_PASSWORD_REQUIRED)
+    .oneOf([yup.ref("password")], ERROR_MESSAGES.VALIDATION.PASSWORDS_DO_NOT_MATCH),
 });
 
 function makeYupValidator<T extends yup.AnyObjectSchema>(schema: T) {
@@ -34,7 +34,7 @@ function makeYupValidator<T extends yup.AnyObjectSchema>(schema: T) {
         const inner = err.inner?.length ? err.inner : [err];
         return inner.reduce<Record<string, string>>((acc, e) => {
           const path = e.path ?? "unknown";
-          acc[path] = e.message ?? "Invalid";
+          acc[path] = e.message ?? ERROR_MESSAGES.VALIDATION.INVALID;
           return acc;
         }, {});
       }
@@ -78,7 +78,7 @@ function CreatePasswordForm() {
   }) => {
     setError(null);
     if (!email.trim()) {
-      setError("Email is missing. Please go back and complete signup.");
+      setError(ERROR_MESSAGES.AUTH.EMAIL_MISSING);
       return;
     }
 
@@ -96,7 +96,7 @@ function CreatePasswordForm() {
       router.push("/auth/registrationsuccess");
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Something went wrong. Please try again."
+        err instanceof Error ? err.message : ERROR_MESSAGES.GENERAL.REQUEST_FAILED
       );
     } finally {
       setLoading(false);
