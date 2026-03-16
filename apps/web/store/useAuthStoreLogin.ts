@@ -1,4 +1,5 @@
 import { signIn as apiSignIn, AUTH_STORAGE_KEYS } from "@/lib/api/auth";
+import { hydrateOnboardingStores } from "@/store/onboardingStore";
 import { create } from "zustand";
 
 interface AuthState {
@@ -34,6 +35,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           AUTH_STORAGE_KEYS.ONBOARDING_COMPLETED,
           String(result.data.user?.onboardingCompleted ?? false)
         );
+        if (result.data.onboarding) {
+          hydrateOnboardingStores(result.data.onboarding);
+        }
       }
       const onboardingCompleted = result?.data?.user?.onboardingCompleted ?? false;
       return onboardingCompleted ? "/" : "/auth/onboarding/identity";

@@ -1,4 +1,4 @@
-import { AUTH_STORAGE_KEYS, saveFaithLifestyle } from "@/lib/api/auth";
+import { AUTH_STORAGE_KEYS, saveFaithLifestyle, type OnboardingData } from "@/lib/api/auth";
 import { create } from "zustand";
 
 interface OnboardingState {
@@ -130,11 +130,36 @@ export const useFaithStore = create<FaithState>((set, get) => ({
         churchInvolvement: state.churchInvolvement || "Member",
         yearsInFaith: state.yearsInFaith,
         churchAttendance: state.churchAttendance || "Weekly",
-        lifestyleSmoking: state.smokingSelection !== "Never" && state.smokingSelection !== "",
-        lifestyleDrinking: state.alcoholSelection !== "Never" && state.alcoholSelection !== "",
+        smokingPreference: state.smokingSelection || "Never",
+        alcoholPreference: state.alcoholSelection || "Never",
         dietaryPreference: state.dietaryPreference || "No Restrictions",
       },
       token
     );
   },
 }));
+
+/** Normalize API gender (e.g. "male") to UI label ("Male") so selection highlights. */
+function normalizeGenderForUI(apiGender: string | null | undefined): string {
+  if (!apiGender) return "";
+  const lower = apiGender.toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
+}
+
+/**
+ * Pre-fill all onboarding stores from API data (e.g. from login/setPassword response
+ * or GET onboarding/review). Call after auth when entering onboarding flow.
+ */
+export function hydrateOnboardingStores(data: OnboardingData) {
+  if (!data) return;
+  useOnboardingStore.getState().setName(data.fullName ?? "");
+  useOnboardingStore.getState().setAge(data.age != null ? String(data.age) : "");
+  useOnboardingStore.getState().setGender(normalizeGenderForUI(data.gender));
+  useBioStore.getState().setBio(data.bio ?? "");
+  useFaithStore.getState().setChurchInvolvement(data.churchInvolvement ?? "");
+  useFaithStore.getState().setYearsInFaith(data.yearsInFaith ?? 0);
+  useFaithStore.getState().setChurchAttendance(data.churchAttendance ?? "");
+  useFaithStore.getState().setSmokingSelection(data.smokingPreference ?? "");
+  useFaithStore.getState().setAlcoholSelection(data.alcoholPreference ?? "");
+  useFaithStore.getState().setDietaryPreference(data.dietaryPreference ?? "");
+}

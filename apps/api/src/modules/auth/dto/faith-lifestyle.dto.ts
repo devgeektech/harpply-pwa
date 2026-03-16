@@ -1,4 +1,4 @@
-import { IsString, IsBoolean, IsInt, IsNotEmpty, IsIn, Min, Max } from 'class-validator';
+import { IsString, IsInt, IsNotEmpty, IsIn, Min, Max } from 'class-validator';
 import { ERROR_MESSAGES } from '../../../common/constants/error-messages';
 
 export class FaithLifestyleDto {
@@ -16,13 +16,15 @@ export class FaithLifestyleDto {
   @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'churchAttendance') })
   churchAttendance: string;
 
-  @IsBoolean()
-  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'lifestyleSmoking') })
-  lifestyleSmoking: boolean;
+  @IsString()
+  @IsIn(['Never', 'Socially', 'Regularly'], { message: 'Smoking preference must be Never, Socially, or Regularly.' })
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'smokingPreference') })
+  smokingPreference: string;
 
-  @IsBoolean()
-  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'lifestyleDrinking') })
-  lifestyleDrinking: boolean;
+  @IsString()
+  @IsIn(['Never', 'Socially', 'Regularly'], { message: 'Alcohol preference must be Never, Socially, or Regularly.' })
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'alcoholPreference') })
+  alcoholPreference: string;
 
   @IsString()
   @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'dietaryPreference') })

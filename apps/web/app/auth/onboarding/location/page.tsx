@@ -1,20 +1,77 @@
 "use client";
 
 import Image from "next/image";
-import { useOnboardingStore } from "@/store/onboardingStore";
-import { Button, Card, CardContent, Input, Progress } from "@repo/ui";
+import { Button, Card, CardContent, Progress } from "@repo/ui";
 import { Send, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { AUTH_STORAGE_KEYS } from "@/lib/constants";
+import { saveLocation } from "@/lib/api/auth";
+import { useState } from "react";
 
 export default function Location() {
-  const { name, age, gender, setName, setAge, setGender } =
-    useOnboardingStore();
   const router = useRouter();
+  const [submitting, setSubmitting] = useState(false);
 
-  const skipLocation = () => {
+  const goNext = () => {
     router.push("/auth/onboarding/bio");
-  }
+  };
+
+  const handleEnableLocation = async () => {
+    if (submitting) return;
+    const token =
+      typeof window !== "undefined"
+        ? window.localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN)
+        : null;
+    if (!token) {
+      goNext();
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const getPosition = () =>
+        new Promise<GeolocationPosition>((resolve, reject) => {
+          if (!navigator.geolocation) {
+            reject(new Error("Geolocation not supported."));
+            return;
+          }
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: false,
+            timeout: 10000,
+          });
+        });
+
+      let latitude = 0;
+      let longitude = 0;
+      try {
+        const pos = await getPosition();
+        latitude = pos.coords.latitude;
+        longitude = pos.coords.longitude;
+      } catch {
+        latitude = 0;
+        longitude = 0;
+      }
+
+      await saveLocation(
+        {
+          latitude,
+          longitude,
+          locationEnabled: true,
+        },
+        token
+      );
+      goNext();
+    } catch {
+      goNext();
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleSkip = () => {
+    goNext();
+  };
 
   return (
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex  sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
@@ -22,7 +79,6 @@ export default function Location() {
         <CardContent className="flex items-center flex-col gap-2 sm:p-10 px-3 text-center">
           <div className="text-left text-white w-full">
             <Link href="/auth/onboarding/identity">
-              {" "}
               <ChevronLeft size={24} />
             </Link>
           </div>
@@ -60,10 +116,18 @@ export default function Location() {
           </p>
 
           {/* Continue Button */}
-          <Button className="cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60">
-            <Send /> Enable Location
+          <Button
+            onClick={handleEnableLocation}
+            disabled={submitting}
+            className="cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60"
+          >
+            <Send /> {submitting ? "Enabling..." : "Enable Location"}
           </Button>
-          <Button onClick={()=>skipLocation()} className="cursor-pointer text-base bg-transparent hover:bg-transparent text-white font-semibold hover:opacity-90 transition disabled:opacity-60">
+          <Button
+            type="button"
+            onClick={handleSkip}
+            className="cursor-pointer text-base bg-transparent hover:bg-transparent text-white font-semibold hover:opacity-90 transition disabled:opacity-60"
+          >
             Skip for Now
           </Button>
         </CardContent>
