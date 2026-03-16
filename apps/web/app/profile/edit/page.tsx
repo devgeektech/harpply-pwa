@@ -10,9 +10,13 @@ import {
   Input,
   Textarea,
 } from "@repo/ui";
-import { ChevronLeft, MapPin, Pencil, User } from "lucide-react";
+import { ChevronLeft, MapPin, Pencil } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { updateBasicProfile } from "@/lib/api/profile";
+import { useState } from "react";
 
 const CARD_BG = "#1A0A26";
 const GOLD_GRADIENT =
@@ -31,7 +35,28 @@ export default function EditProfilePage() {
     setLocation,
     setGender,
   } = useProfileStore();
+  const router = useRouter();
+  const [saving, setSaving] = useState(false);
 
+  const handleSave = async () => {
+    if (saving) return;
+    setSaving(true);
+    try {
+      await updateBasicProfile({
+        fullName: name,
+        age: age || undefined,
+        location: location || undefined,
+        gender: gender.toLowerCase(),
+      });
+      toast.success("Profile updated successfully.");
+      router.push("/profile/identity");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to update profile. Please try again.";
+      toast.error(message);
+    } finally {
+      setSaving(false);
+    }
+  };
   return (
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex  sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
     <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
@@ -161,21 +186,13 @@ export default function EditProfilePage() {
             ))}
             </div>
           </div>
-          <div className="w-full mt-[16px]">
-              <label className="mb-1.5 block text-sm font-medium text-white/80">
-                Location
-              </label>
-                <Textarea
-                    placeholder="Write about yourself"
-                    className="min-h-[120px] rounded-[8px] border-white/15 bg-white text-black placeholder:text-black/40 focus-visible:ring-0 focus-visible:ring-offset-0"
-                  />
-            </div>
 
           {/* Next */}
           <Button
+            onClick={handleSave}
+            disabled={saving}
             className="cursor-pointer w-full text-base h-[52px] mt-[30px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60">
-      
-            <Link href="/profile/identity">Next</Link>
+            {saving ? "Saving..." : "Save Changes"}
           </Button>
         </CardContent>
       </Card>

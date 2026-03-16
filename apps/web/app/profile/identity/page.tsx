@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useProfileStore } from "@/store/profileStore";
 import { useIdentityStore } from "@/store/identityStore";
 import { Button, Card, CardContent } from "@repo/ui";
@@ -20,6 +21,7 @@ import { useCallback, useMemo } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
+import { fetchProfile } from "@/lib/api/profile";
 
 import "swiper/css";
 import "swiper/css/pagination";
@@ -40,7 +42,7 @@ const faithIconMap: Record<string, React.ReactNode> = {
 };
 
 export default function ProfileIdentityPage() {
-  const { name, age, location } = useProfileStore();
+  const { name, age, location, hydrateFromApi, loaded } = useProfileStore();
   const {
     profileImages,
     aboutMe,
@@ -50,6 +52,18 @@ export default function ProfileIdentityPage() {
     diet,
     setActiveSlideIndex,
   } = useIdentityStore();
+
+  useEffect(() => {
+    if (loaded) return;
+    fetchProfile()
+      .then((res) => {
+        if (res?.data) {
+          hydrateFromApi(res.data);
+        }
+      })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded]);
 
   const onSwiper = useCallback(
     (swiper: SwiperType) => {

@@ -10,6 +10,7 @@
 
 import type { Metadata, Viewport } from "next";
 import { Inter, Cormorant_Garamond } from "next/font/google";
+import { ToasterProvider } from "@/components/toaster-provider";
 import "@repo/ui/globals.css";
 
 const inter = Inter({
@@ -69,6 +70,7 @@ export default function RootLayout({
         style={{ margin: 0, padding: 0 }}
       >
         {children}
+        <ToasterProvider />
       </body>
     </html>
   );

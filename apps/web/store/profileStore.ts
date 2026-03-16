@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { ProfileData } from "@/lib/api/profile";
 
 export type Gender = "Male" | "Female" | "Other";
 
@@ -9,25 +10,40 @@ interface ProfileState {
   church: string;
   bio: string;
   gender: Gender;
+  loaded: boolean;
 
   setBio: (bio: string) => void;
   setName: (name: string) => void;
   setAge: (age: number) => void;
   setLocation: (location: string) => void;
   setGender: (gender: Gender) => void;
+  hydrateFromApi: (data: ProfileData) => void;
 }
 
 export const useProfileStore = create<ProfileState>((set) => ({
-  name: "Sarah Jensen",
-  age: 28,
-  location: "Los Angeles, CA",
-  church: "Grace Community Church",
+  name: "",
+  age: 0,
+  location: "",
+  church: "",
   gender: "Male",
-  bio: `Seeking a partner who shares a deep love for scripture and community service. I find peace in morning devotionals and weekend hiking.`,
+  bio: "",
+  loaded: false,
 
   setBio: (bio) => set({ bio }),
   setName: (name) => set({ name }),
   setAge: (age) => set({ age }),
   setLocation: (location) => set({ location }),
   setGender: (gender) => set({ gender }),
+  hydrateFromApi: (data) =>
+    set({
+      name: data.fullName ?? "",
+      age: data.age ?? 0,
+      location: data.location ?? "",
+      church: data.churchInvolvement ?? "",
+      bio: data.bio ?? "",
+      gender:
+        (data.gender &&
+          (data.gender.charAt(0).toUpperCase() + data.gender.slice(1).toLowerCase())) as Gender,
+      loaded: true,
+    }),
 }));
