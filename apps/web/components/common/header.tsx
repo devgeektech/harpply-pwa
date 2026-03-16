@@ -11,7 +11,7 @@ export default function Header() {
   return (
     <header className="border-b border-white/10 bg-white flex items-center justify-between px-6 py-2">
       <Link href="/" className="me-12">
-        <Image src="/images/logoblack.png" className="w-[93px] h-[30px] object-contain" alt="logo" width={93} height={30} />
+        <Image src="/images/logoblack.png" className="min-w-[93px] min-h-[30px] object-contain" alt="logo" width={93} height={30} />
       </Link>
       {/* Search */}
       <div className="flex items-center gap-2 w-full relative">
@@ -25,10 +25,10 @@ export default function Header() {
       </div>
 
       {/* Profile */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 ms-3">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="relative bg-[#F5F3ED] p-2 rounded-full h-[50px] w-[50px] cursor-pointer">
+            <Button variant="outline" className=" border-none relative bg-[#F5F3ED] p-2 rounded-full h-[50px] w-[50px] cursor-pointer">
               <Image src="/images/bell-icon.svg" alt="dropdown" width={30} height={30} />
             </Button>
           </DropdownMenuTrigger>
@@ -48,9 +48,9 @@ export default function Header() {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="relative bg-[#F5F3ED] p-2 rounded-full cursor-pointer">
-            <span className="text-sm font-medium text-gray-700">
-          Sarah Jensen
+            <Button variant="outline" className="border-none h-auto relative bg-[#F5F3ED] py-[10px] px-[10px] rounded-[8px] cursor-pointer whitespace-nowrap">
+            <span className="text-sm font-medium text-[#C39936] flex items-center gap-2">
+          Sarah Jensen <Image src="/images/circle-down.svg" alt="dropdown" width={24} height={24} />
         </span>
             </Button>
           </DropdownMenuTrigger>

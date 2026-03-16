@@ -15,7 +15,7 @@ export default function DashboardLayout({
       <Sidebar />
 
       {/* Right Content */}
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-col flex-1 bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen px-4 py-[50px] sm:py-4">
 
         <main className="flex-1 overflow-auto">
           {children}

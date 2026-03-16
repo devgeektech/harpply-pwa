@@ -12,13 +12,7 @@ export default function Sidebar() {
   ]
 
   return (
-    <aside className="h-screen w-[70px] bg-[#1A0636] flex flex-col items-center py-6 border-r border-white/10">
-      {/* Logo */}
-      <div className="mb-10">
-        <div className="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center text-black font-bold">
-          H
-        </div>
-      </div>
+    <aside className="h-screen w-[90px] bg-[#1D0746] flex flex-col items-center py-6 border-r border-[#FFFFFF14]">
 
       {/* Menu */}
       <nav className="flex flex-col gap-6">
