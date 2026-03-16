@@ -40,8 +40,7 @@ export default function Identity() {
       <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
         <CardContent className="flex items-center flex-col gap-2 sm:p-10 px-3 text-left">
           <div className="text-left text-white w-full">
-            <Link href={"/"}>
-              {" "}
+            <Link href="/">
               <ChevronLeft size={24} />
             </Link>
           </div>

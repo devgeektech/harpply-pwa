@@ -52,13 +52,10 @@ export class OnboardingService {
     await this.prisma.user.update({
       where: { id: userId },
       data: {
-        churchInvolvement: dto.myFaith ?? dto.churchInvolvement,
         yearsInFaith: dto.yearsInFaith,
         churchAttendance: dto.churchAttendance,
-        exercise: dto.exercise,
         lifestyleSmoking: dto.lifestyleSmoking,
         lifestyleDrinking: dto.lifestyleDrinking,
-        lifestylePartying: dto.lifestylePartying,
         dietaryPreference: dto.dietaryPreference,
       } as Prisma.UserUpdateInput,
     });

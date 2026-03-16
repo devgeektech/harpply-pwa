@@ -32,8 +32,9 @@ export interface SignInResponse {
   statusCode?: number;
 }
 
-/** localStorage keys for registration/onboarding status (used for post-login and post-registration redirects). */
+/** localStorage keys for registration/onboarding status and auth token. */
 export const AUTH_STORAGE_KEYS = {
+  ACCESS_TOKEN: "harpply_access_token",
   ONBOARDING_COMPLETED: "harpply_onboarding_completed",
 } as const;
 
@@ -137,4 +138,34 @@ export async function signIn(email: string, password: string): Promise<SignInRes
   }
   const data = await res.json().catch(() => ({}));
   return data as SignInResponse;
+}
+
+/** Payload for POST /auth/onboarding/faith-lifestyle (matches API FaithLifestyleDto). */
+export interface FaithLifestylePayload {
+  churchInvolvement: string;
+  yearsInFaith: number;
+  churchAttendance: string;
+  lifestyleSmoking: boolean;
+  lifestyleDrinking: boolean;
+  dietaryPreference: string;
+}
+
+export async function saveFaithLifestyle(
+  payload: FaithLifestylePayload,
+  accessToken: string
+): Promise<{ message: string }> {
+  const res = await fetch(`${getAuthBaseUrl()}/auth/onboarding/faith-lifestyle`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const msg = await getErrorMessage(res, "Failed to save faith & lifestyle.");
+    throw new Error(msg);
+  }
+  const data = await res.json().catch(() => ({}));
+  return data as { message: string };
 }

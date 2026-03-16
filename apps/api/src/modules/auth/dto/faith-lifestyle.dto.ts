@@ -3,10 +3,6 @@ import { ERROR_MESSAGES } from '../../../common/constants/error-messages';
 
 export class FaithLifestyleDto {
   @IsString()
-  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'myFaith') })
-  myFaith: string;
-
-  @IsString()
   @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'churchInvolvement') })
   churchInvolvement: string;
 
@@ -20,10 +16,6 @@ export class FaithLifestyleDto {
   @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'churchAttendance') })
   churchAttendance: string;
 
-  @IsIn(['Active', 'Sometimes', 'Never'])
-  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'exercise') })
-  exercise: string;
-
   @IsBoolean()
   @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'lifestyleSmoking') })
   lifestyleSmoking: boolean;
@@ -31,10 +23,6 @@ export class FaithLifestyleDto {
   @IsBoolean()
   @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'lifestyleDrinking') })
   lifestyleDrinking: boolean;
-
-  @IsBoolean()
-  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'lifestylePartying') })
-  lifestylePartying: boolean;
 
   @IsString()
   @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'dietaryPreference') })
