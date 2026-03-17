@@ -140,6 +140,34 @@ export class AuthController {
     return this.authService.verifyEmailByToken(token);
   }
 
+  @Get('verify-reset')
+  @ApiOperation({
+    summary: 'Validate reset token from email link; redirects to frontend set-password page',
+  })
+  async verifyResetFromLink(
+    @Query('token') token: string,
+    @Res() res: Express.Response,
+  ) {
+    const resetPasswordUrl =
+      this.config.get<string>('FRONTEND_RESET_PASSWORD_URL') ??
+      this.config.get<string>('FRONTEND_APP_URL') ??
+      'https://app.harpply.com';
+    const setPasswordResetPath = '/auth/set-password-reset';
+    const fullUrl = resetPasswordUrl.replace(/\/$/, '') + setPasswordResetPath;
+    try {
+      await this.authService.validateResetToken(token);
+      return res.redirect(302, `${fullUrl}?token=${encodeURIComponent(token)}`);
+    } catch {
+      return res.redirect(302, `${fullUrl}?error=invalid_token`);
+    }
+  }
+
+  @Get('validate-reset-token/:token')
+  @ApiOperation({ summary: 'Validate reset token; returns email for pre-fill (JSON)' })
+  async validateResetToken(@Param('token') token: string) {
+    return this.authService.validateResetToken(token);
+  }
+
   @Post('onboarding/identity')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

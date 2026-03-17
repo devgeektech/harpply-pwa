@@ -12,7 +12,7 @@ import {
 import { ERROR_MESSAGES } from '../../common/constants/error-messages';
 import { encodeEmail, decodeEmail, decodeEmailSafe } from '../../common/utils/email-encode';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { randomBytes, randomUUID } from 'crypto';
+import { randomUUID } from 'crypto';
 import type { Prisma } from '@prisma/client';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -255,38 +255,45 @@ export class AuthService {
     return successResponse(SUCCESS_MESSAGES.AUTH.LOGOUT_SUCCESS);
   }
 
+  /** Forgot password: send verification email with link to set new password (same process as signup). */
   async forgotPassword(dto: ForgotPasswordDto) {
     const emailEncoded = encodeEmail(dto.email);
     const user = await this.prisma.user.findUnique({
       where: { email: emailEncoded },
+      select: { id: true, password: true },
     });
 
     if (!user) {
-      return successResponse(ERROR_MESSAGES.AUTH.USER_NOT_FOUND, {
-        data: {},
+      return successResponse(SUCCESS_MESSAGES.AUTH.FORGOT_PASSWORD_GENERIC, {
+        data: { email: dto.email },
       });
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    if (user.password == null) {
+      return successResponse(SUCCESS_MESSAGES.AUTH.FORGOT_PASSWORD_GENERIC, {
+        data: { email: dto.email },
+      });
+    }
 
-    // Create secure reset token
-    const resetToken = randomBytes(32).toString('hex');
+    const resetToken = randomUUID();
+    const resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
     await this.prisma.user.update({
       where: { email: emailEncoded },
       data: {
-        resetOtp: otp,
-        resetOtpExpires: new Date(Date.now() + 10 * 60 * 1000), // 10 mins
-        resetToken: resetToken,
-        resetTokenExpires: new Date(Date.now() + 15 * 60 * 1000), // 15 mins
+        resetToken,
+        resetTokenExpires,
+        resetOtp: null,
+        resetOtpExpires: null,
       } as Prisma.UserUpdateInput,
     });
 
-    console.log('OTP:', otp);
-    console.log('Reset Token:', resetToken);
+    this.brevoEmailService
+      .sendPasswordResetLink(dto.email, resetToken)
+      .catch(() => undefined);
 
-    return successResponse(SUCCESS_MESSAGES.AUTH.OTP_SENT, {
-      data: { resetToken, otp },
+    return successResponse(SUCCESS_MESSAGES.AUTH.FORGOT_PASSWORD_GENERIC, {
+      data: { email: dto.email },
     });
   }
 
@@ -308,22 +315,48 @@ export class AuthService {
     return successResponse(SUCCESS_MESSAGES.AUTH.OTP_VERIFIED);
   }
 
+  /** Reset password by token (from email link) or by email (legacy). */
   async resetPassword(dto: ResetPasswordDto) {
     if (dto.password !== dto.confirmPassword) {
       throw new BadRequestException(ERROR_MESSAGES.AUTH.PASSWORD_MISMATCH);
     }
-
-    const emailEncoded = encodeEmail(dto.email);
-    const user = await this.prisma.user.findUnique({
-      where: { email: emailEncoded },
-    });
-
-    if (!user) {
-      throw new BadRequestException(ERROR_MESSAGES.AUTH.USER_NOT_FOUND);
+    if (!dto.token?.trim() && !dto.email?.trim()) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.EMAIL_MISSING);
     }
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
+    if (dto.token?.trim()) {
+      const user = await this.prisma.user.findFirst({
+        where: {
+          resetToken: dto.token,
+          resetTokenExpires: { gt: new Date() },
+        },
+      });
+      if (!user) {
+        throw new BadRequestException(ERROR_MESSAGES.AUTH.TOKEN_INVALID);
+      }
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          password: hashedPassword,
+          token: null,
+          resetToken: null,
+          resetTokenExpires: null,
+          resetOtp: null,
+          resetOtpExpires: null,
+        },
+      });
+      return successResponse(SUCCESS_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS);
+    }
+
+    const emailEncoded = encodeEmail(dto.email!);
+    const user = await this.prisma.user.findUnique({
+      where: { email: emailEncoded },
+    });
+    if (!user) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.USER_NOT_FOUND);
+    }
     await this.prisma.user.update({
       where: { email: emailEncoded },
       data: {
@@ -333,8 +366,24 @@ export class AuthService {
         resetOtpExpires: null,
       },
     });
-
     return successResponse(SUCCESS_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS);
+  }
+
+  /** Validate reset token (from email link); returns email for pre-fill. */
+  async validateResetToken(token: string) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        resetToken: token,
+        resetTokenExpires: { gt: new Date() },
+      },
+      select: { email: true },
+    });
+    if (!user) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.TOKEN_INVALID);
+    }
+    return successResponse(SUCCESS_MESSAGES.AUTH.EMAIL_VERIFIED, {
+      data: { email: decodeEmailSafe(user.email) },
+    });
   }
 
   /** Mark email as verified when user clicks link from Brevo. */

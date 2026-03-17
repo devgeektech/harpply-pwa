@@ -97,6 +97,58 @@ export async function verifyEmailByToken(
   return data as { message: string; data?: { email: string } };
 }
 
+/** Request password reset; sends verification email with link (same process as signup). */
+export async function forgotPassword(email: string): Promise<{ message: string; data?: { email: string } }> {
+  const res = await fetch(`${getAuthBaseUrl()}/auth/forgot-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+    ...authFetchOptions,
+  });
+  if (!res.ok) {
+    const msg = await getErrorMessage(res, "Failed to send reset link.");
+    throw new Error(msg);
+  }
+  const data = await res.json().catch(() => ({}));
+  return data as { message: string; data?: { email: string } };
+}
+
+/** Validate reset token from email link; returns email for pre-fill. */
+export async function validateResetToken(
+  token: string
+): Promise<{ message: string; data?: { email: string } }> {
+  const res = await fetch(
+    `${getAuthBaseUrl()}/auth/validate-reset-token/${encodeURIComponent(token)}`,
+    { method: "GET", ...authFetchOptions }
+  );
+  if (!res.ok) {
+    const msg = await getErrorMessage(res, "Invalid or expired link.");
+    throw new Error(msg);
+  }
+  const data = await res.json().catch(() => ({}));
+  return data as { message: string; data?: { email: string } };
+}
+
+/** Reset password using token from email link. */
+export async function resetPasswordByToken(
+  token: string,
+  password: string,
+  confirmPassword: string
+): Promise<{ message: string }> {
+  const res = await fetch(`${getAuthBaseUrl()}/auth/reset-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, password, confirmPassword }),
+    ...authFetchOptions,
+  });
+  if (!res.ok) {
+    const msg = await getErrorMessage(res, "Failed to reset password.");
+    throw new Error(msg);
+  }
+  const data = await res.json().catch(() => ({}));
+  return data as { message: string };
+}
+
 export async function resendVerificationEmail(email: string): Promise<{ message: string; data?: { email: string; requiresPassword?: boolean } }> {
   const res = await fetch(`${getAuthBaseUrl()}/auth/resend-verification`, {
     method: "POST",

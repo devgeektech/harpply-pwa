@@ -81,4 +81,54 @@ export class BrevoEmailService {
       );
     }
   }
+
+  /** Send password reset link (same pattern as email verification). */
+  async sendPasswordResetLink(email: string, token: string): Promise<void> {
+    if (!this.client) {
+      this.logger.warn(
+        `Skipping password reset email – Brevo API client not initialized. Email: ${email}`,
+      );
+      return;
+    }
+
+    const resetUrl = `${this.verifyBaseUrl.replace(/\/$/, '')}/auth/set-password-reset?token=${encodeURIComponent(token)}`;
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Reset your password</title></head>
+<body style="font-family: system-ui, sans-serif; background:#f5f5f5; padding:24px; margin:0;">
+  <div style="max-width:480px; margin:0 auto; background:#fff; border-radius:12px; padding:24px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+    <h1 style="margin:0 0 16px; font-size:20px; color:#333;">Reset your password</h1>
+    <p style="margin:0 0 24px; font-size:14px; line-height:1.6; color:#555;">
+      You requested a password reset for your ${this.appName} account. Click the button below to set a new password.
+    </p>
+    <p style="margin:0 0 24px;">
+      <a href="${resetUrl}" style="display:inline-block; padding:12px 24px; background:#1976d2; color:#fff; text-decoration:none; border-radius:8px; font-weight:600;">Set new password</a>
+    </p>
+    <p style="margin:0; font-size:12px; color:#888;">
+      If you didn't request this, you can ignore this email. The link expires in 1 hour.
+    </p>
+    <p style="margin:16px 0 0; font-size:12px; color:#888;">
+      If the button doesn't work, copy and paste this link into your browser:<br/>
+      <span style="word-break:break-all;">${resetUrl}</span>
+    </p>
+  </div>
+</body>
+</html>`;
+
+    try {
+      await this.client.transactionalEmails.sendTransacEmail({
+        sender: { email: this.senderEmail, name: this.senderName },
+        to: [{ email }],
+        subject: `Reset your password for ${this.appName}`,
+        htmlContent,
+      });
+    } catch (err) {
+      this.logger.error(
+        `Failed to send password reset email to ${email}`,
+        err instanceof Error ? err.stack : String(err),
+      );
+    }
+  }
 }
