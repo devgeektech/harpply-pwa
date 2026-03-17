@@ -34,7 +34,7 @@ function VerifyEmailContent() {
   const [resendLoading, setResendLoading] = useState(false);
   const [resendMessage, setResendMessage] = useState<string | null>(null);
   const [resendError, setResendError] = useState<string | null>(null);
-  const [cooldownLeft, setCooldownLeft] = useState(0);
+  const [cooldownLeft, setCooldownLeft] = useState(RESEND_COOLDOWN_SEC);
 
   useEffect(() => {
     if (emailFromUrl) setEmail(emailFromUrl);

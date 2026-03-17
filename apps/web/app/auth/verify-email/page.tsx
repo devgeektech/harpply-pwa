@@ -14,6 +14,7 @@ function VerifyEmailContent() {
   const token = searchParams.get("token");
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [verifiedEmail, setVerifiedEmail] = useState<string>("");
 
   useEffect(() => {
     if (!token?.trim()) {
@@ -23,7 +24,10 @@ function VerifyEmailContent() {
     }
     setStatus("loading");
     verifyEmailByToken(token.trim())
-      .then(() => setStatus("verified"))
+      .then((res) => {
+        setStatus("verified");
+        if (res?.data?.email) setVerifiedEmail(res.data.email);
+      })
       .catch((err) => {
         setStatus("error");
         setErrorMessage(err instanceof Error ? err.message : "Verification failed.");
@@ -62,7 +66,14 @@ function VerifyEmailContent() {
                 Your email has been verified. Create a password to finish signing up.
               </p>
               <div className="mt-6 w-full">
-                <Link href="/auth/createpassword" className="block w-full">
+                <Link
+                  href={
+                    verifiedEmail
+                      ? `/auth/createpassword?email=${encodeURIComponent(verifiedEmail)}`
+                      : "/auth/createpassword"
+                  }
+                  className="block w-full"
+                >
                   <Button
                     type="button"
                     className="cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition"

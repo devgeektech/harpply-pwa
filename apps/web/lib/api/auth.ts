@@ -81,8 +81,10 @@ async function getErrorMessage(
   return res.statusText || fallback;
 }
 
-/** Verify email with token from the link; updates DB and returns success. */
-export async function verifyEmailByToken(token: string): Promise<{ message: string }> {
+/** Verify email with token from the link; updates DB and returns success + email for create-password. */
+export async function verifyEmailByToken(
+  token: string
+): Promise<{ message: string; data?: { email: string } }> {
   const res = await fetch(`${getAuthBaseUrl()}/auth/verify-email/${encodeURIComponent(token)}`, {
     method: "GET",
     ...authFetchOptions,
@@ -92,7 +94,7 @@ export async function verifyEmailByToken(token: string): Promise<{ message: stri
     throw new Error(msg);
   }
   const data = await res.json().catch(() => ({}));
-  return data as { message: string };
+  return data as { message: string; data?: { email: string } };
 }
 
 export async function resendVerificationEmail(email: string): Promise<{ message: string; data?: { email: string; requiresPassword?: boolean } }> {

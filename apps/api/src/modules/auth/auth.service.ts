@@ -10,7 +10,7 @@ import {
   UnauthorizedException,
 } from '../../common/exceptions';
 import { ERROR_MESSAGES } from '../../common/constants/error-messages';
-import { encodeEmail, decodeEmail } from '../../common/utils/email-encode';
+import { encodeEmail, decodeEmail, decodeEmailSafe } from '../../common/utils/email-encode';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { randomBytes, randomUUID } from 'crypto';
 import type { Prisma } from '@prisma/client';
@@ -355,6 +355,8 @@ export class AuthService {
       },
     });
 
-    return successResponse(SUCCESS_MESSAGES.AUTH.EMAIL_VERIFIED);
+    return successResponse(SUCCESS_MESSAGES.AUTH.EMAIL_VERIFIED, {
+      data: { email: decodeEmailSafe(user.email) },
+    });
   }
 }
