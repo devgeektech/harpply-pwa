@@ -1,10 +1,7 @@
-/**
- * Auth API helpers. Uses NEXT_PUBLIC_API_URL on client for fetch.
- */
-const getAuthBaseUrl = () =>
-  typeof window !== "undefined"
-    ? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000"
-    : process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+import { getApiBaseUrl } from "./base-url";
+
+/** Auth API base URL: live URL on production, localhost on local. */
+const getAuthBaseUrl = () => getApiBaseUrl();
 
     const authFetchOptions: RequestInit = { credentials: "include" };
 

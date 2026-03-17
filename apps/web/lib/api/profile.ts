@@ -1,9 +1,7 @@
 import { AUTH_STORAGE_KEYS } from "@/lib/constants";
+import { getApiBaseUrl } from "./base-url";
 
-const getBaseUrl = () =>
-  typeof window !== "undefined"
-    ? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000"
-    : process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+const getBaseUrl = () => getApiBaseUrl();
 
 const fetchOptions: RequestInit = { credentials: "include" };
 
