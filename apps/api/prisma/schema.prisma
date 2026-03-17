@@ -21,6 +21,8 @@ model User {
   resetOtpExpires    DateTime?
   resetToken         String?
   resetTokenExpires  DateTime?
+  emailVerified      Boolean  @default(false)
+  emailVerificationToken String?
 
   // Onboarding - Identity / Profile
   fullName   String?

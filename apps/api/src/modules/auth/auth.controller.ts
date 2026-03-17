@@ -5,8 +5,10 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   Res,
   UseGuards,
+  Param,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
@@ -28,6 +30,7 @@ import { CurrentUserId, CurrentUser } from './decorators/current-user.decorator'
 import { AllowEmptyBody } from '../../common/decorators/allow-empty-body.decorator';
 import { ACCESS_TOKEN_COOKIE, accessTokenCookieOptions } from './auth-cookie.constants';
 import * as Express from 'express';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -35,7 +38,9 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly onboardingService: OnboardingService,
-  ) { }
+    private readonly config: ConfigService,
+  ) {}
+
 
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
@@ -99,6 +104,32 @@ export class AuthController {
   @Post('reset-password')
   async resetPassword(@Body() dto: ResetPasswordDto) {
     return this.authService.resetPassword(dto);
+  }
+
+  @Get('verify-email')
+  @ApiOperation({
+    summary:
+      'Verify email from link in email (query token); redirects to set-password page',
+  })
+  async verifyEmailFromLink(
+    @Query('token') token: string,
+    @Res() res: Express.Response,
+  ) {
+    const setPasswordUrl =
+      this.config.get<string>('FRONTEND_SET_PASSWORD_URL') ??
+      'https://app.harpply.com/auth/set-password';
+    try {
+      await this.authService.verifyEmailByToken(token);
+      return res.redirect(302, setPasswordUrl);
+    } catch {
+      return res.redirect(302, `${setPasswordUrl}?error=invalid_token`);
+    }
+  }
+
+  @Get('verify-email/:token')
+  @ApiOperation({ summary: 'Verify email (path token); returns JSON' })
+  async verifyEmail(@Param('token') token: string) {
+    return this.authService.verifyEmailByToken(token);
   }
 
   @Post('onboarding/identity')

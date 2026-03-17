@@ -11,6 +11,7 @@ export const SUCCESS_MESSAGES = {
     PASSWORD_RESET_SUCCESS: 'Password updated successfully.',
     FORGOT_PASSWORD_GENERIC:
       'If this email exists, an OTP has been sent.',
+    EMAIL_VERIFIED: 'Email verified successfully.',
   },
   ONBOARDING: {
     IDENTITY_SAVED:'Identity saved successfully.',

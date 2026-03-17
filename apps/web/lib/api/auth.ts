@@ -81,6 +81,20 @@ async function getErrorMessage(
   return res.statusText || fallback;
 }
 
+/** Verify email with token from the link; updates DB and returns success. */
+export async function verifyEmailByToken(token: string): Promise<{ message: string }> {
+  const res = await fetch(`${getAuthBaseUrl()}/auth/verify-email/${encodeURIComponent(token)}`, {
+    method: "GET",
+    ...authFetchOptions,
+  });
+  if (!res.ok) {
+    const msg = await getErrorMessage(res, "Verification failed.");
+    throw new Error(msg);
+  }
+  const data = await res.json().catch(() => ({}));
+  return data as { message: string };
+}
+
 export async function registerEmail(email: string): Promise<RegisterEmailResponse> {
   let res: Response;
   try {

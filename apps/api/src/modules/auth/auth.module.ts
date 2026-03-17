@@ -5,16 +5,19 @@ import { OnboardingService } from './onboarding.service';
 import { JwtModule } from '@nestjs/jwt';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { JwtStrategy } from './jwt.strategy';
+import { ConfigModule } from '@nestjs/config';
+import { BrevoEmailService } from '../../common/email/brevo-email.service';
 
 @Module({
   imports: [
+    ConfigModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'your-very-secure-secret-1234567890',
       signOptions: { expiresIn: '1d' },
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, OnboardingService, PrismaService,JwtStrategy],
+  providers: [AuthService, OnboardingService, PrismaService, JwtStrategy, BrevoEmailService],
   exports: [AuthService, JwtModule, JwtStrategy],
 })
 export class AuthModule {}

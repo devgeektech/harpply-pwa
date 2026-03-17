@@ -19,6 +19,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SUCCESS_MESSAGES } from '../../common/constants/success-messages';
 import { successResponse } from '../../common/response/api-response';
 import { OnboardingService } from './onboarding.service';
+import { BrevoEmailService } from '../../common/email/brevo-email.service';
 
 @Injectable()
 export class AuthService {
@@ -26,26 +27,34 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly onboardingService: OnboardingService,
+    private readonly brevoEmailService: BrevoEmailService,
   ) { }
 
   /** Step 1: Register email only. User must call set-password to complete signup. */
   async registerEmail(dto: RegisterEmailDto) {
     const emailEncoded = encodeEmail(dto.email);
-
     const existingUser = await this.prisma.user.findUnique({
       where: { email: emailEncoded },
     });
-
     if (existingUser) {
       throw new ConflictException(ERROR_MESSAGES.AUTH.EMAIL_ALREADY_EXISTS);
     }
+
+    const emailVerificationToken = randomUUID();
 
     await this.prisma.user.create({
       data: {
         email: emailEncoded,
         password: null,
+        emailVerified: false,
+        emailVerificationToken,
       },
     });
+
+    // Fire-and-forget verification email; do not block signup on failures.
+    this.brevoEmailService
+      .sendEmailVerificationLink(dto.email, emailVerificationToken)
+      .catch(() => undefined);
 
     return successResponse(SUCCESS_MESSAGES.AUTH.EMAIL_REGISTERED, {
       statusCode: 201,
@@ -64,7 +73,14 @@ export class AuthService {
     const emailEncoded = encodeEmail(email);
     const user = await this.prisma.user.findUnique({
       where: { email: emailEncoded },
-      select: { id: true, email: true, password: true, createdAt: true, onboardingCompleted: true },
+      select: {
+        id: true,
+        email: true,
+        password: true,
+        createdAt: true,
+        onboardingCompleted: true,
+        emailVerified: true,
+      },
     });
 
     if (!user || user.password != null) {
@@ -107,7 +123,14 @@ export class AuthService {
     const emailEncoded = encodeEmail(dto.email);
     const user = await this.prisma.user.findUnique({
       where: { email: emailEncoded },
-      select: { id: true, email: true, password: true, createdAt: true, onboardingCompleted: true },
+      select: {
+        id: true,
+        email: true,
+        password: true,
+        createdAt: true,
+        onboardingCompleted: true,
+        emailVerified: true,
+      },
     });
 
     if (!user) {
@@ -118,6 +141,10 @@ export class AuthService {
 
     if (user.password == null) {
       throw new UnauthorizedException(ERROR_MESSAGES.AUTH.COMPLETE_SIGNUP);
+    }
+
+    if (!user.emailVerified) {
+      throw new UnauthorizedException(ERROR_MESSAGES.AUTH.EMAIL_NOT_VERIFIED);
     }
 
     const isPasswordValid = await bcrypt.compare(
@@ -249,4 +276,24 @@ export class AuthService {
     return successResponse(SUCCESS_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS);
   }
 
+  /** Mark email as verified when user clicks link from Brevo. */
+  async verifyEmailByToken(token: string) {
+    const user = await this.prisma.user.findFirst({
+      where: { emailVerificationToken: token },
+    });
+
+    if (!user) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.TOKEN_INVALID);
+    }
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerified: true,
+        emailVerificationToken: null,
+      },
+    });
+
+    return successResponse(SUCCESS_MESSAGES.AUTH.EMAIL_VERIFIED);
+  }
 }

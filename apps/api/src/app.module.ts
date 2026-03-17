@@ -2,6 +2,7 @@ import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
+import { join } from 'path';
 
 import { AuthModule } from './modules/auth/auth.module';
 import { ProfileModule } from './modules/profile/profile.module';
@@ -17,7 +18,15 @@ import { AwsS3Module } from './common/aws-s3/aws-s3.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      // Load apps/api/.env when running from monorepo root (pnpm dev)
+      envFilePath: [
+        join(process.cwd(), 'apps/api/.env'),
+        join(process.cwd(), '.env'),
+        '.env',
+      ],
+    }),
     AwsS3Module,
     AuthModule,
     ProfileModule,
