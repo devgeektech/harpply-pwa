@@ -35,21 +35,38 @@ export class AuthService {
     const emailEncoded = encodeEmail(dto.email);
     const existingUser = await this.prisma.user.findUnique({
       where: { email: emailEncoded },
+      select: { email: true, password: true, emailVerified: true },
     });
-    if (existingUser) {
-      throw new ConflictException(ERROR_MESSAGES.AUTH.EMAIL_ALREADY_EXISTS);
-    }
-
     const emailVerificationToken = randomUUID();
+    if (existingUser) {
+      if (existingUser.emailVerified && existingUser.password == null) {
+        return successResponse(
+          SUCCESS_MESSAGES.AUTH.COMPLETE_SIGNUP_SET_PASSWORD,
+          {
+            statusCode: 200,
+            data: { email: dto.email, requiresPassword: true },
+          },
+        );
+      }
+      if (existingUser.password != null) {
+        throw new ConflictException(ERROR_MESSAGES.AUTH.EMAIL_ALREADY_EXISTS);
+      }
 
-    await this.prisma.user.create({
-      data: {
-        email: emailEncoded,
-        password: null,
-        emailVerified: false,
-        emailVerificationToken,
-      },
-    });
+      if (existingUser && existingUser.emailVerified && existingUser.password) {
+        throw new ConflictException(
+          ERROR_MESSAGES.AUTH.EMAIL_REGISTERED_VERIFY_FIRST,
+        );
+      }
+    } else {
+      await this.prisma.user.create({
+        data: {
+          email: emailEncoded,
+          password: null,
+          emailVerified: false,
+          emailVerificationToken,
+        },
+      });
+    }
 
     // Fire-and-forget verification email; do not block signup on failures.
     this.brevoEmailService
@@ -59,6 +76,48 @@ export class AuthService {
     return successResponse(SUCCESS_MESSAGES.AUTH.EMAIL_REGISTERED, {
       statusCode: 201,
       data: { email: dto.email },
+    });
+  }
+
+  /** Resend verification email. Does not reveal whether email exists (always 200 with generic/specific message). */
+  async resendVerificationEmail(email: string) {
+    const emailEncoded = encodeEmail(email);
+    const user = await this.prisma.user.findUnique({
+      where: { email: emailEncoded },
+      select: {
+        emailVerified: true,
+        password: true,
+        emailVerificationToken: true,
+      },
+    });
+
+    if (!user) {
+      return successResponse(SUCCESS_MESSAGES.AUTH.VERIFICATION_EMAIL_SENT, {
+        data: { email },
+      });
+    }
+
+    if (user.emailVerified) {
+      return successResponse(SUCCESS_MESSAGES.AUTH.EMAIL_ALREADY_VERIFIED, {
+        data: {
+          email,
+          requiresPassword: user.password == null,
+        },
+      });
+    }
+
+    const newToken = randomUUID();
+    await this.prisma.user.update({
+      where: { email: emailEncoded },
+      data: { emailVerificationToken: newToken },
+    });
+
+    this.brevoEmailService
+      .sendEmailVerificationLink(email, newToken)
+      .catch(() => undefined);
+
+    return successResponse(SUCCESS_MESSAGES.AUTH.VERIFICATION_EMAIL_SENT, {
+      data: { email },
     });
   }
 
@@ -140,7 +199,9 @@ export class AuthService {
     }
 
     if (user.password == null) {
-      throw new UnauthorizedException(ERROR_MESSAGES.AUTH.COMPLETE_SIGNUP);
+      throw new UnauthorizedException(
+        ERROR_MESSAGES.AUTH.COMPLETE_SIGNUP
+      );
     }
 
     if (!user.emailVerified) {

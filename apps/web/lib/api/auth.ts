@@ -10,7 +10,7 @@ const getAuthBaseUrl = () =>
 
 export interface RegisterEmailResponse {
   message: string;
-  data: { email: string };
+  data: { email: string; requiresPassword?: boolean };
   statusCode?: number;
 }
 
@@ -95,6 +95,21 @@ export async function verifyEmailByToken(token: string): Promise<{ message: stri
   return data as { message: string };
 }
 
+export async function resendVerificationEmail(email: string): Promise<{ message: string; data?: { email: string; requiresPassword?: boolean } }> {
+  const res = await fetch(`${getAuthBaseUrl()}/auth/resend-verification`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+    ...authFetchOptions,
+  });
+  if (!res.ok) {
+    const msg = await getErrorMessage(res, "Failed to resend verification email.");
+    throw new Error(msg);
+  }
+  const data = await res.json().catch(() => ({}));
+  return data;
+}
+
 export async function registerEmail(email: string): Promise<RegisterEmailResponse> {
   let res: Response;
   try {
@@ -151,6 +166,17 @@ export async function setPassword(
   return data as SetPasswordResponse;
 }
 
+/** Error with optional code from API (e.g. COMPLETE_SIGNUP when user must set password first). */
+export class AuthError extends Error {
+  constructor(
+    message: string,
+    public readonly code?: string,
+  ) {
+    super(message);
+    this.name = "AuthError";
+  }
+}
+
 export async function signIn(email: string, password: string): Promise<SignInResponse> {
   let res: Response;
   try {
@@ -170,8 +196,13 @@ export async function signIn(email: string, password: string): Promise<SignInRes
     throw new Error(msg);
   }
   if (!res.ok) {
-    const msg = await getErrorMessage(res, "Sign in failed.");
-    throw new Error(msg);
+    const data = await res.json().catch(() => ({}));
+    const msg =
+      data && typeof data === "object" && typeof data.message === "string"
+        ? data.message
+        : await getErrorMessage(res, "Sign in failed.");
+    const code = data && typeof data === "object" && typeof data.code === "string" ? data.code : undefined;
+    throw new AuthError(msg, code);
   }
   const data = await res.json().catch(() => ({}));
   return data as SignInResponse;

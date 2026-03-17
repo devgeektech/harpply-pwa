@@ -1,6 +1,8 @@
 export const ERROR_MESSAGES = {
   AUTH: {
-    EMAIL_ALREADY_EXISTS: 'An account with this email already exists.',
+    EMAIL_ALREADY_EXISTS: 'An account with this email already exists. Sign in instead.',
+    EMAIL_REGISTERED_VERIFY_FIRST:
+      'This email is already registered. Please verify your email using the link we sent you.',
     USER_NOT_FOUND: 'No account found with this email address.',
     PASSWORD_MISMATCH: 'Passwords do not match.',
     EMAIL_MISSING: 'Email is missing. Please go back and complete signup.',

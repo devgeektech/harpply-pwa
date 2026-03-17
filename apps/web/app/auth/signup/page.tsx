@@ -60,9 +60,13 @@ export default function SignupPage() {
     setError(null);
     setLoading(true);
     try {
-      await apiRegisterEmail(values.email);
+      const result = await apiRegisterEmail(values.email);
       setEmail(values.email);
-      router.push(`/auth/verify?email=${encodeURIComponent(values.email)}`);
+      if (result?.data?.requiresPassword) {
+        router.push(`/auth/createpassword?email=${encodeURIComponent(values.email)}`);
+      } else {
+        router.push(`/auth/verify?email=${encodeURIComponent(values.email)}`);
+      }
     } catch (err) {
       setError(
         err instanceof Error ? err.message : ERROR_MESSAGES.GENERAL.REQUEST_FAILED

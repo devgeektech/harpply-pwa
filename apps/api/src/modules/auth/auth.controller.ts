@@ -19,6 +19,7 @@ import { SignInDto } from './dto/sign-in.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ResendVerificationDto } from './dto/resend-verification.dto';
 import { IdentityDto } from './dto/identity.dto';
 import { LocationDto } from './dto/location.dto';
 import { StoryDto } from './dto/story.dto';
@@ -46,6 +47,13 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   async registerEmail(@Body() dto: RegisterEmailDto) {
     return this.authService.registerEmail(dto);
+  }
+
+  @Post('resend-verification')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Resend verification email for the given email' })
+  async resendVerification(@Body() dto: ResendVerificationDto) {
+    return this.authService.resendVerificationEmail(dto.email);
   }
 
   @Post('set-password')

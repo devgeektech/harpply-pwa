@@ -1,12 +1,13 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState, useCallback } from "react";
 import { Button, Card, CardContent } from "@repo/ui";
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { ChevronLeft, Loader2 } from "lucide-react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useMemo, useEffect } from "react";
 import { useSignupStore } from "store/useSignupStore";
+import { resendVerificationEmail } from "@/lib/api/auth";
 
 function maskEmail(email: string): string {
   if (!email || !email.includes("@")) return "***@*****.com";
@@ -21,15 +22,49 @@ function maskEmail(email: string): string {
   return `${maskedLocal}@${maskedDomain}`;
 }
 
+const RESEND_COOLDOWN_SEC = 60;
+
 function VerifyEmailContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const emailFromUrl = searchParams.get("email") ?? "";
   const { email: emailFromStore, setEmail } = useSignupStore();
   const email = emailFromStore || emailFromUrl;
 
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState<string | null>(null);
+  const [resendError, setResendError] = useState<string | null>(null);
+  const [cooldownLeft, setCooldownLeft] = useState(0);
+
   useEffect(() => {
     if (emailFromUrl) setEmail(emailFromUrl);
   }, [emailFromUrl, setEmail]);
+
+  useEffect(() => {
+    if (cooldownLeft <= 0) return;
+    const t = setInterval(() => setCooldownLeft((s) => Math.max(0, s - 1)), 1000);
+    return () => clearInterval(t);
+  }, [cooldownLeft]);
+
+  const handleResend = useCallback(async () => {
+    if (!email?.trim() || resendLoading || cooldownLeft > 0) return;
+    setResendError(null);
+    setResendMessage(null);
+    setResendLoading(true);
+    try {
+      const result = await resendVerificationEmail(email.trim());
+      setResendMessage(result?.message ?? "Verification link sent. Please check your email.");
+      setCooldownLeft(RESEND_COOLDOWN_SEC);
+      if (result?.data?.requiresPassword) {
+        router.push(`/auth/createpassword?email=${encodeURIComponent(email.trim())}`);
+        return;
+      }
+    } catch (err) {
+      setResendError(err instanceof Error ? err.message : "Failed to resend.");
+    } finally {
+      setResendLoading(false);
+    }
+  }, [email, resendLoading, cooldownLeft, router]);
 
   const maskedEmail = useMemo(() => maskEmail(email), [email]);
   const createPasswordUrl = email
@@ -58,22 +93,31 @@ function VerifyEmailContent() {
             )}
           </p>
 
-          <div className="mt-6 flex flex-col items-center gap-4 w-full">
-            <Link
-              href="#"
-              className="text-yellow-400 font-medium underline hover:opacity-90"
-            >
-              Resend
-            </Link>
+          {resendMessage && (
+            <p className="text-sm text-yellow-400 w-full">{resendMessage}</p>
+          )}
+          {resendError && (
+            <p className="text-sm text-red-400 w-full">{resendError}</p>
+          )}
 
-            <Link href={createPasswordUrl} className="w-full">
-              <Button
-                type="button"
-                className="cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition"
-              >
-                Create password
-              </Button>
-            </Link>
+          <div className="mt-6 flex flex-col items-center gap-4 w-full">
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={!email?.trim() || resendLoading || cooldownLeft > 0}
+              className="text-yellow-400 font-medium underline hover:opacity-90 disabled:opacity-50 disabled:no-underline disabled:cursor-not-allowed"
+            >
+              {resendLoading ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Sending...
+                </span>
+              ) : cooldownLeft > 0 ? (
+                `Resend in ${cooldownLeft}s`
+              ) : (
+                "Resend"
+              )}
+            </button>
           </div>
 
           {/* <p className="text-center text-sm text-white mt-6 w-full">

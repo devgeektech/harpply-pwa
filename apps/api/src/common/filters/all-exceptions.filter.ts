@@ -25,9 +25,24 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const res = exception.getResponse();
-      message = typeof res === 'object' && res && typeof (res as any).message !== 'undefined'
-        ? (res as any).message
-        : (res as string) || exception.message;
+      const resObj = typeof res === 'object' && res ? (res as Record<string, unknown>) : null;
+      message =
+        resObj && typeof resObj.message !== 'undefined'
+          ? (resObj.message as string | string[])
+          : (res as string) || exception.message;
+      // Pass through optional `code` for client handling (e.g. COMPLETE_SIGNUP)
+      const code = resObj && typeof resObj.code === 'string' ? resObj.code : undefined;
+      const messageStr = Array.isArray(message) ? message.join(', ') : message;
+      this.logger.warn(`${request.method} ${request.url} ${status} - ${messageStr}`);
+      if (status === HttpStatus.INTERNAL_SERVER_ERROR && exception instanceof Error) {
+        this.logger.error(exception.message);
+        this.logger.error(exception.stack);
+      }
+      const body = code
+        ? { success: false as const, statusCode: status, message: messageStr, code }
+        : errorResponse(messageStr, status);
+      response.status(status).json(body);
+      return;
     } else if (exception instanceof BusinessException) {
       status = exception.status;
       message = exception.message;
@@ -55,7 +70,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const messageStr = Array.isArray(message) ? message.join(', ') : message;
     this.logger.warn(`${request.method} ${request.url} ${status} - ${messageStr}`);
 
-    // Log full error for 500s so you can see the real cause (e.g. in terminal)
     if (status === HttpStatus.INTERNAL_SERVER_ERROR && exception instanceof Error) {
       this.logger.error(exception.message);
       this.logger.error(exception.stack);
