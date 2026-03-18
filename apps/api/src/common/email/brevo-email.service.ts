@@ -18,12 +18,14 @@ export class BrevoEmailService {
       'no-reply@harpply.com';
     this.senderName =
       this.config.get<string>('BREVO_SENDER_NAME') ?? 'Harpply';
-    // Link in email must point to the frontend verify-email page (e.g. https://app.harpply.com or http://localhost:3000)
+    // Link in email must point to the frontend verify-email page.
+    // On live server: set FRONTEND_APP_URL to your live frontend (e.g. https://harpply.com).
+    const frontendUrl = this.config.get<string>('FRONTEND_APP_URL');
+    const isProduction = this.config.get<string>('NODE_ENV') === 'production';
     this.verifyBaseUrl =
-      this.config.get<string>('FRONTEND_APP_URL') ??
-      this.config.get<string>('VERIFY_EMAIL_LINK_BASE') ??
-      this.config.get<string>('BREVO_VERIFY_BASE_URL') ??
-      'http://localhost:3000';
+      frontendUrl ??
+      (isProduction ? 'https://harpply.com' : 'http://localhost:3000');
+    // this.verifyBaseUrl = 'https://harpply.com';
     this.appName = this.config.get<string>('APP_NAME') ?? 'Harpply';
 
     if (apiKey?.trim()) {
