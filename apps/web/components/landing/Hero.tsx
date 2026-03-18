@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { FadeIn } from "./FadeIn";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/useAuthStore";
 
 type HeroProps = {
   onOpenModal: () => void;
@@ -53,6 +55,16 @@ function EmailIcon() {
 }
 
 export function Hero({ onOpenModal }: HeroProps) {
+  const router = useRouter();
+  const { loading, setLoading } = useAuthStore();
+
+  const handleGoogle = async () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+  };
+
   return (
     <section
       id="pwa-splash"
@@ -118,15 +130,16 @@ export function Hero({ onOpenModal }: HeroProps) {
       <FadeIn className="relative z-10 flex w-full max-w-[420px] flex-col gap-[0.85rem]">
         <button
           type="button"
-          onClick={onOpenModal}
+          onClick={handleGoogle}
+          disabled={loading}
           className="font-[var(--font-inter),'Inter',sans-serif] flex w-full items-center justify-center gap-[0.75rem] rounded-full border-none bg-[rgba(255,255,255,0.97)] px-6 py-4 text-[0.95rem] font-semibold text-[#1a1a2e] no-underline shadow-[0_2px_16px_rgba(0,0,0,0.25)] transition-[transform,box-shadow] duration-[0.18s] hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(0,0,0,0.35)]"
         >
           <GoogleIcon />
-          Continue with Google
+          {loading ? "Connecting..." : "Continue with Google"}
         </button>
         <button
           type="button"
-          onClick={onOpenModal}
+          onClick={() => router.push("/auth/signin")}
           className="font-[var(--font-inter),'Inter',sans-serif] flex w-full items-center justify-center gap-[0.75rem] rounded-full border-none bg-[rgba(255,255,255,0.91)] px-6 py-4 text-[0.95rem] font-medium text-[#1a1a2e] no-underline shadow-[0_2px_12px_rgba(0,0,0,0.2)] transition-[transform,box-shadow] duration-[0.18s] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)]"
         >
           <EmailIcon />

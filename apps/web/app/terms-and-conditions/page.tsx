@@ -18,14 +18,14 @@ export default function TermsAndConditionsPage() {
         referrerPolicy="no-referrer-when-downgrade"
       />
 
-      <Link
+      {/* <Link
         href={termlyTermsUrl}
         target="_blank"
         rel="noopener noreferrer"
         className="absolute right-3 top-3 rounded-full bg-black/70 px-3 py-2 text-[0.8rem] font-medium text-white no-underline backdrop-blur hover:bg-black/80"
       >
         Open in new tab
-      </Link>
+      </Link> */}
     </div>
   );
 }

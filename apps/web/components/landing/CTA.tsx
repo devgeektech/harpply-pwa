@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FadeIn } from "./FadeIn";
+import { useRouter } from "next/navigation";
 
 type CTAProps = {
   onOpenModal: () => void;
@@ -76,6 +77,8 @@ const btnOutlineStyle: React.CSSProperties = {
 };
 
 export function CTA({ onOpenModal }: CTAProps) {
+  const router = useRouter();
+
   return (
     <section
       className="relative overflow-hidden"
@@ -116,9 +119,9 @@ export function CTA({ onOpenModal }: CTAProps) {
           <FadeIn>
             <button
               type="button"
-              onClick={onOpenModal}
               className="cursor-pointer no-underline transition-all duration-200 hover:opacity-90 hover:-translate-y-0.5"
               style={btnPrimaryStyle}
+              onClick={() => router.push("/auth/signupemail")}
             >
               Create a Free Profile
             </button>

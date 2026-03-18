@@ -104,7 +104,7 @@ export function Footer() {
               Contact
             </Link>
             <Link
-              href="#"
+              href="#"  // help-desk-ticket,
               className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
             >
               Help Desk Ticket
@@ -123,7 +123,7 @@ export function Footer() {
               Terms and Conditions
             </Link>
             <Link
-              href="https://app.termly.io/policy-viewer/policy.html?policyUUID=907a765b-ecbd-42f8-8270-fdc29aa73491"
+              href="/privacy-policy"
               target="_blank"
               rel="noopener noreferrer"
               className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
@@ -131,7 +131,7 @@ export function Footer() {
               Privacy Policy
             </Link>
             <Link
-              href="https://app.termly.io/policy-viewer/policy.html?policyUUID=9d357e10-c829-4d48-b795-ac504dc32250"
+              href="/disclaimer"
               target="_blank"
               rel="noopener noreferrer"
               className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
@@ -139,7 +139,7 @@ export function Footer() {
               Disclaimer
             </Link>
             <Link
-              href="https://app.termly.io/policy-viewer/policy.html?policyUUID=d6998107-6366-425a-829d-dd7a596ba0c3"
+              href="/cookie-policy"
               target="_blank"
               rel="noopener noreferrer"
               className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
@@ -147,7 +147,7 @@ export function Footer() {
               Cookie Policy
             </Link>
             <Link
-              href="https://app.termly.io/policy-viewer/policy.html?policyUUID=e5689572-5aaa-472c-9ad3-197e3c7709c0"
+              href="/acceptable-use-policy"
               target="_blank"
               rel="noopener noreferrer"
               className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
