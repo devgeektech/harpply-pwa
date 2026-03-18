@@ -19,10 +19,13 @@ export class BrevoEmailService {
     this.senderName =
       this.config.get<string>('BREVO_SENDER_NAME') ?? 'Harpply';
     // Link in email must point to the frontend verify-email page (e.g. https://app.harpply.com or http://localhost:3000)
+    // this.verifyBaseUrl =
+    //   this.config.get<string>('FRONTEND_APP_URL') ??
+    //   this.config.get<string>('VERIFY_EMAIL_LINK_BASE') ??
+    //   this.config.get<string>('BREVO_VERIFY_BASE_URL') ??
+    //   'http://localhost:3000';
     this.verifyBaseUrl =
       this.config.get<string>('FRONTEND_APP_URL') ??
-      this.config.get<string>('VERIFY_EMAIL_LINK_BASE') ??
-      this.config.get<string>('BREVO_VERIFY_BASE_URL') ??
       'http://localhost:3000';
     this.appName = this.config.get<string>('APP_NAME') ?? 'Harpply';
 
