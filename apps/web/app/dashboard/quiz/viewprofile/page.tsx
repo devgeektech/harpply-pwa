@@ -134,7 +134,7 @@ export default function ViewProfilePage() {
         </Link>
       </div>
 
-      {/* Profile image swiper */}
+      {/* Profile image swiper */} 
       <div className="pb-4 overflow-hidden">
         <Swiper
           onSwiper={onSwiper}
