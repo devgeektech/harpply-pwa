@@ -40,7 +40,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         }
       }
       const onboardingCompleted = result?.data?.user?.onboardingCompleted ?? false;
-      return onboardingCompleted ? "/" : "/auth/onboarding/identity";
+      return onboardingCompleted ? "/profile/identity" : "/auth/onboarding/identity";
     } finally {
       set({ loading: false });
     }

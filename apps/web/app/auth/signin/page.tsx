@@ -6,6 +6,7 @@ import { useAuthStore } from "store/useAuthStoreLogin";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { AuthError } from "@/lib/api/auth";
 
 export default function Signin() {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,6 +19,12 @@ export default function Signin() {
       const redirectTo = await login();
       router.push(redirectTo);
     } catch (err) {
+      if (err instanceof AuthError && err.code === "COMPLETE_SIGNUP") {
+        router.push(
+          `/auth/createpassword?email=${encodeURIComponent(email.trim() || "")}`
+        );
+        return;
+      }
       setError(err instanceof Error ? err.message : "Sign in failed.");
     }
   };
@@ -86,7 +93,7 @@ export default function Signin() {
                     Signing in...
                   </span>
                 ) : (
-                  "Sign In"
+                  "Sign In" 
                 )}
               </Button>
             </form>

@@ -5,8 +5,10 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   Res,
   UseGuards,
+  Param,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
@@ -17,6 +19,7 @@ import { SignInDto } from './dto/sign-in.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ResendVerificationDto } from './dto/resend-verification.dto';
 import { IdentityDto } from './dto/identity.dto';
 import { LocationDto } from './dto/location.dto';
 import { StoryDto } from './dto/story.dto';
@@ -28,6 +31,7 @@ import { CurrentUserId, CurrentUser } from './decorators/current-user.decorator'
 import { AllowEmptyBody } from '../../common/decorators/allow-empty-body.decorator';
 import { ACCESS_TOKEN_COOKIE, accessTokenCookieOptions } from './auth-cookie.constants';
 import * as Express from 'express';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -35,12 +39,21 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly onboardingService: OnboardingService,
-  ) { }
+    private readonly config: ConfigService,
+  ) {}
+
 
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
   async registerEmail(@Body() dto: RegisterEmailDto) {
     return this.authService.registerEmail(dto);
+  }
+
+  @Post('resend-verification')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Resend verification email for the given email' })
+  async resendVerification(@Body() dto: ResendVerificationDto) {
+    return this.authService.resendVerificationEmail(dto.email);
   }
 
   @Post('set-password')
@@ -99,6 +112,60 @@ export class AuthController {
   @Post('reset-password')
   async resetPassword(@Body() dto: ResetPasswordDto) {
     return this.authService.resetPassword(dto);
+  }
+
+  @Get('verify-email')
+  @ApiOperation({
+    summary:
+      'Verify email from link in email (query token); redirects to set-password page',
+  })
+  async verifyEmailFromLink(
+    @Query('token') token: string,
+    @Res() res: Express.Response,
+  ) {
+    const setPasswordUrl =
+      this.config.get<string>('FRONTEND_SET_PASSWORD_URL') ??
+      'https://app.harpply.com/auth/set-password';
+    try {
+      await this.authService.verifyEmailByToken(token);
+      return res.redirect(302, setPasswordUrl);
+    } catch {
+      return res.redirect(302, `${setPasswordUrl}?error=invalid_token`);
+    }
+  }
+
+  @Get('verify-email/:token')
+  @ApiOperation({ summary: 'Verify email (path token); returns JSON' })
+  async verifyEmail(@Param('token') token: string) {
+    return this.authService.verifyEmailByToken(token);
+  }
+
+  @Get('verify-reset')
+  @ApiOperation({
+    summary: 'Validate reset token from email link; redirects to frontend set-password page',
+  })
+  async verifyResetFromLink(
+    @Query('token') token: string,
+    @Res() res: Express.Response,
+  ) {
+    const resetPasswordUrl =
+      this.config.get<string>('FRONTEND_RESET_PASSWORD_URL') ??
+      this.config.get<string>('FRONTEND_APP_URL') ??
+      'https://app.harpply.com';
+    const setPasswordResetPath = '/auth/set-password-reset';
+    const fullUrl = resetPasswordUrl.replace(/\/$/, '') + setPasswordResetPath;
+    try {
+      await this.authService.validateResetToken(token);
+      return res.redirect(302, `${fullUrl}?token=${encodeURIComponent(token)}`);
+    } catch {
+      return res.redirect(302, `${fullUrl}?error=invalid_token`);
+    }
+  }
+
+  @Get('validate-reset-token/:token')
+  @ApiOperation({ summary: 'Validate reset token; returns email for pre-fill (JSON)' })
+  async validateResetToken(@Param('token') token: string) {
+    return this.authService.validateResetToken(token);
   }
 
   @Post('onboarding/identity')

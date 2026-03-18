@@ -10,15 +10,16 @@ import {
   UnauthorizedException,
 } from '../../common/exceptions';
 import { ERROR_MESSAGES } from '../../common/constants/error-messages';
-import { encodeEmail, decodeEmail } from '../../common/utils/email-encode';
+import { encodeEmail, decodeEmail, decodeEmailSafe } from '../../common/utils/email-encode';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { randomBytes, randomUUID } from 'crypto';
+import { randomUUID } from 'crypto';
 import type { Prisma } from '@prisma/client';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SUCCESS_MESSAGES } from '../../common/constants/success-messages';
 import { successResponse } from '../../common/response/api-response';
 import { OnboardingService } from './onboarding.service';
+import { BrevoEmailService } from '../../common/email/brevo-email.service';
 
 @Injectable()
 export class AuthService {
@@ -26,30 +27,97 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly onboardingService: OnboardingService,
+    private readonly brevoEmailService: BrevoEmailService,
   ) { }
 
   /** Step 1: Register email only. User must call set-password to complete signup. */
   async registerEmail(dto: RegisterEmailDto) {
     const emailEncoded = encodeEmail(dto.email);
-
     const existingUser = await this.prisma.user.findUnique({
       where: { email: emailEncoded },
+      select: { email: true, password: true, emailVerified: true },
     });
-
+    const emailVerificationToken = randomUUID();
     if (existingUser) {
-      throw new ConflictException(ERROR_MESSAGES.AUTH.EMAIL_ALREADY_EXISTS);
+      if (existingUser.emailVerified && existingUser.password == null) {
+        return successResponse(
+          SUCCESS_MESSAGES.AUTH.COMPLETE_SIGNUP_SET_PASSWORD,
+          {
+            statusCode: 200,
+            data: { email: dto.email, requiresPassword: true },
+          },
+        );
+      }
+      if (existingUser.password != null) {
+        throw new ConflictException(ERROR_MESSAGES.AUTH.EMAIL_ALREADY_EXISTS);
+      }
+
+      if (existingUser && existingUser.emailVerified && existingUser.password) {
+        throw new ConflictException(
+          ERROR_MESSAGES.AUTH.EMAIL_REGISTERED_VERIFY_FIRST,
+        );
+      }
+    } else {
+      await this.prisma.user.create({
+        data: {
+          email: emailEncoded,
+          password: null,
+          emailVerified: false,
+          emailVerificationToken,
+        },
+      });
     }
 
-    await this.prisma.user.create({
-      data: {
-        email: emailEncoded,
-        password: null,
-      },
-    });
+    // Fire-and-forget verification email; do not block signup on failures.
+    this.brevoEmailService
+      .sendEmailVerificationLink(dto.email, emailVerificationToken)
+      .catch(() => undefined);
 
     return successResponse(SUCCESS_MESSAGES.AUTH.EMAIL_REGISTERED, {
       statusCode: 201,
       data: { email: dto.email },
+    });
+  }
+
+  /** Resend verification email. Does not reveal whether email exists (always 200 with generic/specific message). */
+  async resendVerificationEmail(email: string) {
+    const emailEncoded = encodeEmail(email);
+    const user = await this.prisma.user.findUnique({
+      where: { email: emailEncoded },
+      select: {
+        emailVerified: true,
+        password: true,
+        emailVerificationToken: true,
+      },
+    });
+
+    if (!user) {
+      return successResponse(SUCCESS_MESSAGES.AUTH.VERIFICATION_EMAIL_SENT, {
+        data: { email },
+      });
+    }
+
+    if (user.emailVerified) {
+      return successResponse(SUCCESS_MESSAGES.AUTH.EMAIL_ALREADY_VERIFIED, {
+        data: {
+          email,
+          requiresPassword: user.password == null,
+        },
+      });
+    }
+
+    const newToken = randomUUID();
+    await this.prisma.user.update({
+      where: { email: emailEncoded },
+      data: { emailVerificationToken: newToken },
+    });
+
+    this.brevoEmailService
+      .sendEmailVerificationLink(email, newToken)
+      .catch(() => undefined);
+
+    return successResponse(SUCCESS_MESSAGES.AUTH.VERIFICATION_EMAIL_SENT, {
+      data: { email },
     });
   }
 
@@ -64,7 +132,14 @@ export class AuthService {
     const emailEncoded = encodeEmail(email);
     const user = await this.prisma.user.findUnique({
       where: { email: emailEncoded },
-      select: { id: true, email: true, password: true, createdAt: true, onboardingCompleted: true },
+      select: {
+        id: true,
+        email: true,
+        password: true,
+        createdAt: true,
+        onboardingCompleted: true,
+        emailVerified: true,
+      },
     });
 
     if (!user || user.password != null) {
@@ -107,7 +182,14 @@ export class AuthService {
     const emailEncoded = encodeEmail(dto.email);
     const user = await this.prisma.user.findUnique({
       where: { email: emailEncoded },
-      select: { id: true, email: true, password: true, createdAt: true, onboardingCompleted: true },
+      select: {
+        id: true,
+        email: true,
+        password: true,
+        createdAt: true,
+        onboardingCompleted: true,
+        emailVerified: true,
+      },
     });
 
     if (!user) {
@@ -117,7 +199,13 @@ export class AuthService {
     }
 
     if (user.password == null) {
-      throw new UnauthorizedException(ERROR_MESSAGES.AUTH.COMPLETE_SIGNUP);
+      throw new UnauthorizedException(
+        ERROR_MESSAGES.AUTH.COMPLETE_SIGNUP
+      );
+    }
+
+    if (!user.emailVerified) {
+      throw new UnauthorizedException(ERROR_MESSAGES.AUTH.EMAIL_NOT_VERIFIED);
     }
 
     const isPasswordValid = await bcrypt.compare(
@@ -167,38 +255,45 @@ export class AuthService {
     return successResponse(SUCCESS_MESSAGES.AUTH.LOGOUT_SUCCESS);
   }
 
+  /** Forgot password: send verification email with link to set new password (same process as signup). */
   async forgotPassword(dto: ForgotPasswordDto) {
     const emailEncoded = encodeEmail(dto.email);
     const user = await this.prisma.user.findUnique({
       where: { email: emailEncoded },
+      select: { id: true, password: true },
     });
 
     if (!user) {
-      return successResponse(ERROR_MESSAGES.AUTH.USER_NOT_FOUND, {
-        data: {},
+      return successResponse(SUCCESS_MESSAGES.AUTH.FORGOT_PASSWORD_GENERIC, {
+        data: { email: dto.email },
       });
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    if (user.password == null) {
+      return successResponse(SUCCESS_MESSAGES.AUTH.FORGOT_PASSWORD_GENERIC, {
+        data: { email: dto.email },
+      });
+    }
 
-    // Create secure reset token
-    const resetToken = randomBytes(32).toString('hex');
+    const resetToken = randomUUID();
+    const resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
     await this.prisma.user.update({
       where: { email: emailEncoded },
       data: {
-        resetOtp: otp,
-        resetOtpExpires: new Date(Date.now() + 10 * 60 * 1000), // 10 mins
-        resetToken: resetToken,
-        resetTokenExpires: new Date(Date.now() + 15 * 60 * 1000), // 15 mins
+        resetToken,
+        resetTokenExpires,
+        resetOtp: null,
+        resetOtpExpires: null,
       } as Prisma.UserUpdateInput,
     });
 
-    console.log('OTP:', otp);
-    console.log('Reset Token:', resetToken);
+    this.brevoEmailService
+      .sendPasswordResetLink(dto.email, resetToken)
+      .catch(() => undefined);
 
-    return successResponse(SUCCESS_MESSAGES.AUTH.OTP_SENT, {
-      data: { resetToken, otp },
+    return successResponse(SUCCESS_MESSAGES.AUTH.FORGOT_PASSWORD_GENERIC, {
+      data: { email: dto.email },
     });
   }
 
@@ -220,22 +315,48 @@ export class AuthService {
     return successResponse(SUCCESS_MESSAGES.AUTH.OTP_VERIFIED);
   }
 
+  /** Reset password by token (from email link) or by email (legacy). */
   async resetPassword(dto: ResetPasswordDto) {
     if (dto.password !== dto.confirmPassword) {
       throw new BadRequestException(ERROR_MESSAGES.AUTH.PASSWORD_MISMATCH);
     }
-
-    const emailEncoded = encodeEmail(dto.email);
-    const user = await this.prisma.user.findUnique({
-      where: { email: emailEncoded },
-    });
-
-    if (!user) {
-      throw new BadRequestException(ERROR_MESSAGES.AUTH.USER_NOT_FOUND);
+    if (!dto.token?.trim() && !dto.email?.trim()) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.EMAIL_MISSING);
     }
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
+    if (dto.token?.trim()) {
+      const user = await this.prisma.user.findFirst({
+        where: {
+          resetToken: dto.token,
+          resetTokenExpires: { gt: new Date() },
+        },
+      });
+      if (!user) {
+        throw new BadRequestException(ERROR_MESSAGES.AUTH.TOKEN_INVALID);
+      }
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          password: hashedPassword,
+          token: null,
+          resetToken: null,
+          resetTokenExpires: null,
+          resetOtp: null,
+          resetOtpExpires: null,
+        },
+      });
+      return successResponse(SUCCESS_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS);
+    }
+
+    const emailEncoded = encodeEmail(dto.email!);
+    const user = await this.prisma.user.findUnique({
+      where: { email: emailEncoded },
+    });
+    if (!user) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.USER_NOT_FOUND);
+    }
     await this.prisma.user.update({
       where: { email: emailEncoded },
       data: {
@@ -245,8 +366,46 @@ export class AuthService {
         resetOtpExpires: null,
       },
     });
-
     return successResponse(SUCCESS_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS);
   }
 
+  /** Validate reset token (from email link); returns email for pre-fill. */
+  async validateResetToken(token: string) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        resetToken: token,
+        resetTokenExpires: { gt: new Date() },
+      },
+      select: { email: true },
+    });
+    if (!user) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.TOKEN_INVALID);
+    }
+    return successResponse(SUCCESS_MESSAGES.AUTH.EMAIL_VERIFIED, {
+      data: { email: decodeEmailSafe(user.email) },
+    });
+  }
+
+  /** Mark email as verified when user clicks link from Brevo. */
+  async verifyEmailByToken(token: string) {
+    const user = await this.prisma.user.findFirst({
+      where: { emailVerificationToken: token },
+    });
+
+    if (!user) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.TOKEN_INVALID);
+    }
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerified: true,
+        emailVerificationToken: null,
+      },
+    });
+
+    return successResponse(SUCCESS_MESSAGES.AUTH.EMAIL_VERIFIED, {
+      data: { email: decodeEmailSafe(user.email) },
+    });
+  }
 }

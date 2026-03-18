@@ -48,7 +48,8 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
   submitIdentity: async () => {
     const { name, age, gender } = get();
 
-    const baseUrl = typeof window !== "undefined" ? (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000") : "http://localhost:5000";
+    const { getApiBaseUrl } = await import("@/lib/api/base-url");
+    const baseUrl = getApiBaseUrl();
 
     const res = await fetch(
       `${baseUrl}/auth/onboarding/identity`,
@@ -79,7 +80,8 @@ export const useBioStore = create<BioState>((set, get) => ({
   submitBio: async () => {
     const { bio } = get();
 
-    const baseUrl = typeof window !== "undefined" ? (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000") : "http://localhost:5000";
+    const { getApiBaseUrl } = await import("@/lib/api/base-url");
+    const baseUrl = getApiBaseUrl();
 
     const res = await fetch(
       `${baseUrl}/auth/onboarding/story`,

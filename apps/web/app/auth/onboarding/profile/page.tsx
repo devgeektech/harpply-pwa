@@ -34,9 +34,9 @@ export default function ReviewProfilePage() {
         await completeOnboarding(token);
         window.localStorage.setItem(AUTH_STORAGE_KEYS.ONBOARDING_COMPLETED, "true");
       }
-      router.push("/");
+      router.push("/profile/identity");
     } catch {
-      router.push("/");
+      setSubmitting(false);
     } finally {
       setSubmitting(false);
     }
@@ -46,7 +46,7 @@ export default function ReviewProfilePage() {
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex  sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
       <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
         <CardContent className="flex flex-col md:gap-6 gap-3 sm:p-10 px-3">
-                    {/* Progress */}
+          {/* Progress */}
           <div className="space-y-2 mb-6">
             <p className="text-xs text-white/60">FINAL STEP</p>
             <Progress value={100} className="h-1" />

@@ -1,11 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 
+
+const goldGradientLogo =
+  "bg-gradient-to-br from-[#f3d88a] to-[#c8952a] bg-clip-text text-transparent [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]";
+
 export function Footer() {
   return (
     <footer className="border-t border-[rgba(201,149,42,0.12)] bg-[#0c0520] px-8 pb-10 pt-16">
       <div className="mx-auto max-w-[1180px]">
-        <div className="grid grid-cols-1 gap-12 border-b border-white/10 pb-12 max-[480px]:grid-cols-1 max-[900px]:grid-cols-2 min-[901px]:grid-cols-[2.2fr_1fr_1fr_1fr]">
+        <div className="grid grid-cols-1 gap-10 border-b border-white/[0.06] pb-12 min-[421px]:grid-cols-2 min-[641px]:grid-cols-3 min-[1101px]:grid-cols-[1.6fr_1fr_1fr_1fr_1.3fr]">
           <div>
             <Link
               className="flex items-center gap-1.5 no-underline"
@@ -20,174 +24,147 @@ export function Footer() {
                 priority
               />
             </Link>
-            <p className="mt-4 max-w-[240px] text-[0.84rem] font-light leading-[1.8] text-white/45">
+            <p className="font-[var(--font-inter),'Inter',sans-serif] mt-4 max-w-[240px] text-[0.84rem] font-light leading-[1.8] text-white/45">
               Where Christian singles meet. A faith-centred platform committed
-              to meaningful, God-honouring connection across 140 countries.
+              to meaningful, God-honouring connection.
             </p>
-            <div className="mt-5 flex gap-2.5">
-              <a
-                className="flex h-8 w-8 items-center justify-center rounded border border-white/10 text-[0.7rem] font-semibold text-white/45 no-underline transition-all duration-200 hover:border-[#c8952a] hover:text-[#e6b645]"
-                href="#"
-                aria-label="Instagram"
-              >
-                In
-              </a>
-              <a
-                className="flex h-8 w-8 items-center justify-center rounded border border-white/10 text-[0.7rem] font-semibold text-white/45 no-underline transition-all duration-200 hover:border-[#c8952a] hover:text-[#e6b645]"
-                href="#"
-                aria-label="X"
-              >
-                X
-              </a>
-              <a
-                className="flex h-8 w-8 items-center justify-center rounded border border-white/10 text-[0.7rem] font-semibold text-white/45 no-underline transition-all duration-200 hover:border-[#c8952a] hover:text-[#e6b645]"
-                href="#"
-                aria-label="Facebook"
-              >
-                Fb
-              </a>
-              <a
-                className="flex h-8 w-8 items-center justify-center rounded border border-white/10 text-[0.7rem] font-semibold text-white/45 no-underline transition-all duration-200 hover:border-[#c8952a] hover:text-[#e6b645]"
-                href="#"
-                aria-label="YouTube"
-              >
-                Yt
-              </a>
-            </div>
           </div>
-          <div>
-            <span className="mb-5 block text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-white/45">
+          <div className="flex flex-col items-start">
+            <span className="font-[var(--font-inter),'Inter',sans-serif] mb-[1.2rem] block text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-white/45">
               Platform
             </span>
             <Link
               href="#how"
-              className="mb-2.5 block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
+              className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
             >
               How It Works
             </Link>
             <Link
-              href="#why"
-              className="mb-2.5 block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
-            >
-              Features
-            </Link>
-            <Link
               href="#"
-              className="mb-2.5 block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
+              className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
             >
-              Pricing{" "}
-              <span className="ml-1.5 inline-block rounded border border-[rgba(201,149,42,0.4)] px-1.5 py-0.5 align-middle text-[0.58rem] font-semibold uppercase tracking-[0.08em] text-[#c8952a]">
-                Soon
-              </span>
+              Pricing
             </Link>
           </div>
-          <div>
-            <span className="mb-5 block text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-white/45">
+          <div className="flex flex-col items-start">
+            <span className="font-[var(--font-inter),'Inter',sans-serif] mb-[1.2rem] block text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-white/45">
               Community
             </span>
             <Link
-              href="#stories"
-              className="mb-2.5 block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
+              href="#"
+              className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block whitespace-nowrap text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
             >
-              Testimonials
-            </Link>
-            <Link
-              href="#community"
-              className="mb-2.5 block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
-            >
-              Devotionals
-            </Link>
-            <Link
-              href="#community"
-              className="mb-2.5 block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
-            >
-              Prayer Circles
+              Newsletter
             </Link>
             <Link
               href="#"
-              className="mb-2.5 block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block whitespace-nowrap text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
             >
-              Blog{" "}
-              <span className="ml-1.5 inline-block rounded border border-[rgba(201,149,42,0.4)] px-1.5 py-0.5 align-middle text-[0.58rem] font-semibold uppercase tracking-[0.08em] text-[#c8952a]">
-                Soon
-              </span>
+              Instagram
             </Link>
             <Link
               href="#"
-              className="mb-2.5 block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block whitespace-nowrap text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
             >
-              Newsletter{" "}
-              <span className="ml-1.5 inline-block rounded border border-[rgba(201,149,42,0.4)] px-1.5 py-0.5 align-middle text-[0.58rem] font-semibold uppercase tracking-[0.08em] text-[#c8952a]">
-                Soon
-              </span>
+              TikTok
+            </Link>
+            <Link
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block whitespace-nowrap text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
+            >
+              Facebook
             </Link>
           </div>
-          <div>
-            <span className="mb-5 block text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-white/45">
+          <div className="flex flex-col items-start">
+            <span className="font-[var(--font-inter),'Inter',sans-serif] mb-[1.2rem] block text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-white/45">
               Company
             </span>
             <Link
               href="#"
-              className="mb-2.5 block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
+              className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
             >
-              About Us{" "}
-              <span className="ml-1.5 inline-block rounded border border-[rgba(201,149,42,0.4)] px-1.5 py-0.5 align-middle text-[0.58rem] font-semibold uppercase tracking-[0.08em] text-[#c8952a]">
-                Soon
-              </span>
+              About Us
             </Link>
             <Link
               href="#"
-              className="mb-2.5 block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
+              className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
             >
-              Our Mission{" "}
-              <span className="ml-1.5 inline-block rounded border border-[rgba(201,149,42,0.4)] px-1.5 py-0.5 align-middle text-[0.58rem] font-semibold uppercase tracking-[0.08em] text-[#c8952a]">
-                Soon
-              </span>
+              Our Mission
             </Link>
             <Link
               href="#"
-              className="mb-2.5 block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
+              className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
             >
-              Safety Centre{" "}
-              <span className="ml-1.5 inline-block rounded border border-[rgba(201,149,42,0.4)] px-1.5 py-0.5 align-middle text-[0.58rem] font-semibold uppercase tracking-[0.08em] text-[#c8952a]">
-                Soon
-              </span>
+              Contact
+            </Link>
+            <Link
+              href="#"  // help-desk-ticket,
+              className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
+            >
+              Help Desk Ticket
+            </Link>
+          </div>
+          <div className="flex flex-col items-start">
+            <span className="font-[var(--font-inter),'Inter',sans-serif] mb-[1.2rem] block text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-white/45">
+              Policies
+            </span>
+            <Link
+              href="/terms-and-conditions"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
+            >
+              Terms and Conditions
+            </Link>
+            <Link
+              href="/privacy-policy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
+            >
+              Privacy Policy
+            </Link>
+            <Link
+              href="/disclaimer"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
+            >
+              Disclaimer
+            </Link>
+            <Link
+              href="/cookie-policy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
+            >
+              Cookie Policy
+            </Link>
+            <Link
+              href="/acceptable-use-policy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
+            >
+              Acceptable Use Policy
             </Link>
             <Link
               href="#"
-              className="mb-2.5 block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
+              className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
             >
-              Privacy Policy{" "}
-              <span className="ml-1.5 inline-block rounded border border-[rgba(201,149,42,0.4)] px-1.5 py-0.5 align-middle text-[0.58rem] font-semibold uppercase tracking-[0.08em] text-[#c8952a]">
-                Soon
-              </span>
-            </Link>
-            <Link
-              href="#"
-              className="mb-2.5 block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
-            >
-              Terms of Service{" "}
-              <span className="ml-1.5 inline-block rounded border border-[rgba(201,149,42,0.4)] px-1.5 py-0.5 align-middle text-[0.58rem] font-semibold uppercase tracking-[0.08em] text-[#c8952a]">
-                Soon
-              </span>
-            </Link>
-            <Link
-              href="#"
-              className="mb-2.5 block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
-            >
-              Contact{" "}
-              <span className="ml-1.5 inline-block rounded border border-[rgba(201,149,42,0.4)] px-1.5 py-0.5 align-middle text-[0.58rem] font-semibold uppercase tracking-[0.08em] text-[#c8952a]">
-                Soon
-              </span>
+              Online Dating Safety Policy
             </Link>
           </div>
         </div>
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-          <p className="text-[0.76rem] font-light text-white/45">
-            &copy; {new Date().getFullYear()} Harpply Inc. All rights reserved.
-          </p>
-          <p className="font-[var(--font-cormorant),'Cormorant_Garamond',serif] text-[0.88rem] italic text-[#c8952a]">
-            &quot;He who finds a wife finds a good thing.&quot; — Proverbs 18:22
+          <p className="font-[var(--font-inter),'Inter',sans-serif] text-[0.76rem] font-light text-white/45">
+            &copy; 2026 Harpply LLC. All rights reserved.
           </p>
         </div>
       </div>

@@ -22,7 +22,7 @@ export default function RegistrationSuccess() {
       router.push("/auth/onboarding/identity");
       return;
     }
-    router.push("/");
+    router.push("/profile/identity");
   };
 
   return (

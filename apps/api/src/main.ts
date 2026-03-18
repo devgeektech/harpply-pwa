@@ -10,6 +10,7 @@ async function bootstrap() {
       process.env.CORS_ORIGIN?.split(',').map((o) => o.trim()) ?? [
         'http://localhost:3000',
         'http://127.0.0.1:3000',
+        'https://harpply.com'
       ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

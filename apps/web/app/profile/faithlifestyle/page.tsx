@@ -1,14 +1,17 @@
 "use client"
 
-
-
+import { useState } from "react"
 import { Church, Calendar, RefreshCcw, Home } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 import { useFaithStore } from "@/store/useFaithStore"
 import { Button, Card, CardContent, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@repo/ui"
 import AttendanceCard from "@/components/common/attendance-card"
 import Link from "next/link"
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react"
+import { updateFaithLifestyleProfile } from "@/lib/api/profile"
+
 export default function FaithLifestylePage() {
   const {
     denomination,
@@ -20,6 +23,28 @@ export default function FaithLifestylePage() {
     setChurchInvolvement,
     setAttendance,
   } = useFaithStore()
+  const router = useRouter()
+  const [saving, setSaving] = useState(false)
+
+  const handleSave = async () => {
+    if (saving) return
+    setSaving(true)
+    try {
+      await updateFaithLifestyleProfile({
+        denomination,
+        yearsInFaith: yearsInFaith ? Number(yearsInFaith) : undefined,
+        churchInvolvement,
+        churchAttendance: attendance,
+      })
+      toast.success("Faith & lifestyle updated successfully.")
+      router.push("/profile/identity")
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to update faith & lifestyle. Please try again."
+      toast.error(message)
+    } finally {
+      setSaving(false)
+    }
+  }
 
   return (
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex  sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
@@ -150,8 +175,10 @@ export default function FaithLifestylePage() {
         {/* Next Button */}
 
         <Button
+          onClick={handleSave}
+          disabled={saving}
           className="cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60">
-          Next
+          {saving ? "Saving..." : "Save Changes"}
         </Button>
 
       </CardContent>

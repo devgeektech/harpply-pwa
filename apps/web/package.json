@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@repo/ui": "workspace:*",
+    "sonner": "^2.0.7",
     "final-form": "^5.0.0",
     "lucide-react": "^0.468.0",
     "swiper": "^11.1.14",

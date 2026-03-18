@@ -10,7 +10,13 @@ export const SUCCESS_MESSAGES = {
     OTP_VERIFIED: 'OTP verified successfully.',
     PASSWORD_RESET_SUCCESS: 'Password updated successfully.',
     FORGOT_PASSWORD_GENERIC:
-      'If this email exists, an OTP has been sent.',
+      'If an account exists with this email, we sent a link to set a new password. Please check your inbox.',
+    EMAIL_VERIFIED: 'Email verified successfully.',
+    COMPLETE_SIGNUP_SET_PASSWORD:
+      'Your email is already verified. Please set your password to complete signup.',
+    VERIFICATION_EMAIL_SENT:
+      'Verification link sent. Please check your email.',
+    EMAIL_ALREADY_VERIFIED: 'This email is already verified.',
   },
   ONBOARDING: {
     IDENTITY_SAVED:'Identity saved successfully.',
