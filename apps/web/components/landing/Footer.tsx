@@ -115,31 +115,41 @@ export function Footer() {
               Policies
             </span>
             <Link
-              href="#"
+              href="/terms-and-conditions"
+              target="_blank"
+              rel="noopener noreferrer"
               className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
             >
               Terms and Conditions
             </Link>
             <Link
-              href="#"
+              href="https://app.termly.io/policy-viewer/policy.html?policyUUID=907a765b-ecbd-42f8-8270-fdc29aa73491"
+              target="_blank"
+              rel="noopener noreferrer"
               className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
             >
               Privacy Policy
             </Link>
             <Link
-              href="#"
+              href="https://app.termly.io/policy-viewer/policy.html?policyUUID=9d357e10-c829-4d48-b795-ac504dc32250"
+              target="_blank"
+              rel="noopener noreferrer"
               className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
             >
               Disclaimer
             </Link>
             <Link
-              href="#"
+              href="https://app.termly.io/policy-viewer/policy.html?policyUUID=d6998107-6366-425a-829d-dd7a596ba0c3"
+              target="_blank"
+              rel="noopener noreferrer"
               className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
             >
               Cookie Policy
             </Link>
             <Link
-              href="#"
+              href="https://app.termly.io/policy-viewer/policy.html?policyUUID=e5689572-5aaa-472c-9ad3-197e3c7709c0"
+              target="_blank"
+              rel="noopener noreferrer"
               className="font-[var(--font-inter),'Inter',sans-serif] mb-[0.6rem] block text-[0.84rem] font-light text-white/75 no-underline transition-colors duration-200 hover:text-white"
             >
               Acceptable Use Policy
