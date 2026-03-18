@@ -37,7 +37,8 @@ export const useIdentityStore = create<IdentityState>((set) => ({
   profileImages: [
     "/images/slider/slide.jpg",
     "/images/slider/slide.jpg",
-    "/images/slider/slide.jpg",
+    "/images/slider/screen_1.jpg",
+    "/images/slider/screen_2.jpg",
   ],
   activeSlideIndex: 0,
   aboutMe:

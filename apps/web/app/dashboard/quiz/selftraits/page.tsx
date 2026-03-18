@@ -1,62 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { useOnboardingStore } from "@/store/onboardingStore";
-import { Button, Card, CardContent, Input, Progress } from "@repo/ui";
+import { Button, Card, CardContent, Progress } from "@repo/ui";
 import Link from "next/link";
 import { ChevronLeft, Check } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 
 
 
 const options = [
-  "Catholic",
-  "Baptist",
-  "Methodist",
-  "Pentecostal",
-  "Evangelical",
-  "Non-Denominational",
-  "Seventh-day Adventist",
-  "Reformed",
-  "Anglican",
-  "Other",
-]
+  "Stand boldly and confront it",
+  "Pray and wait patiently",
+  "Seek wise counsel",
+  "Lead others through it",
+] as const;
 
-export default function Denomination() {
+export default function SelfTraits() {
 
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-
-  const {
-    name,
-    age,
-    gender,
-    setName,
-    setAge,
-    setGender,
-    submitIdentity,
-  } = useOnboardingStore();
-
-  const handleSubmit = async () => {
-    try {
-      setLoading(true);
-
-      await submitIdentity();
-
-      router.push("/auth/onboarding/location"); // next step
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-  const [selected, setSelected] = useState<string>("Catholic")
+  const [selected, setSelected] = useState<string>("Stand boldly and confront it")
 
   return (
     <div className="flex sm:items-center items-start justify-center sm:px-4 px-0 pb-[50px] md:py-[50px] sm:py-4 w-full">
       <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
-        <CardContent className="flex items-center flex-col gap-2 sm:p-10 sm:px-3 px-0 text-left">
+        <CardContent className="flex items-center flex-col gap-2 sm:p-10 sm:px-6 px-0 text-left">
           <div className="text-left text-white w-full">
             <Link href="/">
               <ChevronLeft size={24} />
@@ -64,19 +30,19 @@ export default function Denomination() {
           </div>
           {/* Progress */}
           <div className="mb-6 w-full">
-            <p className="text-sm text-gray-300 mb-2">Step 2 of 10</p>
+            <p className="text-sm text-gray-300 mb-2">Question 2 of 10</p>
             <Progress value={20} />
           </div>
 
           {/* Title */}
           <h1 className="text-[24px] font-light font-serif text-white mb-2 w-full">
-          Choose your denomination
+          When facing adversity you tend to:
           </h1>
 
 
                   {/* Options */}
         <div className="space-y-4 w-full">
-          {options.map((item) => {
+          {options.map((item: string) => {
             const active = selected === item
 
             return (
@@ -110,10 +76,10 @@ export default function Denomination() {
 
           {/* Continue Button */}
           <Button
-            onClick={handleSubmit}
+
             className="cursor-pointer mt-[1rem] w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold hover:opacity-90 transition"
           >
-            {loading ? "Submitting..." : "Continue"}
+            Continue
           </Button>
           <p className="text-white max-w-[300px] text-center mx-auto text-sm font-light w-full">Your answer are reflective of your current spiritual journey.</p>
         </CardContent>

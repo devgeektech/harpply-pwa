@@ -14,7 +14,7 @@ export default function Header() {
         <Image src="/images/logoblack.png" className="min-w-[93px] min-h-[30px] object-contain" alt="logo" width={93} height={30} />
       </Link>
       {/* Search */}
-      <div className="flex items-center gap-2 w-full relative">
+      <div className="hidden sm:flex items-center gap-2 w-full relative">
         <Button className="absolute left-2 top-1/2 -translate-y-1/2 bg-transparent border-none px-2">
         <Search className="text-gray-400" size={18} />
         </Button>
@@ -25,7 +25,7 @@ export default function Header() {
       </div>
 
       {/* Profile */}
-      <div className="flex items-center gap-3 ms-3">
+      <div className="items-center gap-3 ms-3 flex">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className=" border-none relative bg-[#F5F3ED] p-2 rounded-full h-[50px] w-[50px] cursor-pointer">
