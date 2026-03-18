@@ -22,10 +22,10 @@ export class BrevoEmailService {
     // On live server: set FRONTEND_APP_URL to your live frontend (e.g. https://harpply.com).
     const frontendUrl = this.config.get<string>('FRONTEND_APP_URL');
     const isProduction = this.config.get<string>('NODE_ENV') === 'production';
-    // this.verifyBaseUrl =
-    //   frontendUrl ??
-    //   (isProduction ? 'https://harpply.com' : 'http://localhost:3000');
-    this.verifyBaseUrl = 'https://harpply.com';
+    this.verifyBaseUrl =
+      frontendUrl ??
+      (isProduction ? 'https://harpply.com' : 'http://localhost:3000');
+    // this.verifyBaseUrl = 'https://harpply.com';
     this.appName = this.config.get<string>('APP_NAME') ?? 'Harpply';
 
     if (apiKey?.trim()) {
