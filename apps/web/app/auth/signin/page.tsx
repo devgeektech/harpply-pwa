@@ -65,13 +65,6 @@ export default function Signin() {
                     : "Google sign-in failed. Please try again.")}
               </p>
             )}
-            <Button
-              type="button"
-              onClick={handleGoogleLogin}
-              className="cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-white text-[#1A1A1A] hover:bg-gray-200"
-            >
-              Continue with Google
-            </Button>
             <form className="space-y-5 md:my-[50px] w-full" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
               {error && (
                 <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">
