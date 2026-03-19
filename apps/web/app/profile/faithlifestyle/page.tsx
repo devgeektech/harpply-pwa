@@ -124,7 +124,7 @@ export default function FaithLifestylePage() {
         churchAttendance: attendance || undefined,
       })
       toast.success("Faith & lifestyle updated successfully.")
-      router.push("/profile/identity")
+      router.push("/profile/faithvalues")
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to update faith & lifestyle. Please try again."
       toast.error(message)

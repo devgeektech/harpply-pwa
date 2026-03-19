@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { ProfileData } from "@/lib/api/profile";
+import { formatFaithValuesForDisplay } from "@/data/myFaithValues";
 
 export type Gender = "Male" | "Female" | "Other";
 
@@ -65,8 +66,8 @@ export const useProfileStore = create<ProfileState>((set) => ({
       denomination: data.denomination ?? "",
       yearsInFaith: data.yearsInFaith ?? null,
       churchAttendance: data.churchAttendance ?? "",
-      myFaithValues: data.myFaithValues ?? "",
-      partnerValues: data.partnerValues ?? "",
+      myFaithValues: formatFaithValuesForDisplay(data.myFaithValues),
+      partnerValues: formatFaithValuesForDisplay(data.partnerValues),
       interests: data.interests ?? [],
       smokingPreference: data.smokingPreference ?? "",
       alcoholPreference: data.alcoholPreference ?? "",

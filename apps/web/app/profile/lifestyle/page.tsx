@@ -1,126 +1,226 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react";
+import { ChevronLeft } from "lucide-react";
+import {
+  Button,
+  Card,
+  CardContent,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@repo/ui";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import {
+  ALCOHOL_OPTIONS,
+  DIETARY_PREFERENCE_OPTIONS,
+  SMOKING_OPTIONS,
+  type AlcoholOption,
+  type DietaryPreferenceValue,
+  type SmokingOption,
+} from "@/lib/constants";
+import { fetchProfile, updateLifestyleProfile } from "@/lib/api/profile";
+import { useProfileStore } from "@/store/profileStore";
 
-import { ChevronLeft } from "lucide-react"
-import { Button, Card, CardContent, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@repo/ui"
-import Link from "next/link"
+function smokingFromApi(raw: string | null | undefined): SmokingOption {
+  if (!raw?.trim()) return SMOKING_OPTIONS[0];
+  const m = SMOKING_OPTIONS.find(
+    (o) => o.toLowerCase() === raw.trim().toLowerCase()
+  );
+  return m ?? SMOKING_OPTIONS[0];
+}
+
+function alcoholFromApi(raw: string | null | undefined): AlcoholOption {
+  if (!raw?.trim()) return ALCOHOL_OPTIONS[0];
+  const m = ALCOHOL_OPTIONS.find(
+    (o) => o.toLowerCase() === raw.trim().toLowerCase()
+  );
+  return m ?? ALCOHOL_OPTIONS[0];
+}
+
+function dietaryValueFromApi(raw: string | null | undefined): DietaryPreferenceValue {
+  if (!raw?.trim()) return DIETARY_PREFERENCE_OPTIONS[0].value;
+  const trimmed = raw.trim();
+  const byValue = DIETARY_PREFERENCE_OPTIONS.find((o) => o.value === trimmed);
+  if (byValue) return byValue.value;
+  const byLabel = DIETARY_PREFERENCE_OPTIONS.find((o) => o.label === trimmed);
+  if (byLabel) return byLabel.value;
+  return DIETARY_PREFERENCE_OPTIONS[0].value;
+}
 
 export default function LifestylePage() {
-  const [smoking, setSmoking] = useState("Never")
-  const [alcohol, setAlcohol] = useState("Socially")
-  const [diet, setDiet] = useState("No specific diet")
+  const hydrateFromApi = useProfileStore((s) => s.hydrateFromApi);
+  const router = useRouter();
+  const [smoking, setSmoking] = useState<SmokingOption>(SMOKING_OPTIONS[0]);
+  const [alcohol, setAlcohol] = useState<AlcoholOption>(ALCOHOL_OPTIONS[0]);
+  const [diet, setDiet] = useState<DietaryPreferenceValue>(
+    DIETARY_PREFERENCE_OPTIONS[0].value
+  );
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  const options = ["Never", "Socially", "Regularly"]
+  const applyFromProfile = useCallback((data: {
+    smokingPreference: string | null;
+    alcoholPreference: string | null;
+    dietaryPreference: string | null;
+  }) => {
+    setSmoking(smokingFromApi(data.smokingPreference));
+    setAlcohol(alcoholFromApi(data.alcoholPreference));
+    setDiet(dietaryValueFromApi(data.dietaryPreference));
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    fetchProfile()
+      .then((res) => {
+        if (cancelled || !res?.data) return;
+        hydrateFromApi(res.data);
+        applyFromProfile(res.data);
+      })
+      .catch(() => {
+        toast.error("Could not load lifestyle preferences.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [hydrateFromApi, applyFromProfile]);
+
+  const handleSave = async () => {
+    if (saving) return;
+    setSaving(true);
+    try {
+      await updateLifestyleProfile({
+        smokingPreference: smoking,
+        alcoholPreference: alcohol,
+        dietaryPreference: diet,
+      });
+      const refreshed = await fetchProfile();
+      if (refreshed?.data) hydrateFromApi(refreshed.data);
+      toast.success("Lifestyle updated.");
+      router.push("/profile/identity");
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to save. Please try again.";
+      toast.error(message);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex  sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
       <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
         <CardContent className="flex flex-col md:gap-6 gap-3 sm:p-6 px-3 text-white">
-        <div className="flex items-center px-0 pb-2 w-full">
-        <Link
-          href="/profile"
-          className="flex items-center justify-center size-10 rounded-full text-white/90 hover:bg-white/10 transition-colors"
-          aria-label="Back"
-        >
-          <ChevronLeft className="size-6" />
-        </Link>
-      </div>
+          <div className="flex items-center px-0 pb-2 w-full">
+            <Link
+              href="/profile"
+              className="flex items-center justify-center size-10 rounded-full text-white/90 hover:bg-white/10 transition-colors"
+              aria-label="Back"
+            >
+              <ChevronLeft className="size-6" />
+            </Link>
+          </div>
 
-        {/* Header */}
-        <div className="flex items-center gap-2 ">
-          <h1 className="text-[24px] font-normal font-serif">Lifestyle</h1>
-        </div>
+          <div className="flex items-center gap-2 ">
+            <h1 className="text-[24px] font-normal font-serif">Lifestyle</h1>
+          </div>
 
-        <p className="text-[20px] font-light">Lifestyle Basics</p>
+          <p className="text-[20px] font-light">Lifestyle Basics</p>
 
-        {/* Smoking */}
-        <div className="">
-          <p className="mb-3 sm:text-[20px] text-[16px] font-light">Smoking</p>
-
-          <div className="flex gap-3">
-            {options.map((item) => (
-              <button
-                key={item}
-                onClick={() => setSmoking(item)}
-                className={`cursor-pointer flex-1 sm:h-[52px] h-[36px] rounded-[8px]  text-sm font-medium transition
+          {loading ? (
+            <p className="text-sm text-white/70">Loading…</p>
+          ) : (
+            <>
+              {/* Smoking */}
+              <div className="">
+                <p className="mb-3 sm:text-[20px] text-[16px] font-light">Smoking</p>
+                <div className="flex gap-3">
+                  {SMOKING_OPTIONS.map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => setSmoking(item)}
+                      className={`cursor-pointer flex-1 sm:h-[52px] h-[36px] rounded-[8px]  text-sm font-medium transition
                 ${
                   smoking === item
                     ? "bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01]"
                     : "bg-[#FBFAF9] text-[#1A1A1A]"
                 }`}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-        </div>
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-        {/* Alcohol */}
-        <div className="">
-          <p className="mb-3 sm:text-[20px] text-[16px] font-light">Alcohol</p>
-
-          <div className="flex gap-3">
-            {options.map((item) => (
-              <button
-                key={item}
-                onClick={() => setAlcohol(item)}
-                className={`cursor-pointer flex-1 sm:h-[52px] h-[36px] rounded-[8px] text-sm font-medium transition
+              {/* Alcohol */}
+              <div className="">
+                <p className="mb-3 sm:text-[20px] text-[16px] font-light">Alcohol</p>
+                <div className="flex gap-3">
+                  {ALCOHOL_OPTIONS.map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => setAlcohol(item)}
+                      className={`cursor-pointer flex-1 sm:h-[52px] h-[36px] rounded-[8px] text-sm font-medium transition
                 ${
                   alcohol === item
                     ? "bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01]"
                     : "bg-[#FBFAF9] text-[#1A1A1A]"
                 }`}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-        </div>
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-        {/* Dietary Preferences */}
-        <div className="">
-          <p className="mb-3 sm:text-[20px] text-[16px] font-light">Dietary Preferences</p>
+              {/* Dietary Preferences */}
+              <div className="">
+                <p className="mb-3 sm:text-[20px] text-[16px] font-light">
+                  Dietary Preferences
+                </p>
+                <Select value={diet} onValueChange={(v) => setDiet(v as DietaryPreferenceValue)}>
+                  <SelectTrigger className="w-full bg-[#FBFAF9] !h-[52px] rounded-[8px] text-[#1A1A1A] text-sm">
+                    <SelectValue placeholder="Select diet" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DIETARY_PREFERENCE_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </>
+          )}
 
-          <Select
-            value={diet}
-            onValueChange={(value) => setDiet(value)}
+          <Button
+            type="button"
+            onClick={handleSave}
+            disabled={loading || saving}
+            className="cursor-pointer w-full h-[52px] mb-4 text-[#913C01] font-semibold bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] disabled:opacity-60"
           >
-            <SelectTrigger className="w-full bg-[#FBFAF9] !h-[52px] rounded-[8px] text-[#1A1A1A] text-sm">
-              <SelectValue placeholder="Select diet" />
-            </SelectTrigger>
+            {saving ? "Saving…" : "Save Changes"}
+          </Button>
 
-            <SelectContent>
-              <SelectItem value="No specific diet">
-                No specific diet
-              </SelectItem>
-              <SelectItem value="Vegetarian">
-                Vegetarian
-              </SelectItem>
-              <SelectItem value="Vegan">
-                Vegan
-              </SelectItem>
-              <SelectItem value="Keto">
-                Keto
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Save Button */}
-        <Button
-          className="cursor-pointer w-full h-[52px] mb-4 text-[#913C01] font-semibold bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)]"
-        >
-          Save Changes
-        </Button>
-
-        {/* Cancel */}
-        <button className="cursor-pointer w-full h-[52px] rounded-[12px] md:rounded-[8px] border border-[#913C01] text-[#913C01] font-medium">
-          Cancel
-        </button>
-
-      </CardContent>
+          <Link
+            href="/dashboard"
+            className="cursor-pointer w-full h-[52px] rounded-[12px] md:rounded-[8px] border border-[#913C01] text-[#913C01] font-medium flex items-center justify-center"
+          >
+            Cancel
+          </Link>
+        </CardContent>
       </Card>
     </div>
-  )
+  );
 }

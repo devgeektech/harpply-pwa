@@ -18,8 +18,9 @@ export interface ProfileData {
   churchInvolvement: string | null;
   yearsInFaith: number | null;
   churchAttendance: string | null;
-  myFaithValues: string | null;
-  partnerValues: string | null;
+  /** JSON array of value slugs (or legacy display titles) from API. */
+  myFaithValues: unknown;
+  partnerValues: unknown;
   interests: string[] | null;
   smokingPreference: string | null;
   alcoholPreference: string | null;
@@ -98,5 +99,48 @@ export async function updateFaithLifestyleProfile(
     ...fetchOptions,
   });
   return handleJson<{ message: string }>(res, "Failed to update faith & lifestyle.");
+}
+
+export interface UpdateFaithValuesPayload {
+  myFaithValues?: string[];
+  partnerValues?: string[];
+}
+
+export async function updateFaithValuesProfile(
+  payload: UpdateFaithValuesPayload
+): Promise<{ message: string }> {
+  const token = await getAuthToken();
+  const res = await fetch(`${getBaseUrl()}/profile/faith-values`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(payload),
+    ...fetchOptions,
+  });
+  return handleJson<{ message: string }>(res, "Failed to update faith values.");
+}
+
+export interface UpdateLifestylePayload {
+  smokingPreference?: string;
+  alcoholPreference?: string;
+  dietaryPreference?: string;
+}
+
+export async function updateLifestyleProfile(
+  payload: UpdateLifestylePayload
+): Promise<{ message: string }> {
+  const token = await getAuthToken();
+  const res = await fetch(`${getBaseUrl()}/profile/lifestyle`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(payload),
+    ...fetchOptions,
+  });
+  return handleJson<{ message: string }>(res, "Failed to update lifestyle.");
 }
 

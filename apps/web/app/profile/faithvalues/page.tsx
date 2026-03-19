@@ -1,20 +1,75 @@
 "use client";
 
-
-import { faithValues } from "@/app/constants/faithValues";
+import { useEffect, useState } from "react";
 import { ValueTag } from "@/components/common/value-tag";
+import {
+  myFaithValues,
+  normalizeFaithValueTokenToValue,
+  parseFaithValuesFromApi,
+} from "@/data/myFaithValues";
 import { useFaithStore } from "@/store/faithStore";
+import { useProfileStore } from "@/store/profileStore";
 import { Button, Card, CardContent } from "@repo/ui";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { fetchProfile, updateFaithValuesProfile } from "@/lib/api/profile";
 
 export default function FaithValuesPage() {
   const {
     myValues,
     partnerValues,
+    setMyValues,
+    setPartnerValues,
     toggleMyValue,
     togglePartnerValue,
   } = useFaithStore();
+  const hydrateFromApi = useProfileStore((s) => s.hydrateFromApi);
+  const router = useRouter();
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchProfile()
+      .then((res) => {
+        if (cancelled || !res?.data) return;
+        hydrateFromApi(res.data);
+        setMyValues(
+          parseFaithValuesFromApi(res.data.myFaithValues).map(
+            normalizeFaithValueTokenToValue
+          )
+        );
+        setPartnerValues(
+          parseFaithValuesFromApi(res.data.partnerValues).map(
+            normalizeFaithValueTokenToValue
+          )
+        );
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [hydrateFromApi, setMyValues, setPartnerValues]);
+
+  const handleNext = async () => {
+    if (saving) return;
+    setSaving(true);
+    try {
+      await updateFaithValuesProfile({
+        myFaithValues: myValues,
+        partnerValues,
+      });
+      toast.success("Faith values updated.");
+      router.push("/profile/lifestyle");
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to save faith values. Please try again.";
+      toast.error(message);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex  sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
@@ -39,12 +94,12 @@ export default function FaithValuesPage() {
           <h2 className="text-white text-[20px] font-light mb-3">My Faith Values</h2>
 
           <div className="flex flex-wrap gap-3 bg-[#FBFAF914] border border-[#E7ECF214] rounded-[8px] px-[10px] py-[18px]">
-            {faithValues.map((value) => (
+            {myFaithValues.map((item) => (
               <ValueTag
-                key={value}
-                label={value}
-                active={myValues.includes(value)}
-                onClick={() => toggleMyValue(value)}
+                key={item.value}
+                label={item.title}
+                active={myValues.includes(item.value)}
+                onClick={() => toggleMyValue(item.value)}
               />
             ))}
           </div>
@@ -55,20 +110,24 @@ export default function FaithValuesPage() {
           <h2 className="text-white text-sm mb-3">Partner Values</h2>
 
           <div className="flex flex-wrap gap-3 bg-[#FBFAF914] border border-[#E7ECF214] rounded-[8px] px-[10px] py-[18px]">
-            {faithValues.map((value) => (
+            {myFaithValues.map((item) => (
               <ValueTag
-                key={value}
-                label={value}
-                active={partnerValues.includes(value)}
-                onClick={() => togglePartnerValue(value)}
+                key={item.value}
+                label={item.title}
+                active={partnerValues.includes(item.value)}
+                onClick={() => togglePartnerValue(item.value)}
               />
             ))}
           </div>
         </div>
 
         {/* Next Button */}
-        <Button className="w-full bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold rounded-[10px] h-[52px]">
-          Next
+        <Button
+          onClick={handleNext}
+          disabled={saving}
+          className="w-full bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold rounded-[10px] h-[52px] disabled:opacity-60"
+        >
+          {saving ? "Saving..." : "Save & next"}
         </Button>
         </CardContent>
       </Card>

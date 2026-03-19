@@ -49,8 +49,6 @@ export class OnboardingService {
   }
 
   async saveFaithLifestyle(userId: string, dto: FaithLifestyleDto) {
-    const lifestyleSmoking = dto.smokingPreference !== 'Never';
-    const lifestyleDrinking = dto.alcoholPreference !== 'Never';
     await this.prisma.user.update({
       where: { id: userId },
       data: {
@@ -59,8 +57,6 @@ export class OnboardingService {
         churchAttendance: dto.churchAttendance,
         smokingPreference: dto.smokingPreference,
         alcoholPreference: dto.alcoholPreference,
-        lifestyleSmoking,
-        lifestyleDrinking,
         dietaryPreference: dto.dietaryPreference,
       } as Prisma.UserUpdateInput,
     });
@@ -101,9 +97,6 @@ export class OnboardingService {
     churchAttendance: true,
     myFaithValues: true,
     partnerValues: true,
-    lifestyleSmoking: true,
-    lifestyleDrinking: true,
-    lifestylePartying: true,
     smokingPreference: true,
     alcoholPreference: true,
     dietaryPreference: true,

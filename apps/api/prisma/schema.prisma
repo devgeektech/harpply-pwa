@@ -39,9 +39,6 @@ model User {
 
   // Onboarding - Bio / Story
   bio        String?
-  jobTitle   String?
-  company    String?
-  school     String?
 
   // Onboarding - Faith & Lifestyle / Profile
   denomination     String?
@@ -50,13 +47,9 @@ model User {
   churchAttendance     String?
   myFaithValues        Json?     // array of strings
   partnerValues        Json?     // array of strings
-  lifestyleSmoking     Boolean?
-  lifestyleDrinking    Boolean?
   smokingPreference    String?   // Never, Socially, Regularly
   alcoholPreference    String?   // Never, Socially, Regularly
-  lifestylePartying    Boolean?
   dietaryPreference    String?
-  exercise             String?
 
   // Onboarding - Choose 3 (stored as JSON array of selected keys)
   interests            Json?
