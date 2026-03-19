@@ -4,7 +4,7 @@ import { ERROR_MESSAGES } from 'src/common/constants/error-messages';
 export class UpdateFaithLifestyleDto {
   @IsOptional()
   @IsString()
-  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.CANNOT_BE_EMPTY_WHEN_PROVIDED.replace('{FIELD}', 'spiritualJourney') })
+  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.CANNOT_BE_EMPTY_WHEN_PROVIDED.replace('{FIELD}', 'denomination') })
   denomination?: string;
 
   @IsOptional()

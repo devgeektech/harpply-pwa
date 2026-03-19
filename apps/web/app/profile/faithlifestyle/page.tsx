@@ -1,16 +1,73 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Church, Calendar, RefreshCcw, Home } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 import { useFaithStore } from "@/store/useFaithStore"
-import { Button, Card, CardContent, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@repo/ui"
+import { useProfileStore } from "@/store/profileStore"
+import {
+  CHURCH_ATTENDANCE_OPTIONS,
+  CHURCH_INVOLVEMENT_OPTIONS,
+  type ChurchAttendanceOption,
+  type ChurchInvolvementOption,
+} from "@/lib/constants"
+import {
+  Button,
+  Card,
+  CardContent,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@repo/ui"
 import AttendanceCard from "@/components/common/attendance-card"
 import Link from "next/link"
 import { ChevronLeft } from "lucide-react"
-import { updateFaithLifestyleProfile } from "@/lib/api/profile"
+import { fetchProfile, updateFaithLifestyleProfile } from "@/lib/api/profile"
+
+/** Icons per index matching `CHURCH_ATTENDANCE_OPTIONS` order. */
+const CHURCH_ATTENDANCE_ICONS = [
+  <Church key="church" size={36} />,
+  <Calendar key="calendar" size={36} />,
+  <RefreshCcw key="refresh" size={36} />,
+  <Home key="home" size={36} />,
+] as const
+
+function normalizeChurchAttendance(
+  value: string | null | undefined
+): ChurchAttendanceOption | "" {
+  if (!value?.trim()) return ""
+  const exact = CHURCH_ATTENDANCE_OPTIONS.find((o) => o === value)
+  if (exact) return exact
+  const ci = CHURCH_ATTENDANCE_OPTIONS.find(
+    (o) => o.toLowerCase() === value.trim().toLowerCase()
+  )
+  return ci ?? ""
+}
+
+const LEGACY_CHURCH_INVOLVEMENT: Record<string, ChurchInvolvementOption> = {
+  member: "Member",
+  volunteer: "Volunteer",
+  leader: "Regular Attender",
+}
+
+function normalizeChurchInvolvement(
+  value: string | null | undefined
+): ChurchInvolvementOption | "" {
+  if (!value?.trim()) return ""
+  const trimmed = value.trim()
+  const exact = CHURCH_INVOLVEMENT_OPTIONS.find((o) => o === trimmed)
+  if (exact) return exact
+  const ci = CHURCH_INVOLVEMENT_OPTIONS.find(
+    (o) => o.toLowerCase() === trimmed.toLowerCase()
+  )
+  if (ci) return ci
+  return LEGACY_CHURCH_INVOLVEMENT[trimmed.toLowerCase()] ?? ""
+}
 
 export default function FaithLifestylePage() {
   const {
@@ -23,8 +80,38 @@ export default function FaithLifestylePage() {
     setChurchInvolvement,
     setAttendance,
   } = useFaithStore()
+  const { loaded, hydrateFromApi } = useProfileStore()
   const router = useRouter()
   const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    if (!loaded) {
+      fetchProfile()
+        .then((res) => {
+          if (res?.data) hydrateFromApi(res.data)
+        })
+        .catch(() => {})
+      return
+    }
+    const {
+      churchAttendance,
+      denomination: d,
+      yearsInFaith: y,
+      church,
+    } = useProfileStore.getState()
+    setAttendance(normalizeChurchAttendance(churchAttendance))
+    if (d) setDenomination(d)
+    if (y != null) setYearsInFaith(String(y))
+    const involvement = normalizeChurchInvolvement(church)
+    if (involvement) setChurchInvolvement(involvement)
+  }, [
+    loaded,
+    hydrateFromApi,
+    setAttendance,
+    setDenomination,
+    setYearsInFaith,
+    setChurchInvolvement,
+  ])
 
   const handleSave = async () => {
     if (saving) return
@@ -34,7 +121,7 @@ export default function FaithLifestylePage() {
         denomination,
         yearsInFaith: yearsInFaith ? Number(yearsInFaith) : undefined,
         churchInvolvement,
-        churchAttendance: attendance,
+        churchAttendance: attendance || undefined,
       })
       toast.success("Faith & lifestyle updated successfully.")
       router.push("/profile/identity")
@@ -91,20 +178,16 @@ export default function FaithLifestylePage() {
         <div className="">
           <p className="text-sm mb-1 text-white">Years in Faith</p>
 
-          <Select
+          <Input
+            type="number"
+            inputMode="numeric"
+            min={0}
+            max={120}
             value={yearsInFaith}
-            onValueChange={setYearsInFaith}
-          >
-            <SelectTrigger className="w-full bg-[#FBFAF9] !h-[52px] rounded-[8px] text-[#1A1A1A] text-sm">
-              <SelectValue placeholder="Life-long" />
-            </SelectTrigger>
-
-            <SelectContent>
-              <SelectItem value="lifelong">Life-long</SelectItem>
-              <SelectItem value="1-5">1-5 years</SelectItem>
-              <SelectItem value="5-10">5-10 years</SelectItem>
-            </SelectContent>
-          </Select>
+            onChange={(e) => setYearsInFaith(e.target.value)}
+            placeholder="e.g. 5"
+            className="w-full h-[52px] rounded-[8px] border-0 bg-[#FBFAF9] text-[#1A1A1A] text-sm placeholder:text-[#1A1A1A]/40 focus-visible:ring-2 focus-visible:ring-amber-500/40"
+          />
         </div>
 
         {/* Church involvement */}
@@ -112,17 +195,19 @@ export default function FaithLifestylePage() {
           <p className="text-sm mb-1 text-white">Church Involvement</p>
 
           <Select
-            value={churchInvolvement}
+            value={churchInvolvement || ""}
             onValueChange={setChurchInvolvement}
           >
             <SelectTrigger className="w-full bg-[#FBFAF9] !h-[52px] rounded-[8px] text-[#1A1A1A] text-sm">
-              <SelectValue placeholder="Member" />
+              <SelectValue placeholder="Select your role" />
             </SelectTrigger>
 
             <SelectContent>
-              <SelectItem value="member">Member</SelectItem>
-              <SelectItem value="volunteer">Volunteer</SelectItem>
-              <SelectItem value="leader">Leader</SelectItem>
+              {CHURCH_INVOLVEMENT_OPTIONS.map((value) => (
+                <SelectItem key={value} value={value}>
+                  {value}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -139,35 +224,15 @@ export default function FaithLifestylePage() {
           </p>
 
           <div className="grid grid-cols-2 gap-4">
-
-            <AttendanceCard
-              label="Weekly"
-              icon={<Church size={36} />}
-              active={attendance === "weekly"}
-              onClick={() => setAttendance("weekly")}
-            />
-
-            <AttendanceCard
-              label="Monthly"
-              icon={<Calendar size={36} />}
-              active={attendance === "monthly"}
-              onClick={() => setAttendance("monthly")}
-            />
-
-            <AttendanceCard
-              label="Occasionally"
-              icon={<RefreshCcw size={36} />}
-              active={attendance === "occasionally"}
-              onClick={() => setAttendance("occasionally")}
-            />
-
-            <AttendanceCard
-              label="Remote/Home"
-              icon={<Home size={36} />}
-              active={attendance === "remote"}
-              onClick={() => setAttendance("remote")}
-            />
-
+            {CHURCH_ATTENDANCE_OPTIONS.map((option, index) => (
+              <AttendanceCard
+                key={option}
+                label={option}
+                icon={CHURCH_ATTENDANCE_ICONS[index]}
+                active={attendance === option}
+                onClick={() => setAttendance(option)}
+              />
+            ))}
           </div>
 
         </div>
@@ -178,7 +243,7 @@ export default function FaithLifestylePage() {
           onClick={handleSave}
           disabled={saving}
           className="cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60">
-          {saving ? "Saving..." : "Save Changes"}
+          {saving ? "Saving..." : "Save & next"}
         </Button>
 
       </CardContent>

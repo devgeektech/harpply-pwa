@@ -15,8 +15,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { updateBasicProfile } from "@/lib/api/profile";
-import { useState } from "react";
+import { updateBasicProfile, fetchProfile } from "@/lib/api/profile";
+import { useState, useEffect } from "react";
 
 const CARD_BG = "#1A0A26";
 const GOLD_GRADIENT =
@@ -30,13 +30,26 @@ export default function EditProfilePage() {
     age,
     location,
     gender,
+    bio,
     setName,
     setAge,
     setLocation,
     setGender,
+    setBio,
+    hydrateFromApi,
+    loaded,
   } = useProfileStore();
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (loaded) return;
+    fetchProfile()
+      .then((res) => {
+        if (res?.data) hydrateFromApi(res.data);
+      })
+      .catch(() => {});
+  }, [loaded, hydrateFromApi]);
 
   const handleSave = async () => {
     if (saving) return;
@@ -47,9 +60,10 @@ export default function EditProfilePage() {
         age: age || undefined,
         location: location || undefined,
         gender: gender.toLowerCase(),
+        bio,
       });
       toast.success("Profile updated successfully.");
-      router.push("/profile/identity");
+      router.push("/profile/faithlifestyle");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to update profile. Please try again.";
       toast.error(message);
@@ -187,12 +201,30 @@ export default function EditProfilePage() {
             </div>
           </div>
 
+          {/* About Me */}
+          <div className="mt-[16px] w-full">
+            <label className="mb-1.5 block text-sm font-medium text-white/80">
+              About Me
+            </label>
+            <Textarea
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              placeholder="I'm a believer who finds peace in..."
+              maxLength={300}
+              rows={4}
+              className="w-full rounded-xl border-0 bg-white text-black placeholder:text-black/40 focus-visible:ring-2 focus-visible:ring-amber-500/40 resize-y min-h-[100px] shadow-none"
+            />
+            <p className="mt-1.5 text-right text-sm text-white/80">
+              {bio.length} / 300 characters
+            </p>
+          </div>
+
           {/* Next */}
           <Button
             onClick={handleSave}
             disabled={saving}
             className="cursor-pointer w-full text-base h-[52px] mt-[30px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60">
-            {saving ? "Saving..." : "Save Changes"}
+            {saving ? "Saving..." : "Save & next"}
           </Button>
         </CardContent>
       </Card>

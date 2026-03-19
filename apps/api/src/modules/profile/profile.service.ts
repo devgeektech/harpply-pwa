@@ -84,10 +84,11 @@ export class ProfileService {
       dto.age !== undefined ||
       dto.location !== undefined ||
       dto.gender !== undefined ||
-      dto.profilePhoto !== undefined;
+      dto.profilePhoto !== undefined ||
+      dto.bio !== undefined;
     if (!hasField && !file) {
       throw new BadRequestException(
-        'Provide at least one field to update (fullName, age, location, gender, or profilePhoto file).',
+        'Provide at least one field to update (fullName, age, location, gender, bio, or profilePhoto file).',
       );
     }
 
@@ -138,6 +139,7 @@ export class ProfileService {
         age: dto.age,
         location: dto.location,
         gender: dto.gender,
+        ...(dto.bio !== undefined && { bio: dto.bio }),
         ...(profilePhotoUrl && { profilePhoto: profilePhotoUrl }),
         ...(dto.profilePhoto && !profilePhotoUrl && { profilePhoto: dto.profilePhoto }),
       },
@@ -150,11 +152,11 @@ export class ProfileService {
     await this.prisma.user.update({
       where: { id: userId },
       data: {
-        spiritualJourney: dto.denomination,
+        denomination: dto.denomination,
         yearsInFaith: dto.yearsInFaith,
         churchInvolvement: dto.churchInvolvement,
         churchAttendance: dto.churchAttendance,
-      } as Prisma.UserUpdateInput,
+      },
     });
     return successResponse(SUCCESS_MESSAGES.PROFILE.FAITH_LIFESTYLE_UPDATED);
   }

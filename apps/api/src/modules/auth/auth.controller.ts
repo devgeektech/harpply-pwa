@@ -42,7 +42,6 @@ export class AuthController {
     private readonly config: ConfigService,
   ) {}
 
-
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
   async registerEmail(@Body() dto: RegisterEmailDto) {

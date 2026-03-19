@@ -51,7 +51,7 @@ updateBasic(
 }
 
   @Patch('faith-lifestyle')
-  @ApiOperation({ summary: 'Edit profile: faith & lifestyle (spiritual journey, church)' })
+  @ApiOperation({ summary: 'Edit profile: faith & lifestyle (denomination, church)' })
   updateFaithLifestyle(
     @CurrentUserId() userId: string,
     @Body() dto: UpdateFaithLifestyleDto,
