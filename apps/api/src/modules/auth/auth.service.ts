@@ -240,6 +240,77 @@ export class AuthService {
     });
   }
 
+  /** Create or find user and return session from Google OAuth profile (used by server-side callback). */
+  async googleLoginWithPayload(payload: {
+    email: string;
+    name?: string | null;
+    picture?: string | null;
+    sub: string;
+  }) {
+    const { email, name, picture, sub: uid } = payload;
+    if (!email?.trim()) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS);
+    }
+    const emailEncoded = encodeEmail(email);
+
+    let user = await this.prisma.user.findUnique({
+      where: { email: emailEncoded },
+      select: {
+        id: true,
+        email: true,
+        password: true,
+        createdAt: true,
+        onboardingCompleted: true,
+        emailVerified: true,
+        fullName: true,
+        profilePhoto: true,
+      },
+    });
+
+    if (!user) {
+      user = await this.prisma.user.create({
+        data: {
+          email: emailEncoded,
+          fullName: name ?? undefined,
+          profilePhoto: picture ?? undefined,
+          googleId: uid,
+          emailVerified: true,
+        },
+        select: {
+          id: true,
+          email: true,
+          password: true,
+          createdAt: true,
+          onboardingCompleted: true,
+          emailVerified: true,
+          fullName: true,
+          profilePhoto: true,
+        },
+      });
+    }
+
+    const emailDecoded = decodeEmail(user.email);
+    const jti = randomUUID();
+    const appToken = this.jwtService.sign({
+      sub: user.id,
+      email: emailDecoded,
+      jti,
+    });
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { token: jti },
+    });
+
+    const { password: _p, ...rest } = user;
+    const safeUser = { ...rest, email: emailDecoded };
+    const onboarding = await this.onboardingService.getOnboardingData(user.id);
+
+    return successResponse(SUCCESS_MESSAGES.AUTH.LOGIN_SUCCESS, {
+      data: { accessToken: appToken, user: safeUser, onboarding },
+    });
+  }
+
   async logout(jti: string, userId?: string) {
     if (jti) {
       await this.prisma.user.updateMany({

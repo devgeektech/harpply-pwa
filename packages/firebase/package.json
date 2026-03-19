@@ -1,0 +1,19 @@
+{
+  "name": "@repo/firebase",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./admin": "./admin.ts",
+    "./client": "./client.ts"
+  },
+  "dependencies": {
+    "firebase": "^12.10.0",
+    "firebase-admin": "^13.7.0"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

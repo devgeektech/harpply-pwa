@@ -1,26 +1,28 @@
 "use client";
 
 import Image from "next/image";
-// import { Mail } from "lucide-react";
-import Logo from "public/images/logo.svg";
 import { Card, CardContent, Button } from "@repo/ui";
-import { useAuthStore } from "store/useAuthStore";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { getApiBaseUrl } from "@/lib/api/base-url";
+import { getGoogleLoginRedirectUrl } from "@/lib/api/auth";
 
 export default function SignupEmail() {
-  const { loading, setLoading } = useAuthStore();
   const router = useRouter();
+  const [apiError, setApiError] = useState<string | null>(null);
 
-  const handleGoogle = async () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-  };
-
-  const handleEmail = () => {
-    console.log("Email login");
+  const handleGoogleLogin = async () => {
+    setApiError(null);
+    const url = getGoogleLoginRedirectUrl();
+    if (!url) return;
+    try {
+      await fetch(getApiBaseUrl(), { method: "HEAD", cache: "no-store" });
+    } catch {
+      setApiError("API not running. From project root run: pnpm dev");
+      return;
+    }
+    window.location.href = url;
   };
 
   return (
@@ -45,9 +47,13 @@ export default function SignupEmail() {
 
           {/* Buttons */}
           <div className="w-full space-y-4 mt-[] mb-[67px] md:my-[67px]">
+            {apiError && (
+              <p className="text-sm text-amber-200 bg-amber-500/20 rounded-lg px-3 py-2">
+                {apiError}
+              </p>
+            )}
             <Button
-              onClick={handleGoogle}
-              disabled={loading}
+              onClick={handleGoogleLogin}
               className="cursor-pointer relative w-full bg-white text-[#1A1A1A] hover:bg-gray-200 rounded-full h-[56px] text-base font-normal"
             >
               <Image
@@ -57,7 +63,7 @@ export default function SignupEmail() {
                 height={30}
                 className="mr-2 absolute left-[22px] top-[14px]"
               />
-              {loading ? "Connecting..." : "Continue with Google"}
+              Continue with Google
             </Button>
 
             <Button
@@ -67,7 +73,7 @@ export default function SignupEmail() {
             >
               <Image
                 src="/images/envlope.png"
-                alt="Google"
+                alt="Email"
                 width={30}
                 height={30}
                 className="mr-2 absolute left-[22px] top-[14px]"
