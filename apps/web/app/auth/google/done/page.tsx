@@ -34,7 +34,9 @@ function GoogleDoneInner() {
           AUTH_STORAGE_KEYS.ONBOARDING_COMPLETED,
           onboardingCompleted ? "true" : "false"
         );
-        router.replace("/auth/onboarding");
+        router.replace(
+          onboardingCompleted ? "/profile/identity" : "/auth/onboarding/identity"
+        );
       } catch (e) {
         setMessage(
           e instanceof Error ? e.message : "Could not complete sign-in."
