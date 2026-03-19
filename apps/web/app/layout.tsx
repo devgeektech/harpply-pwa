@@ -10,6 +10,7 @@
 
 import type { Metadata, Viewport } from "next";
 import { Inter, Cormorant_Garamond } from "next/font/google";
+import Script from "next/script";
 import { ToasterProvider } from "@/components/toaster-provider";
 import "@repo/ui/globals.css";
 
@@ -40,9 +41,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-  themeColor: "#1a0a3c",
+  viewportFit: "cover",
+  themeColor: "#0c0520",
 };
 
 export default function RootLayout({
@@ -51,7 +51,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link
           rel="apple-touch-icon"
@@ -71,6 +71,11 @@ export default function RootLayout({
       >
         {children}
         <ToasterProvider />
+        <Script
+          id="termly-resource-blocker"
+          src="https://app.termly.io/resource-blocker/4725f758-9ac0-4e26-9d2c-dabb9261ac08?autoBlock=on"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
