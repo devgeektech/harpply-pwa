@@ -25,6 +25,13 @@ import { fetchProfile } from "@/lib/api/profile";
 
 import "swiper/css";
 import "swiper/css/pagination";
+import ChurchIcon from "@/icons/chruch";
+import Bookfaith from "@/icons/bookfaith";
+import Chruchweekly from "@/icons/chruchweekly";
+import Faithvalues from "@/icons/faithvalues";
+import Partnervalues from "@/icons/partnervalues";
+import Denomination from "@/icons/denomination";
+import Lifestyle from "@/icons/lifestyle";
 
 const ACCENT = "#C39936";
 const BULLET_INACTIVE = "#3d3a4a";
@@ -33,12 +40,18 @@ const TEXT_PRIMARY = "#1F1D2B";
 const TEXT_MUTED = "#6E6C7E";
 
 const faithIconMap: Record<string, React.ReactNode> = {
-  church: <Church className="size-8 shrink-0" style={{ color: ACCENT }} />,
-  scroll: <BookOpen className="size-8 shrink-0" style={{ color: ACCENT }} />,
-  attendance: <Church className="size-8 shrink-0" style={{ color: ACCENT }} />,
-  hands: <Heart className="size-8 shrink-0" style={{ color: ACCENT }} />,
-  heart: <Heart className="size-8 shrink-0" style={{ color: ACCENT }} />,
-  denomination: <Landmark className="size-8 shrink-0" style={{ color: ACCENT }} />,
+  church: <ChurchIcon />,
+  // church: <Church className="size-8 shrink-0" style={{ color: ACCENT }} />,
+  // scroll: <BookOpen className="size-8 shrink-0" style={{ color: ACCENT }} />,
+  scroll: <Bookfaith />,
+  // attendance: <Church className="size-8 shrink-0" style={{ color: ACCENT }} />,
+  attendance: <Chruchweekly />,
+  // hands: <Heart className="size-8 shrink-0" style={{ color: ACCENT }} />,
+  hands: <Faithvalues />,
+  // heart: <Heart className="size-8 shrink-0" style={{ color: ACCENT }} />,
+  heart: <Partnervalues />,
+  // denomination: <Landmark className="size-8 shrink-0" style={{ color: ACCENT }} />,
+  denomination: <Denomination />,
 };
 
 export default function ProfileIdentityPage() {
@@ -256,7 +269,7 @@ export default function ProfileIdentityPage() {
                   {/* Lifestyle Habits with pills */}
                   <li className="flex sm:items-center items-start gap-3">
                     <span className="mt-0.5 shadow-[0px_0px_4px_0px_#0000001A] rounded-[12px] bg-white min-w-[60px] min-h-[60px] flex items-center justify-center">
-                      <Popcorn className="size-5 shrink-0  text-[#C39936]" />
+                      <Lifestyle />
                     </span>
                     <div className="min-w-0 flex-1">
                       <p

@@ -20,7 +20,7 @@ const FooterResponsive = () => {
   ]
 
   return (
-    <nav className="flex flex-row md:gap-6 gap-3 md:hidden bg-[#000000] justify-between px-6 items-center fixed bottom-0 left-0 right-0 py-3">
+    <nav className="flex flex-row md:gap-6 gap-3 md:hidden bg-[#000000] justify-between px-6 items-center fixed z-50 bottom-0 left-0 right-0 py-3">
       {menu.map((item, i) => {
         const Icon = item.icon
         const isActive = pathname === item.href

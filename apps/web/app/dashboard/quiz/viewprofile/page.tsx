@@ -20,9 +20,10 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
-import type { Swiper as SwiperType } from "swiper";
+// import type { Swiper as SwiperType } from "swiper";
 
 import "swiper/css";
 import "swiper/css/pagination";
@@ -120,7 +121,7 @@ export default function ViewProfilePage() {
 
   return (
     <>
-    <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex items-center justify-center sm:px-4 px-0">
+    <div className="view-profile bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex items-center justify-center sm:px-4 px-0">
     <Card className=" md:d-block md:bg-[url('/images/bg_auth_center.png')] pt-0 sm:py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
       <CardContent className="flex items-center flex-col sm:p-10 px-0 text-left">
       {/* Top nav - back */}
@@ -139,12 +140,12 @@ export default function ViewProfilePage() {
         <Swiper
           onSwiper={onSwiper}
           onSlideChange={onSlideChange}
-          // modules={[Autoplay, Pagination]}
-          // loop={true}
-          // autoplay={{
-          //   delay: 3500,
-          //   disableOnInteraction: false,
-          // }}
+          modules={[Autoplay, Pagination]}
+          loop={true}
+          autoplay={{
+            delay: 3500,
+            disableOnInteraction: false,
+          }}
           speed={600}
           pagination={{
             clickable: true,
@@ -152,32 +153,41 @@ export default function ViewProfilePage() {
             bulletClass: "swiper-bullet-custom",
           }}
           spaceBetween={10}
-          slidesPerView={1}
-          // breakpoints={{
-          //   640: {
-          //     slidesPerView: 1.2,
-          //     spaceBetween: 20,
-          //   },
-          //   768: {
-          //     slidesPerView: 1.5,
-          //     spaceBetween: 30,
-          //   },
-          // }}
+          slidesPerView={1.75}
+        
+          breakpoints={{
+            300: {
+              slidesPerView: 1.2,
+              spaceBetween: 20,
+            },
+            640: {
+              slidesPerView: 1.2,
+              spaceBetween: 20,
+            },
+            768: {
+              slidesPerView: 1.2,
+              spaceBetween: 20,
+            },
+            1199: {
+              slidesPerView: 1.75,
+              spaceBetween: 20,
+            },
+          }}
         //   centeredSlides
           className="profile-swiper overflow-hidden"
           style={{ paddingBottom: 28, width: "100%" }}
         >
           {profileImages.map((src, i) => (
             <SwiperSlide key={i}>
-            <div className="relative w-full ">
+            {/* <div className=""> */}
               <img
                 src={src}
                 alt={`Profile ${i + 1}`}
                 // fill
-                className="object-cover rounded-2xl"
+                className="object-cover rounded-2xl h-full w-full"
                 // sizes="(max-width: 640px) 100vw, 280px"
               />
-            </div>
+            {/* </div> */}
           </SwiperSlide>
           ))}
         </Swiper>
@@ -239,7 +249,7 @@ export default function ViewProfilePage() {
       <h2 className="text-[20px] font-normal mb-2 text-white" >
           Faith & Lifestyle
       </h2>
-        <Card className="rounded-t-3xl py-0 bg-[#FBFAF9] rounded-b-xl border-0 shadow-xl bg-white overflow-hidden">
+        <Card className="py-0 bg-[#FBFAF9] rounded-b-xl border-0 shadow-xl bg-white overflow-hidden">
           <CardContent className="sm:p-5 p-[12px] pt-6 text-left">
             <ul className="space-y-4">
               {/* Lifestyle Habits with pills */}
@@ -298,7 +308,7 @@ export default function ViewProfilePage() {
 
 
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="bg-gradient-to-b from-[#140034] to-[#01010D] border-none max-w-sm rounded-2xl text-center p-8 shadow-[0px_4px_4px_0px_#00000014]">
+      <DialogContent className="bg-gradient-to-b from-[#140034] to-[#01010D] border-none max-w-sm  rounded-2xl text-center p-8 shadow-[0px_4px_4px_0px_#00000014]">
 
         {/* Icon */}
         <div className="flex justify-center">

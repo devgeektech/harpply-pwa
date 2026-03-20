@@ -10,7 +10,7 @@ export default function DashboardLayout({
   return (
     <>
         <Header />
-    <div className="flex">
+    <div className="flex wrapper">
 
       {/* Sidebar */}
       <Sidebar />
