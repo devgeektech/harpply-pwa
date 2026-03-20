@@ -171,7 +171,22 @@ export default function ManagePhotoPage() {
       setSaveError(ERROR_MESSAGES.PHOTOS.MIN_PHOTOS_REQUIRED)
       return
     }
-    router.push("/profile/profilesuccess")
+
+    // Go back to the page user came from (previous step in profile flow).
+    // `document.referrer` is sometimes empty for client-side navigations,
+    // so we also fall back to browser history.
+    if (typeof window !== "undefined") {
+      const referrer = document.referrer
+      if (referrer) {
+        window.location.href = referrer
+        return
+      }
+      window.history.back()
+      return
+    }
+
+    // SSR fallback (should not happen because this is a client component)
+    router.push("/profile/identity")
   }
 
   return (
@@ -237,7 +252,7 @@ export default function ManagePhotoPage() {
                       <button
                         type="button"
                         onClick={() => handleRemovePhoto(index)}
-                        disabled={deletingIndex === index}
+                        disabled={deletingIndex !== null}
                         className="cursor-pointer absolute top-2 right-2 bg-[#FBFAF9] rounded-full p-1 disabled:opacity-60"
                         aria-label="Remove photo"
                       >
@@ -248,7 +263,7 @@ export default function ManagePhotoPage() {
                     <button
                       type="button"
                       onClick={openFilePicker}
-                      disabled={uploading}
+                      disabled={uploading || deletingIndex !== null}
                       className="cursor-pointer flex flex-col items-center text-[#913C01] disabled:opacity-60"
                       aria-label="Add photo"
                     >
@@ -297,7 +312,7 @@ export default function ManagePhotoPage() {
             disabled={loadingPhotos || uploading || deletingIndex !== null}
             className="cursor-pointer w-full h-[52px] text-[#913C01] font-semibold bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)]"
           >
-            Save Photo
+            Next
           </Button>
 
           {saveError && (

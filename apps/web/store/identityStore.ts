@@ -6,6 +6,7 @@ export interface IdentityState {
   /** Active swiper slide index */
   activeSlideIndex: number;
 
+  setProfileImages: (images: string[]) => void;
   setActiveSlideIndex: (index: number) => void;
 }
 
@@ -19,5 +20,6 @@ export const useIdentityStore = create<IdentityState>((set) => ({
   ],
   activeSlideIndex: 0,
 
+  setProfileImages: (images: string[]) => set({ profileImages: images }),
   setActiveSlideIndex: (index) => set({ activeSlideIndex: index }),
 }));

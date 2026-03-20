@@ -21,7 +21,7 @@ import { useCallback, useMemo } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
-import { fetchProfile } from "@/lib/api/profile";
+import { fetchProfile, fetchProfilePhotos } from "@/lib/api/profile";
 
 import "swiper/css";
 import "swiper/css/pagination";
@@ -31,6 +31,15 @@ const BULLET_INACTIVE = "#3d3a4a";
 const BG_DARK = "#130F26";
 const TEXT_PRIMARY = "#1F1D2B";
 const TEXT_MUTED = "#6E6C7E";
+
+function buildPhotoSrc(s3PublicUrl: string, key: string): string {
+  const safeKey = key?.toString?.().trim() ?? "";
+  if (!safeKey) return "/images/slider/slide.jpg";
+  if (/^https?:\/\//i.test(safeKey)) return safeKey;
+  const base = (s3PublicUrl ?? "").replace(/\/$/, "");
+  if (!base) return "/images/slider/slide.jpg";
+  return `${base}/${safeKey.replace(/^\/+/, "")}`;
+}
 
 const faithIconMap: Record<string, React.ReactNode> = {
   church: <Church className="size-8 shrink-0" style={{ color: ACCENT }} />,
@@ -60,19 +69,29 @@ export default function ProfileIdentityPage() {
     hydrateFromApi,
     loaded,
   } = useProfileStore();
-  const { profileImages, setActiveSlideIndex } = useIdentityStore();
+  const { profileImages, setActiveSlideIndex, setProfileImages } = useIdentityStore();
+  const s3PublicUrl = process.env.NEXT_PUBLIC_AWS_S3_URL ?? "";
 
   useEffect(() => {
-    if (loaded) return;
-    fetchProfile()
+    if (!loaded) {
+      fetchProfile()
+        .then((res) => {
+          if (res?.data) {
+            hydrateFromApi(res.data);
+          }
+        })
+        .catch(() => {});
+    }
+
+    fetchProfilePhotos()
       .then((res) => {
-        if (res?.data) {
-          hydrateFromApi(res.data);
+        const keys = res?.photos ?? [];
+        if (keys.length > 0) {
+          setProfileImages(keys.map((key) => buildPhotoSrc(s3PublicUrl, key)));
         }
       })
-      .catch(() => { });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded]);
+      .catch(() => {});
+  }, [loaded, hydrateFromApi, setProfileImages, s3PublicUrl]);
 
   const onSwiper = useCallback(
     (swiper: SwiperType) => {

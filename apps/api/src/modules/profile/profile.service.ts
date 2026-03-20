@@ -21,7 +21,9 @@ const PHOTO_MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 const ALLOWED_PHOTO_MIMES = ['image/jpeg', 'image/png', 'image/webp'];
 const MIN_PHOTOS_REQUIRED = 3;
 
-export type ProfilePhotoItem = { key: string; url: string };
+// `user.profilePhotos` is stored as an array of S3 object keys (strings).
+// The web client then builds public URLs using your S3 public base URL.
+export type ProfilePhotoKey = string;
 
 const profileSelect = {
   id: true,
@@ -191,7 +193,7 @@ export class ProfileService {
     if (!user) {
       throw new NotFoundException(ERROR_MESSAGES.USER.PROFILE_NOT_FOUND);
     }
-    const photos = (user.profilePhotos as ProfilePhotoItem[] | null) ?? [];
+    const photos = (user.profilePhotos as ProfilePhotoKey[] | null) ?? [];
     const meetsMinimum = photos.length >= MIN_PHOTOS_REQUIRED;
     return successResponse(SUCCESS_MESSAGES.PROFILE.PHOTOS_RETRIEVED, {
       data: { photos, meetsMinimum, minPhotosRequired: MIN_PHOTOS_REQUIRED },
@@ -258,15 +260,15 @@ export class ProfileService {
     if (!user) {
       throw new NotFoundException(ERROR_MESSAGES.USER.PROFILE_NOT_FOUND);
     }
-    const photos = (user.profilePhotos as ProfilePhotoItem[] | null) ?? [];
+    const photos = (user.profilePhotos as ProfilePhotoKey[] | null) ?? [];
     if (index < 0 || index >= photos.length) {
       throw new BadRequestException(ERROR_MESSAGES.PHOTOS.PHOTO_NOT_FOUND);
     }
 
-    const item = photos[index];
+    const key = photos[index];
     const bucket = this.config.get<string>('AWS_S3_BUCKET_PROFILE_PHOTOS');
     if (this.awsS3.isConfigured() && bucket) {
-      await this.awsS3.delete(bucket, item.key);
+      await this.awsS3.delete(bucket, key);
     }
     const updated = photos.filter((_, i) => i !== index);
     await this.prisma.user.update({
