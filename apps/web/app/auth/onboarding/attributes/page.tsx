@@ -1,7 +1,7 @@
 "use client";
 
 import AttributeCard from "@/components/common/attribute-card";
-import { attributes } from "@/data/attributes";
+import { myFaithValues } from "@/data/myFaithValues";
 import { useAttributesStore } from "@/store/useAttributesStore";
 import { Button, Card, CardContent, Progress } from "@repo/ui";
 import { ChevronLeft } from "lucide-react";
@@ -64,9 +64,10 @@ export default function AttributesPage() {
 
           {/* Cards */}
           <div className="grid grid-cols-2 gap-4">
-            {attributes.map((item) => (
+            {myFaithValues.map((item) => (
               <AttributeCard
-                key={item.title}
+                key={item.value}
+                value={item.value}
                 title={item.title}
                 desc={item.desc}
               />

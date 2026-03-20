@@ -53,7 +53,6 @@ export class AuthController {
     private readonly googleOauthExchange: GoogleOauthExchangeStore,
   ) { }
 
-
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
   async registerEmail(@Body() dto: RegisterEmailDto) {

@@ -19,7 +19,7 @@ interface BioState {
   submitBio: () => Promise<any>;
 }
 
-/** Faith & lifestyle fields for POST /auth/onboarding/faith-lifestyle. UI uses string toggles; submit converts to API booleans. */
+/** Faith & lifestyle fields for POST /auth/onboarding/faith-lifestyle (string preferences). */
 interface FaithState {
   churchInvolvement: string;
   yearsInFaith: number;

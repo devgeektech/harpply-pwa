@@ -2,14 +2,14 @@
 
 import { Button, Card, CardContent, Input, Label } from "@repo/ui";
 import Link from "next/link";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { AuthError, getGoogleLoginRedirectUrl } from "@/lib/api/auth";
 import { getApiBaseUrl } from "@/lib/api/base-url";
 import { useAuthStore } from "store/useAuthStoreLogin";
 
-export default function Signin() {
+function SigninForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const router = useRouter();
@@ -138,5 +138,19 @@ export default function Signin() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function Signin() {
+  return (
+    <Suspense
+      fallback={
+        <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex items-center justify-center px-4">
+          <Loader2 className="h-8 w-8 animate-spin text-white/70" aria-label="Loading" />
+        </div>
+      }
+    >
+      <SigninForm />
+    </Suspense>
   );
 }

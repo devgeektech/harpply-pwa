@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { ProfileData } from "@/lib/api/profile";
+import { formatFaithValuesForDisplay } from "@/data/myFaithValues";
 
 export type Gender = "Male" | "Female" | "Other";
 
@@ -11,6 +12,15 @@ interface ProfileState {
   bio: string;
   gender: Gender;
   loaded: boolean;
+  denomination: string;
+  yearsInFaith: number | null;
+  churchAttendance: string;
+  myFaithValues: string;
+  partnerValues: string;
+  interests: string[];
+  smokingPreference: string;
+  alcoholPreference: string;
+  dietaryPreference: string;
 
   setBio: (bio: string) => void;
   setName: (name: string) => void;
@@ -28,6 +38,15 @@ export const useProfileStore = create<ProfileState>((set) => ({
   gender: "Male",
   bio: "",
   loaded: false,
+  denomination: "",
+  yearsInFaith: null,
+  churchAttendance: "",
+  myFaithValues: "",
+  partnerValues: "",
+  interests: [],
+  smokingPreference: "",
+  alcoholPreference: "",
+  dietaryPreference: "",
 
   setBio: (bio) => set({ bio }),
   setName: (name) => set({ name }),
@@ -44,6 +63,15 @@ export const useProfileStore = create<ProfileState>((set) => ({
       gender:
         (data.gender &&
           (data.gender.charAt(0).toUpperCase() + data.gender.slice(1).toLowerCase())) as Gender,
+      denomination: data.denomination ?? "",
+      yearsInFaith: data.yearsInFaith ?? null,
+      churchAttendance: data.churchAttendance ?? "",
+      myFaithValues: formatFaithValuesForDisplay(data.myFaithValues),
+      partnerValues: formatFaithValuesForDisplay(data.partnerValues),
+      interests: data.interests ?? [],
+      smokingPreference: data.smokingPreference ?? "",
+      alcoholPreference: data.alcoholPreference ?? "",
+      dietaryPreference: data.dietaryPreference ?? "",
       loaded: true,
     }),
 }));

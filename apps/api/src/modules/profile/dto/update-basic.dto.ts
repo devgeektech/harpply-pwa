@@ -29,4 +29,8 @@ export class UpdateBasicDto {
   @IsUrl()
   @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.CANNOT_BE_EMPTY_WHEN_PROVIDED.replace('{FIELD}', 'profilePhoto') })
   profilePhoto?: string;
+
+  @IsOptional()
+  @IsString()
+  bio?: string;
 }

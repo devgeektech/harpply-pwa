@@ -59,9 +59,6 @@ export interface OnboardingData {
   churchAttendance?: string | null;
   myFaithValues?: unknown;
   partnerValues?: unknown;
-  lifestyleSmoking?: boolean | null;
-  lifestyleDrinking?: boolean | null;
-  lifestylePartying?: boolean | null;
   smokingPreference?: string | null;
   alcoholPreference?: string | null;
   dietaryPreference?: string | null;
