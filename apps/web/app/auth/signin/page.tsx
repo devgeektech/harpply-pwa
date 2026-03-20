@@ -2,16 +2,36 @@
 
 import { Button, Card, CardContent, Input, Label } from "@repo/ui";
 import Link from "next/link";
-import { useAuthStore } from "store/useAuthStoreLogin";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { AuthError } from "@/lib/api/auth";
+import { AuthError, getGoogleLoginRedirectUrl } from "@/lib/api/auth";
+import { getApiBaseUrl } from "@/lib/api/base-url";
+import { useAuthStore } from "store/useAuthStoreLogin";
 
 export default function Signin() {
   const [showPassword, setShowPassword] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { email, password, setEmail, setPassword, login, loading, error, setError } = useAuthStore();
+
+  const googleError = searchParams.get("error") === "google_signin_failed";
+  const googleFailReason = searchParams.get("reason");
+
+  const handleGoogleLogin = async () => {
+    setError(null);
+    setApiError(null);
+    const url = getGoogleLoginRedirectUrl();
+    if (!url) return;
+    try {
+      await fetch(getApiBaseUrl(), { method: "HEAD", cache: "no-store" });
+    } catch {
+      setApiError("API not running. From project root run: pnpm dev");
+      return;
+    }
+    window.location.href = url;
+  };
 
   const handleLogin = async () => {
     setError(null);
@@ -37,6 +57,14 @@ export default function Signin() {
             <h2 className="w-full text-[24px] font-light text-white font-serif tracking-wider mb-[32px] md:mb-0">
               Sign In
             </h2>
+            {(apiError || googleError) && (
+              <p className="text-sm text-amber-200 bg-amber-500/20 rounded-lg px-3 py-2">
+                {apiError ??
+                  (googleFailReason
+                    ? `Google sign-in failed (${googleFailReason}). Check API terminal logs and GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET / GOOGLE_CALLBACK_URI.`
+                    : "Google sign-in failed. Please try again.")}
+              </p>
+            )}
             <form className="space-y-5 md:my-[50px] w-full" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
               {error && (
                 <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">
@@ -93,7 +121,7 @@ export default function Signin() {
                     Signing in...
                   </span>
                 ) : (
-                  "Sign In" 
+                  "Sign In"
                 )}
               </Button>
             </form>

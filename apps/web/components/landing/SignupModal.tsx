@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { getGoogleLoginRedirectUrl } from "@/lib/api/auth";
 
 type SignupModalProps = {
   isOpen: boolean;
@@ -51,6 +52,11 @@ export function SignupModal({ isOpen, onClose }: SignupModalProps) {
     router.push("/auth/signin");
   };
 
+  const handleContinueWithGoogle = () => {
+    const url = getGoogleLoginRedirectUrl();
+    if (url) window.location.href = url;
+  };
+
   return (
     <div
       className={`fixed inset-0 z-[300] flex items-end justify-center bg-black/75 ${isOpen ? "flex" : "hidden"}`}
@@ -85,6 +91,7 @@ export function SignupModal({ isOpen, onClose }: SignupModalProps) {
 
         <button
           type="button"
+          onClick={handleContinueWithGoogle}
           className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-full border-none bg-white/[0.96] px-4 py-4 font-[var(--font-inter),'Inter',sans-serif] text-[0.88rem] font-semibold text-[#18182a] transition-colors duration-200 hover:bg-[#efefef]"
         >
           <GoogleIcon />
