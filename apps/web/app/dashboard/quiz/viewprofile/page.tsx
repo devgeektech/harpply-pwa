@@ -121,7 +121,7 @@ export default function ViewProfilePage() {
   return (
     <>
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex items-center justify-center sm:px-4 px-0">
-    <Card className=" md:d-block md:bg-[url('/images/bg_auth_center.png')] sm:py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
+    <Card className=" md:d-block md:bg-[url('/images/bg_auth_center.png')] pt-0 sm:py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
       <CardContent className="flex items-center flex-col sm:p-10 px-0 text-left">
       {/* Top nav - back */}
       <div className="flex items-center px-0 pt-0 pb-2 w-full">
@@ -135,7 +135,7 @@ export default function ViewProfilePage() {
       </div>
 
       {/* Profile image swiper */} 
-      <div className="pb-4 overflow-hidden">
+      <div className="pb-4 overflow-hidden w-full">
         <Swiper
           onSwiper={onSwiper}
           onSlideChange={onSlideChange}
@@ -152,7 +152,7 @@ export default function ViewProfilePage() {
             bulletClass: "swiper-bullet-custom",
           }}
           spaceBetween={10}
-          slidesPerView={2}
+          slidesPerView={1}
           // breakpoints={{
           //   640: {
           //     slidesPerView: 1.2,
