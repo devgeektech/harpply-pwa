@@ -37,7 +37,6 @@ import { AwsS3Module } from './common/aws-s3/aws-s3.module';
     AppService,
     PrismaService,
 
-    
     {
       provide: APP_PIPE,
       useFactory: () =>
@@ -61,8 +60,6 @@ import { AwsS3Module } from './common/aws-s3/aws-s3.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(NotEmptyBodyMiddleware)
-      .forRoutes('auth', 'profile');
+    consumer.apply(NotEmptyBodyMiddleware).forRoutes('auth', 'profile');
   }
 }

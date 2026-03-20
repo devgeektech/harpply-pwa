@@ -14,10 +14,8 @@ export class BrevoEmailService {
   constructor(private readonly config: ConfigService) {
     const apiKey = this.config.get<string>('BREVO_API_KEY');
     this.senderEmail =
-      this.config.get<string>('BREVO_SENDER_EMAIL') ??
-      'no-reply@harpply.com';
-    this.senderName =
-      this.config.get<string>('BREVO_SENDER_NAME') ?? 'Harpply';
+      this.config.get<string>('BREVO_SENDER_EMAIL') ?? 'no-reply@harpply.com';
+    this.senderName = this.config.get<string>('BREVO_SENDER_NAME') ?? 'Harpply';
     // Link in email must point to the frontend verify-email page.
     // On live server: set FRONTEND_APP_URL to your live frontend (e.g. https://harpply.com).
     const frontendUrl = this.config.get<string>('FRONTEND_APP_URL');

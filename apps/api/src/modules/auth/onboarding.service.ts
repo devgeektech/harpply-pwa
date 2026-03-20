@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { IdentityDto } from './dto/identity.dto';
 import type { Prisma } from '@prisma/client';
@@ -7,12 +7,12 @@ import { StoryDto } from './dto/story.dto';
 import { FaithLifestyleDto } from './dto/faith-lifestyle.dto';
 import { InterestsDto } from './dto/interests.dto';
 import { successResponse } from '../../common/response/api-response';
-import { SUCCESS_MESSAGES } from "src/common/constants/success-messages";
-import { ERROR_MESSAGES } from "src/common/constants/error-messages";
+import { SUCCESS_MESSAGES } from 'src/common/constants/success-messages';
+import { ERROR_MESSAGES } from 'src/common/constants/error-messages';
 
 @Injectable()
 export class OnboardingService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async saveIdentity(userId: string, dto: IdentityDto) {
     await this.prisma.user.update({
@@ -42,7 +42,7 @@ export class OnboardingService {
     await this.prisma.user.update({
       where: { id: userId },
       data: {
-        bio: dto.bio
+        bio: dto.bio,
       } as Prisma.UserUpdateInput,
     });
     return successResponse(SUCCESS_MESSAGES.ONBOARDING.STORY);
@@ -90,7 +90,6 @@ export class OnboardingService {
     longitude: true,
     location: true,
     locationEnabled: true,
-    profilePhoto: true,
     bio: true,
     churchInvolvement: true,
     yearsInFaith: true,

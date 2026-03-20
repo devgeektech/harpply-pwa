@@ -11,7 +11,6 @@ export interface ProfileData {
   fullName: string | null;
   age: number | null;
   gender: string | null;
-  profilePhoto: string | null;
   location: string | null;
   bio: string | null;
   denomination: string | null;

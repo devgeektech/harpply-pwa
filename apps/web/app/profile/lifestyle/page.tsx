@@ -121,7 +121,7 @@ export default function LifestylePage() {
         <CardContent className="flex flex-col md:gap-6 gap-3 sm:p-6 px-3 text-white">
           <div className="flex items-center px-0 pb-2 w-full">
             <Link
-              href="/profile"
+              href="/profile/faithvalues"
               className="flex items-center justify-center size-10 rounded-full text-white/90 hover:bg-white/10 transition-colors"
               aria-label="Back"
             >

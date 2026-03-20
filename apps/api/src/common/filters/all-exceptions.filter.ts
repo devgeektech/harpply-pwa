@@ -25,21 +25,35 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const res = exception.getResponse();
-      const resObj = typeof res === 'object' && res ? (res as Record<string, unknown>) : null;
+      const resObj =
+        typeof res === 'object' && res
+          ? (res as Record<string, unknown>)
+          : null;
       message =
         resObj && typeof resObj.message !== 'undefined'
           ? (resObj.message as string | string[])
           : (res as string) || exception.message;
       // Pass through optional `code` for client handling (e.g. COMPLETE_SIGNUP)
-      const code = resObj && typeof resObj.code === 'string' ? resObj.code : undefined;
+      const code =
+        resObj && typeof resObj.code === 'string' ? resObj.code : undefined;
       const messageStr = Array.isArray(message) ? message.join(', ') : message;
-      this.logger.warn(`${request.method} ${request.url} ${status} - ${messageStr}`);
-      if (status === HttpStatus.INTERNAL_SERVER_ERROR && exception instanceof Error) {
+      this.logger.warn(
+        `${request.method} ${request.url} ${status} - ${messageStr}`,
+      );
+      if (
+        status === HttpStatus.INTERNAL_SERVER_ERROR &&
+        exception instanceof Error
+      ) {
         this.logger.error(exception.message);
         this.logger.error(exception.stack);
       }
       const body = code
-        ? { success: false as const, statusCode: status, message: messageStr, code }
+        ? {
+            success: false as const,
+            statusCode: status,
+            message: messageStr,
+            code,
+          }
         : errorResponse(messageStr, status);
       response.status(status).json(body);
       return;
@@ -52,7 +66,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       const causeCode = err.cause?.originalCode ?? err.meta?.originalCode;
       if (code === 'P1001' || code === 'P1017' || causeCode === '28P01') {
         status = HttpStatus.SERVICE_UNAVAILABLE;
-        message = 'Database connection failed. Check DATABASE_URL and that Postgres is running (e.g. docker compose up db).';
+        message =
+          'Database connection failed. Check DATABASE_URL and that Postgres is running (e.g. docker compose up db).';
       } else if (code === 'P2025') {
         status = HttpStatus.NOT_FOUND;
         message = 'Record not found.';
@@ -68,10 +83,16 @@ export class AllExceptionsFilter implements ExceptionFilter {
     }
 
     const messageStr =
-      (Array.isArray(message) ? message.join(', ') : message) || 'Internal server error';
-    this.logger.warn(`${request.method} ${request.url} ${status} - ${messageStr}`);
+      (Array.isArray(message) ? message.join(', ') : message) ||
+      'Internal server error';
+    this.logger.warn(
+      `${request.method} ${request.url} ${status} - ${messageStr}`,
+    );
 
-    if (status === HttpStatus.INTERNAL_SERVER_ERROR && exception instanceof Error) {
+    if (
+      status === HttpStatus.INTERNAL_SERVER_ERROR &&
+      exception instanceof Error
+    ) {
       this.logger.error(exception.message);
       this.logger.error(exception.stack);
     }

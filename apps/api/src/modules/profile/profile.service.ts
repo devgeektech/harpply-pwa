@@ -31,7 +31,6 @@ const profileSelect = {
   fullName: true,
   age: true,
   gender: true,
-  profilePhoto: true,
   profilePhotos: true,
   latitude: true,
   longitude: true,
@@ -77,59 +76,17 @@ export class ProfileService {
   async updateBasic(
     userId: string,
     dto: UpdateBasicDto,
-    file?: Express.Multer.File,
   ) {
     const hasField =
       dto.fullName !== undefined ||
       dto.age !== undefined ||
       dto.location !== undefined ||
       dto.gender !== undefined ||
-      dto.profilePhoto !== undefined ||
       dto.bio !== undefined;
-    if (!hasField && !file) {
+    if (!hasField) {
       throw new BadRequestException(
-        'Provide at least one field to update (fullName, age, location, gender, bio, or profilePhoto file).',
+        'Provide at least one field to update (fullName, age, location, gender, bio).',
       );
-    }
-
-    const bucket = this.config.get<string>('AWS_S3_BUCKET_PROFILE_PHOTOS')!;
-
-    let profilePhotoUrl: string | undefined;
-
-    if (file) {
-      if (!ALLOWED_PHOTO_MIMES.includes(file.mimetype)) {
-        throw new BadRequestException(ERROR_MESSAGES.PHOTOS.INVALID_FILE_TYPE);
-      }
-
-      if (file.size > PHOTO_MAX_SIZE_BYTES) {
-        throw new BadRequestException(ERROR_MESSAGES.PHOTOS.FILE_TOO_LARGE);
-      }
-
-      const keyPrefix =
-        this.config.get<string>('AWS_S3_KEY_PREFIX_PROFILE_PHOTOS') ??
-        'profile-photo';
-
-      const ext =
-        file.mimetype === 'image/png'
-          ? 'png'
-          : file.mimetype === 'image/webp'
-            ? 'webp'
-            : 'jpg';
-
-      const key = `${keyPrefix}/${userId}/${Date.now()}.${ext}`;
-
-      const publicBaseUrl =
-        this.config.get<string>('AWS_S3_PUBLIC_URL_PROFILE_PHOTOS') ?? null;
-
-      const { url } = await this.awsS3.upload(
-        bucket,
-        key,
-        file.buffer,
-        file.mimetype,
-        { publicBaseUrl },
-      );
-
-      profilePhotoUrl = url;
     }
 
     await this.prisma.user.update({
@@ -140,8 +97,6 @@ export class ProfileService {
         location: dto.location,
         gender: dto.gender,
         ...(dto.bio !== undefined && { bio: dto.bio }),
-        ...(profilePhotoUrl && { profilePhoto: profilePhotoUrl }),
-        ...(dto.profilePhoto && !profilePhotoUrl && { profilePhoto: dto.profilePhoto }),
       },
     });
 
