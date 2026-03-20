@@ -12,10 +12,10 @@ export default function Sidebar() {
   ]
 
   return (
-    <aside className="hidden md:block w-[90px] bg-[#1D0746] flex flex-col items-center py-6 border-r border-[#FFFFFF14]">
+    <aside className="hidden md:block w-[90px] bg-[#1D0746] flex flex-col justify-center items-center py-6 border-r border-[#FFFFFF14]">
 
       {/* Menu */}
-      <nav className="flex flex-col gap-6">
+      <nav className="flex flex-col gap-6 items-center justify-center">
         {menu.map((item, i) => {
           const Icon = item.icon
           return (

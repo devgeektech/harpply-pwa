@@ -7,12 +7,16 @@ interface GlobalModalProps {
   open: boolean;
   onClose: () => void;
   type?: "deleteAccount";
+  title?: string;
+  description?: string;
 }
 
 export default function GlobalModal({
   open,
   onClose,
   type = "deleteAccount",
+  title,
+  description,
 }: GlobalModalProps) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -32,17 +36,25 @@ export default function GlobalModal({
             <div className="flex justify-center mb-4">
               <div className="bg-red-100 p-2 rounded-full">
                 <div className="bg-red-500 text-white p-3 rounded-full">
-                  <img src="/images/deletewhiteicon.svg" alt="delete" width={24} height={24} />
+                  <img
+                    src="/images/deletewhiteicon.svg"
+                    alt="delete"
+                    width={24}
+                    height={24}
+                  />
                 </div>
               </div>
             </div>
 
             {/* Title */}
-            <h2 className="text-[24px] text-[#121721] font-semibold">Delete Account</h2>
+            <h2 className="text-[24px] text-[#121721] font-semibold">
+              {title || "Delete Account"}
+            </h2>
 
             {/* Description */}
             <p className="text-base text-[#1A1A1A] font-normal mt-2 mx-auto max-w-[400px] text-center">
-              This action is permanent and will delete all of your account data.
+              {description ||
+                "This action is permanent and will delete all of your account data."}
             </p>
 
             {/* Buttons */}
