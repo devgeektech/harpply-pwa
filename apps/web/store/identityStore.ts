@@ -13,11 +13,9 @@ export interface IdentityState {
 /** Faith & Lifestyle and lifestyle pills: use profileStore (from profile API) on identity page. */
 
 export const useIdentityStore = create<IdentityState>((set) => ({
-  profileImages: [
-    "/images/slider/slide.jpg",
-    "/images/slider/slide.jpg",
-    "/images/slider/slide.jpg",
-  ],
+  // Start empty so the identity page doesn't show placeholder images
+  // while `/profile/photos` is still loading.
+  profileImages: [],
   activeSlideIndex: 0,
 
   setProfileImages: (images: string[]) => set({ profileImages: images }),
