@@ -104,13 +104,12 @@ export default function EditProfilePage() {
                   </div>
                 </Avatar>
                 <Button
+                  type="button"
+                  aria-label="Edit profile photo"
+                  onClick={() => router.push("/profile/managephoto")}
                   className=" cursor-pointer group rounded-full w-[35px] h-[35px] bg-[#e3e3e3] absolute right-[15px]
                     top-[20px] z-[1] border-[1.08px] border-solid border-[#1A181880]"
                 >
-                  <Input
-                    type="file"
-                    className="absolute w-full h-full opacity-0 cursor-pointer"
-                  />
                   <Pencil className="text-black group-hover:text-white transition-colors" />
                 </Button>
               </div>

@@ -14,6 +14,7 @@ interface UploadErrorDialogProps {
   onOpenChange: (open: boolean) => void
   onRetry?: () => void
   onCancel?: () => void
+  message?: string
 }
 
 export function Uploaderrordialog({
@@ -21,7 +22,9 @@ export function Uploaderrordialog({
   onOpenChange,
   onRetry,
   onCancel,
+  message,
 }: UploadErrorDialogProps) {
+  const dialogMessage = message ?? "Upload failed. Please try again."
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogOverlay className="bg-[#140034] opacity-50" />
@@ -41,7 +44,7 @@ export function Uploaderrordialog({
 
         {/* Description */}
         <p className="text-[16px] font-normal mt-2 mb-6 text-[#1A1A1A]">
-          Upload failed. Please try again.
+          {dialogMessage}
         </p>
 
         {/* Retry Button */}
