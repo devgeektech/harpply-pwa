@@ -3,7 +3,39 @@ import { getApiBaseUrl } from "./base-url";
 /** Auth API base URL: live URL on production, localhost on local. */
 const getAuthBaseUrl = () => getApiBaseUrl();
 
-    const authFetchOptions: RequestInit = { credentials: "include" };
+/** URL to start server-side Google OAuth; avoids Firebase handler. */
+export function getGoogleLoginRedirectUrl(): string {
+  if (typeof window === "undefined") return "";
+  const apiBase = getApiBaseUrl();
+  const returnTo = `${window.location.origin}/auth/google/done`;
+  return `${apiBase}/auth/google/redirect?returnTo=${encodeURIComponent(returnTo)}`;
+}
+
+/** One-time exchange after Google redirect (token is not in URL fragment). */
+export async function exchangeGoogleSessionCode(exchange: string): Promise<{
+  accessToken: string;
+  onboardingCompleted: boolean;
+}> {
+  const res = await fetch(
+    `${getApiBaseUrl()}/auth/google/session?exchange=${encodeURIComponent(exchange)}`,
+    { method: "GET", credentials: "include" }
+  );
+  if (!res.ok) {
+    const msg = await getErrorMessage(res, "Google sign-in session expired.");
+    throw new Error(msg);
+  }
+  const json = (await res.json()) as {
+    data?: { accessToken?: string; onboardingCompleted?: boolean };
+  };
+  const accessToken = json?.data?.accessToken;
+  if (!accessToken) throw new Error("Invalid response from server.");
+  return {
+    accessToken,
+    onboardingCompleted: Boolean(json?.data?.onboardingCompleted),
+  };
+}
+
+const authFetchOptions: RequestInit = { credentials: "include" };
 
 export interface RegisterEmailResponse {
   message: string;
@@ -58,11 +90,12 @@ export interface SignInResponse {
 
 export { AUTH_STORAGE_KEYS } from "@/lib/constants";
 
-/** Parse error message from API error response (JSON or text). */
+/** Parse error message from API error response (JSON or text). Never returns undefined. */
 async function getErrorMessage(
   res: Response,
   fallback: string
 ): Promise<string> {
+  const safeFallback = fallback || "Request failed.";
   const contentType = res.headers.get("content-type") ?? "";
   if (contentType.includes("application/json")) {
     const data = await res.json().catch(() => ({}));
@@ -75,7 +108,7 @@ async function getErrorMessage(
   }
   const text = await res.text().catch(() => "");
   if (text.trim()) return text.slice(0, 200);
-  return res.statusText || fallback;
+  return res.statusText || safeFallback;
 }
 
 /** Verify email with token from the link; updates DB and returns success + email for create-password. */

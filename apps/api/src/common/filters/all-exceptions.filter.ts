@@ -67,7 +67,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       }
     }
 
-    const messageStr = Array.isArray(message) ? message.join(', ') : message;
+    const messageStr =
+      (Array.isArray(message) ? message.join(', ') : message) || 'Internal server error';
     this.logger.warn(`${request.method} ${request.url} ${status} - ${messageStr}`);
 
     if (status === HttpStatus.INTERNAL_SERVER_ERROR && exception instanceof Error) {

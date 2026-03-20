@@ -7,6 +7,7 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule } from '@nestjs/config';
 import { BrevoEmailService } from '../../common/email/brevo-email.service';
+import { GoogleOauthExchangeStore } from './google-oauth-exchange.store';
 
 @Module({
   imports: [
@@ -17,7 +18,14 @@ import { BrevoEmailService } from '../../common/email/brevo-email.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, OnboardingService, PrismaService, JwtStrategy, BrevoEmailService],
+  providers: [
+    AuthService,
+    OnboardingService,
+    PrismaService,
+    JwtStrategy,
+    BrevoEmailService,
+    GoogleOauthExchangeStore,
+  ],
   exports: [AuthService, JwtModule, JwtStrategy],
 })
 export class AuthModule {}

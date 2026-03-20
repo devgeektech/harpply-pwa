@@ -4,6 +4,11 @@ import Image from "next/image";
 import { FadeIn } from "./FadeIn";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useState } from "react";
+import { AuthError, getGoogleLoginRedirectUrl } from "@/lib/api/auth";
+import { getApiBaseUrl } from "@/lib/api/base-url";
+
+
 
 type HeroProps = {
   onOpenModal: () => void;
@@ -56,14 +61,24 @@ function EmailIcon() {
 
 export function Hero({ onOpenModal }: HeroProps) {
   const router = useRouter();
-  const { loading, setLoading } = useAuthStore();
+  const [apiError, setApiError] = useState<string | null>(null);
+  const { email, password, setEmail, setPassword, loading, error, setError } = useAuthStore();
 
-  const handleGoogle = async () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1500);
+  const handleGoogleLogin = async () => {
+    setError(null);
+    setApiError(null);
+    const url = getGoogleLoginRedirectUrl();
+    if (!url) return;
+    try {
+      await fetch(getApiBaseUrl(), { method: "HEAD", cache: "no-store" });
+    } catch {
+      setApiError("API not running. From project root run: pnpm dev");
+      return;
+    }
+    window.location.href = url;
   };
+
+
 
   return (
     <section
@@ -130,7 +145,7 @@ export function Hero({ onOpenModal }: HeroProps) {
       <FadeIn className="relative z-10 flex w-full max-w-[420px] flex-col gap-[0.85rem]">
         <button
           type="button"
-          onClick={handleGoogle}
+          onClick={handleGoogleLogin}
           disabled={loading}
           className="font-[var(--font-inter),'Inter',sans-serif] flex w-full items-center justify-center gap-[0.75rem] rounded-full border-none bg-[rgba(255,255,255,0.97)] px-6 py-4 text-[0.95rem] font-semibold text-[#1a1a2e] no-underline shadow-[0_2px_16px_rgba(0,0,0,0.25)] transition-[transform,box-shadow] duration-[0.18s] hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(0,0,0,0.35)]"
         >
