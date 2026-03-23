@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   BadRequestException,
   Body,
@@ -46,6 +49,7 @@ import {
 import * as Express from 'express';
 import { ConfigService } from '@nestjs/config';
 import { successResponse } from '../../common/response/api-response';
+import { AttributeDto } from './dto/attribute.dto';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -57,7 +61,7 @@ export class AuthController {
     private readonly onboardingService: OnboardingService,
     private readonly config: ConfigService,
     private readonly googleOauthExchange: GoogleOauthExchangeStore,
-  ) {}
+  ) { }
 
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
@@ -510,6 +514,32 @@ export class AuthController {
     @Body() dto: InterestsDto,
   ) {
     return this.onboardingService.saveInterests(userId, dto);
+  }
+
+  @Post('onboarding/my-attributes')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Save my-attributes – auth by token, update user by decoded sub',
+  })
+  async saveMyFaithValues(
+    @CurrentUserId() userId: string,
+    @Body() dto: AttributeDto,
+  ) {
+    return this.onboardingService.saveMyFaithValues(userId, dto);
+  }
+
+  @Post('onboarding/partner-attributes')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Save partner-attributes – auth by token, update user by decoded sub',
+  })
+  async savePartnerValues(
+    @CurrentUserId() userId: string,
+    @Body() dto: AttributeDto,
+  ) {
+    return this.onboardingService.savePartnerValues(userId, dto);
   }
 
   @Get('onboarding/review')

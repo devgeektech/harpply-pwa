@@ -17,11 +17,11 @@ export default function AttributeCard({ value, title, desc }: Props) {
   return (
     <div
       onClick={() => toggle(value)}
-      className={`cursor-pointer rounded-xl border p-4 transition
+      className={`cursor-pointer rounded-xl border p-4 transition w-full
       ${active ? "border-yellow-400 bg-yellow-50" : "bg-white border-gray-200"}
       `}
     >
-      <div className="flex justify-between items-start">
+      <div className="flex justify-between items-center">
         <div className="text-lg font-semibold">{title}</div>
 
         <CheckboxField

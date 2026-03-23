@@ -7,11 +7,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { AuthError, getGoogleLoginRedirectUrl } from "@/lib/api/auth";
 import { getApiBaseUrl } from "@/lib/api/base-url";
+import { ERROR_MESSAGES } from "@/lib/messages";
+import { isStrongPassword, isValidEmail } from "@/lib/validation/regex";
 import { useAuthStore } from "store/useAuthStoreLogin";
 
 function SigninForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { email, password, setEmail, setPassword, login, loading, error, setError } = useAuthStore();
@@ -35,6 +39,30 @@ function SigninForm() {
 
   const handleLogin = async () => {
     setError(null);
+    setEmailError(null);
+    setPasswordError(null);
+    const normalizedEmail = email.trim();
+    const trimmedPassword = password.trim();
+    let hasValidationError = false;
+
+    if (!normalizedEmail) {
+      setEmailError(ERROR_MESSAGES.VALIDATION.EMAIL_REQUIRED);
+      hasValidationError = true;
+    } else if (!isValidEmail(normalizedEmail)) {
+      setEmailError(ERROR_MESSAGES.VALIDATION.EMAIL_INVALID);
+      hasValidationError = true;
+    }
+
+    if (!trimmedPassword) {
+      setPasswordError(ERROR_MESSAGES.VALIDATION.PASSWORD_REQUIRED);
+      hasValidationError = true;
+    } else if (!isStrongPassword(password)) {
+      setPasswordError(ERROR_MESSAGES.VALIDATION.PASSWORD_WEAK);
+      hasValidationError = true;
+    }
+
+    if (hasValidationError) return;
+
     try {
       const redirectTo = await login();
       router.push(redirectTo);
@@ -60,9 +88,11 @@ function SigninForm() {
             {(apiError || googleError) && (
               <p className="text-sm text-amber-200 bg-amber-500/20 rounded-lg px-3 py-2">
                 {apiError ??
-                  (googleFailReason
-                    ? `Google sign-in failed (${googleFailReason}). Check API terminal logs and GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET / GOOGLE_CALLBACK_URI.`
-                    : "Google sign-in failed. Please try again.")}
+                  (googleError
+                    ? googleFailReason
+                      ? `Google sign-in failed (${googleFailReason}). Check API terminal logs and GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET / GOOGLE_CALLBACK_URI.`
+                      : "Google sign-in failed. Please try again."
+                    : null)}
               </p>
             )}
             <form className="space-y-5 md:my-[50px] w-full" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
@@ -76,9 +106,13 @@ function SigninForm() {
                 <Input
                   placeholder="Email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (emailError) setEmailError(null);
+                  }}
                   className="bg-white border-white/10 h-[52px] border border-[#E7ECF2] rounded-[12px] md:rounded-[8px] text-[#3B3B3B] placeholder:text-[#3B3B3B] focus-visible:ring-0"
                 />
+                {emailError && <p className="text-sm text-red-400">{emailError}</p>}
               </div>
 
               <div className="space-y-2">
@@ -88,7 +122,10 @@ function SigninForm() {
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (passwordError) setPasswordError(null);
+                    }}
                     className="bg-white h-[52px] rounded-[12px] rounded-[8px] border-white/10 text-[#3B3B3B] placeholder:text-[#3B3B3B] pr-10  focus-visible:ring-0"
                   />
                   <button
@@ -99,6 +136,7 @@ function SigninForm() {
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+                {passwordError && <p className="text-sm text-red-400">{passwordError}</p>}
               </div>
 
               <div className="text-right text-sm">

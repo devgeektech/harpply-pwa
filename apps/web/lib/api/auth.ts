@@ -1,4 +1,5 @@
 import { getApiBaseUrl } from "./base-url";
+import { redirectIfUnauthorizedForAuthApi } from "./session-expired";
 
 /** Auth API base URL: live URL on production, localhost on local. */
 const getAuthBaseUrl = () => getApiBaseUrl();
@@ -20,6 +21,7 @@ export async function exchangeGoogleSessionCode(exchange: string): Promise<{
     `${getApiBaseUrl()}/auth/google/session?exchange=${encodeURIComponent(exchange)}`,
     { method: "GET", credentials: "include" }
   );
+  redirectIfUnauthorizedForAuthApi(res);
   if (!res.ok) {
     const msg = await getErrorMessage(res, "Google sign-in session expired.");
     throw new Error(msg);
@@ -310,6 +312,7 @@ export async function saveFaithLifestyle(
     },
     body: JSON.stringify(payload),
   });
+  redirectIfUnauthorizedForAuthApi(res);
   if (!res.ok) {
     const msg = await getErrorMessage(res, "Failed to save faith & lifestyle.");
     throw new Error(msg);
@@ -337,6 +340,7 @@ export async function saveLocation(
     },
     body: JSON.stringify(payload),
   });
+  redirectIfUnauthorizedForAuthApi(res);
   if (!res.ok) {
     const msg = await getErrorMessage(res, "Failed to save location.");
     throw new Error(msg);
@@ -358,8 +362,53 @@ export async function saveInterests(
     },
     body: JSON.stringify({ interests }),
   });
+  redirectIfUnauthorizedForAuthApi(res);
   if (!res.ok) {
     const msg = await getErrorMessage(res, "Failed to save interests.");
+    throw new Error(msg);
+  }
+  const data = await res.json().catch(() => ({}));
+  return data as { message: string };
+}
+
+/** Save onboarding user-attributes for the current user. */
+export async function saveMyFaithValues(
+  myFaithValues: string[],
+  accessToken: string
+): Promise<{ message: string }> {
+  const res = await fetch(`${getAuthBaseUrl()}/auth/onboarding/my-attributes`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ attribute: myFaithValues }),
+  });
+  redirectIfUnauthorizedForAuthApi(res);
+  if (!res.ok) {
+    const msg = await getErrorMessage(res, "Failed to save attributes.");
+    throw new Error(msg);
+  }
+  const data = await res.json().catch(() => ({}));
+  return data as { message: string };
+}
+
+/** Save onboarding user-attributes for the current user. */
+export async function savePartnerValues(
+  partnerValues: string[],
+  accessToken: string
+): Promise<{ message: string }> {
+  const res = await fetch(`${getAuthBaseUrl()}/auth/onboarding/partner-attributes`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ attribute: partnerValues }),
+  });
+  redirectIfUnauthorizedForAuthApi(res);
+  if (!res.ok) {
+    const msg = await getErrorMessage(res, "Failed to save partner-attributes.");
     throw new Error(msg);
   }
   const data = await res.json().catch(() => ({}));
@@ -375,6 +424,7 @@ export async function completeOnboarding(accessToken: string): Promise<{ message
     },
     ...authFetchOptions,
   });
+  redirectIfUnauthorizedForAuthApi(res);
   if (!res.ok) {
     const msg = await getErrorMessage(res, "Failed to complete onboarding.");
     throw new Error(msg);
@@ -397,6 +447,7 @@ export async function getOnboardingData(
     headers: { Authorization: `Bearer ${accessToken}` },
     ...authFetchOptions,
   });
+  redirectIfUnauthorizedForAuthApi(res);
   if (!res.ok) {
     const msg = await getErrorMessage(res, "Failed to load onboarding data.");
     throw new Error(msg);

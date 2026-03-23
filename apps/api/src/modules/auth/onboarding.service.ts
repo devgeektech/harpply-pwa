@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { IdentityDto } from './dto/identity.dto';
@@ -9,10 +11,11 @@ import { InterestsDto } from './dto/interests.dto';
 import { successResponse } from '../../common/response/api-response';
 import { SUCCESS_MESSAGES } from 'src/common/constants/success-messages';
 import { ERROR_MESSAGES } from 'src/common/constants/error-messages';
+import { AttributeDto } from './dto/attribute.dto';
 
 @Injectable()
 export class OnboardingService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async saveIdentity(userId: string, dto: IdentityDto) {
     await this.prisma.user.update({
@@ -71,6 +74,26 @@ export class OnboardingService {
       } as Prisma.UserUpdateInput,
     });
     return successResponse(SUCCESS_MESSAGES.ONBOARDING.INTEREST);
+  }
+
+  async saveMyFaithValues(userId: string, dto: AttributeDto) {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        myFaithValues: dto.attribute as Prisma.InputJsonValue,
+      } as Prisma.UserUpdateInput,
+    });
+    return successResponse(SUCCESS_MESSAGES.ONBOARDING.ATTRIBUTES);
+  }
+
+  async savePartnerValues(userId: string, dto: AttributeDto) {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        partnerValues: dto.attribute as Prisma.InputJsonValue,
+      } as Prisma.UserUpdateInput,
+    });
+    return successResponse(SUCCESS_MESSAGES.ONBOARDING.PARTNER_ATTRIBUTES);
   }
 
   async completeOnboarding(userId: string) {

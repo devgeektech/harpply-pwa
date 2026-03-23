@@ -1,4 +1,5 @@
 import { AUTH_STORAGE_KEYS, saveFaithLifestyle, type OnboardingData } from "@/lib/api/auth";
+import { redirectIfUnauthorizedForAuthApi } from "@/lib/api/session-expired";
 import { create } from "zustand";
 
 interface OnboardingState {
@@ -65,6 +66,8 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
       }
     );
 
+    redirectIfUnauthorizedForAuthApi(res);
+
     if (!res.ok) {
       throw new Error("Failed to submit identity");
     }
@@ -94,6 +97,8 @@ export const useBioStore = create<BioState>((set, get) => ({
         credentials: "include",
       }
     );
+
+    redirectIfUnauthorizedForAuthApi(res);
 
     if (!res.ok) {
       throw new Error("Failed to submit story");

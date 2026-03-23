@@ -7,11 +7,11 @@ import { Button, Card, CardContent, Progress } from "@repo/ui";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { AUTH_STORAGE_KEYS } from "@/lib/constants";
-import { saveMyFaithValues } from "@/lib/api/auth";
+import { savePartnerValues } from "@/lib/api/auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function AttributesPage() {
+export default function PartnerAttributesPage() {
   const selected = useAttributesStore((s) => s.selected);
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
@@ -23,43 +23,44 @@ export default function AttributesPage() {
         ? window.localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN)
         : null;
     if (!token) {
-      router.push("/auth/onboarding/partner-attributes");
+      router.push("/auth/onboarding/profile");
       return;
     }
     setSubmitting(true);
     try {
-      await saveMyFaithValues(selected, token);
+      await savePartnerValues(selected, token);
     } catch {
       // soft‑fail, still move forward
     } finally {
       setSubmitting(false);
-      router.push("/auth/onboarding/partner-attributes");
+      router.push("/auth/onboarding/profile");
     }
   };
 
   return (
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex  sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
       <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
-        <CardContent className="flex items-start flex-col gap-3 sm:p-10 px-3">
+        <CardContent className="flex items-start justify-start flex-col gap-3 sm:p-10 px-3">
           <div className="text-left text-white w-full ">
-            <Link href="/auth/onboarding/faith">
+            <Link href="/auth/onboarding/attributes">
               <ChevronLeft size={24} />
             </Link>
           </div>
+          
           {/* Progress */}
           <div className="mb-6 w-full">
-            <p className="text-xs text-gray-300 mb-2 text-left">Step 5 of 7</p>
+            <p className="text-xs text-gray-300 mb-2 text-left">Step 6 of 7</p>
 
             <Progress value={80} className="h-2" />
           </div>
 
           {/* Title */}
-          <h2 className="text-[24px] font-serif text-white font-normal leading-snug text-left">
-            Choose 3 biblical attributes that reflect your walk with Christ
+          <h2 className="text-[24px] font-serif text-white justify-start font-normal leading-snug !text-left">
+            Choose 3 biblical attributes you seek in a partner
           </h2>
 
           <p className="text-sm text-white mt-0 mb-6 text-left w-full">
-            Select the qualities most important to you.
+            SSelect the qualities most important to you.
           </p>
 
           {/* Cards */}

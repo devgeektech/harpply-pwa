@@ -19,12 +19,21 @@ import { useState } from "react";
 export default function Bio() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [bioError, setBioError] = useState<string | null>(null);
 
   const { bio, setBio, submitBio } =
     useBioStore();
 
   const handleSubmit = async () => {
     try {
+      setBioError(null);
+
+      const trimmedBio = bio.trim();
+      if (!trimmedBio) {
+        setBioError("Please enter a valid bio");
+        return;
+      }
+
       setLoading(true);
 
       await submitBio();
@@ -77,8 +86,9 @@ export default function Bio() {
               placeholder="I’m a believer who finds peace in..."
             />
             <p className="text-sm text-white font-light flex justify-end">
-              0 / 300 characters
+              {bio.length} / 300 characters
             </p>
+            {bioError && <p className="text-sm text-red-400">{bioError}</p>}
           </div>
           <div className="text-sm my-[20px] italic text-[#1A1A1A99] bg-[#FBFAF9] gap-2 p-4 border border-[#F4EFDE] rounded-[12px] flex justify-left text-left">
             <label className="min-w-[25px] h-[35px] flex justify-center items-start">
@@ -96,7 +106,7 @@ export default function Bio() {
           {/* Continue Button */}
           <Button className="cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60"
             onClick={handleSubmit}
-            disabled={!bio || loading}
+            disabled={!bio.trim() || loading}
           >
             Continue
           </Button>

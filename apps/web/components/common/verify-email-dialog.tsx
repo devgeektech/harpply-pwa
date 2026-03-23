@@ -9,9 +9,10 @@ import {
   DialogTitle,
 } from "@repo/ui";
 import Link from "next/link";
+import { isValidEmail } from "@/lib/validation/regex";
 
 function maskEmail(email: string): string {
-  if (!email || !email.includes("@")) return "***@*****.com";
+  if (!email || !isValidEmail(email)) return "***@*****.com";
   const [local, domain] = email.split("@");
   const maskedLocal =
     !local || local.length <= 2
@@ -58,7 +59,7 @@ export default function VerifyEmailDialog({
         <div className="flex flex-col items-center gap-4 mt-4">
           <Link
             href={resendHref}
-            className="text-[#913C01] font-medium underline hover:opacity-90"
+            className="text-[#913C01] font-medium underline hover:opacity-90 cursor-pointer"
           >
             Resend
           </Link>
