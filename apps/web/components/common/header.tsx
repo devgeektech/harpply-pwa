@@ -1,13 +1,30 @@
 "use client"
 
-import { CircleUserRound, LogOut, Search, Settings } from "lucide-react"
+import { useState } from "react"
+import { CircleUserRound, LogOut, Search, Settings, Trash } from "lucide-react"
 import { Button, Input } from "@repo/ui"
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui"
 import Link from "next/link"
 import Image from "next/image"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@repo/ui"
+import { X } from 'lucide-react';
+
+const suggestionsData = [
+  "Dashboard",
+  "Profile",
+  "Settings",
+  "Users",
+  "Analytics",
+  "Reports",
+];
+
 
 export default function Header() {
+  const [query, setQuery] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const filteredSuggestions = suggestionsData.filter((item) =>
+    item.toLowerCase().includes(query.toLowerCase())
+  );
   return (
     <header className="border-b border-white/10 bg-white flex items-center justify-between px-6 py-2">
       <Link href="/" className="me-12">
@@ -15,24 +32,67 @@ export default function Header() {
       </Link>
       {/* Search */}
       <div className="hidden sm:flex items-center gap-2 w-full relative">
-        <Button className="absolute left-2 top-1/2 -translate-y-1/2 bg-transparent border-none px-2">
+      
+      {/* 🔍 Search Icon */}
+      <Button className="absolute left-2 top-1/2 -translate-y-1/2 bg-transparent border-none px-2">
         <Search className="text-gray-400" size={18} />
-        </Button>
-        <Input
-          placeholder="Search"
-          className="h-[40px] text-base shadow-none focus-visible:ring-0 border border-gray-200 rounded-full ps-15"
-        />
-      </div>
+      </Button>
+
+      {/* ❌ Clear Button */}
+      {query && (
+        <button
+          onClick={() => setQuery("")}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black"
+        >
+          <X size={18} />
+        </button>
+      )}
+
+      {/* 🧠 Input */}
+      <Input
+        value={query}
+        onChange={(e) => {
+          setQuery(e.target.value);
+          setShowDropdown(true);
+        }}
+        onFocus={() => setShowDropdown(true)}
+        onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+        placeholder="Search"
+        className="h-[40px] text-base shadow-none focus-visible:ring-0 border border-gray-200 rounded-full pl-10 pr-10"
+      />
+
+      {/* 📌 Suggestions Dropdown */}
+      {showDropdown && query && (
+        <div className="absolute top-[110%] left-0 w-full bg-white border border-gray-200 rounded-xl shadow-md z-50">
+          {filteredSuggestions.length > 0 ? (
+            filteredSuggestions.map((item, index) => (
+              <div
+                key={index}
+                onMouseDown={() => {
+                  setQuery(item);
+                  setShowDropdown(false);
+                }}
+                className="px-4 py-2 cursor-pointer rounded-md hover:bg-gray-100"
+              >
+                {item}
+              </div>
+            ))
+          ) : (
+            <div className="px-4 py-2 text-gray-400">No results found</div>
+          )}
+        </div>
+      )}
+    </div>
 
       {/* Profile */}
-      <div className="items-center gap-3 ms-3 flex">
+      <div className="items-center gap-3 ms-3 me-4 flex">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className=" border-none relative bg-[#F5F3ED] p-2 rounded-full h-[50px] w-[50px] cursor-pointer">
               <Image src="/images/bell-icon.svg" alt="dropdown" width={30} height={30} />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="border-white/10 bg-gradient-to-b from-[rgba(100, 28, 60, 0.296)] to-[rgba(7, 1, 26, 0.74)]">
+          <DropdownMenuContent className="mt-[12px] border-white/10 bg-gradient-to-b from-[rgba(100, 28, 60, 0.296)] to-[rgba(7, 1, 26, 0.74)]">
             <DropdownMenuGroup>
               {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
               <DropdownMenuItem>
@@ -115,20 +175,18 @@ export default function Header() {
             </span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="border-white/10 bg-gradient-to-b from-[rgba(100, 28, 60, 0.296)] to-[rgba(7, 1, 26, 0.74)]">
+          <DropdownMenuContent className="mt-[12px] border-white/10 bg-gradient-to-b from-[rgba(100, 28, 60, 0.296)] to-[rgba(7, 1, 26, 0.74)]">
               {/* <DropdownMenuLabel className="text-sm font-medium text-[#C39936]">My Account</DropdownMenuLabel> */}
-              <DropdownMenuSeparator  className="bg-white/10" />
+              {/* <DropdownMenuSeparator  className="bg-white/10" /> */}
               <DropdownMenuItem asChild><Link href="/profile" className="cursor-pointer text-sm font-medium text-[#C39936]"><CircleUserRound className="text-[#C39936]" /> Profile</Link></DropdownMenuItem>
               <DropdownMenuSeparator  className="bg-white/10" />
               <DropdownMenuItem asChild><Link href="/settings" className="cursor-pointer text-sm font-medium text-[#C39936]"><Settings className="text-[#C39936]" /> Settings</Link></DropdownMenuItem>
               <DropdownMenuSeparator  className="bg-white/10" />
+              <DropdownMenuItem asChild><Link href="/settings" className="cursor-pointer text-sm font-medium text-[#C39936]"> <Trash  className="text-[#C39936]"/> Delete Account</Link></DropdownMenuItem>
+              <DropdownMenuSeparator  className="bg-white/10" />
               <DropdownMenuItem asChild><Link href="/logout" className="cursor-pointer text-sm font-medium text-[#C39936]"><LogOut className="text-[#C39936]" /> Logout</Link></DropdownMenuItem>
-
           </DropdownMenuContent>
         </DropdownMenu>
-       
-
-
        
       </div>
     </header>

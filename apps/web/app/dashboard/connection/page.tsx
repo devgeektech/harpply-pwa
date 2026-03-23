@@ -39,45 +39,27 @@ const Connectionlist = () => {
 
         <Tabs defaultValue="new" className="w-full">
         <TabsList variant="line">
-        <TabsTrigger value="overview" className="cursor-pointer text-white">Overview</TabsTrigger>
-        <TabsTrigger value="analytics" className="cursor-pointer text-white">Analytics</TabsTrigger>
-        <TabsTrigger value="reports" className="cursor-pointer text-white">Reports</TabsTrigger>
-      </TabsList>
-        {/* <TabsList className="bg-transparent border-0 gap-4" variant="line">
-  
   <TabsTrigger
     value="new"
-    className="
-      relative px-0 pb-2 cursor-pointer
-      text-sm font-medium text-white/70
-      hover:text-[#C39936]
-      data-[state=active]:text-[#C39936]
-      data-[state=active]:border-b-2
-      data-[state=active]:border-b-solid
-      data-[state=active]:border-[#C39936]
-      data-[state=active]:bg-transparent
-    "
+    className="cursor-pointer text-white 
+               data-[state=active]:text-[#C39936]
+               hover:text-[#C39936]
+               data-[state=active]:after:bg-[#C39936]"
   >
     New
   </TabsTrigger>
 
   <TabsTrigger
     value="matched"
-    className="
-      relative px-0 pb-2 cursor-pointer
-      text-sm font-medium text-white/70
-      border-none
-      hover:text-[#C39936]
-      data-[state=active]:text-[#C39936]
-      data-[state=active]:border-b-2
-      data-[state=active]:border-[#C39936]
-      data-[state=active]:bg-transparent
-    "
+    className="cursor-pointer text-white 
+               data-[state=active]:text-[#C39936] 
+               hover:text-[#C39936]
+               data-[state=active]:after:bg-[#C39936]"
   >
     Matched
   </TabsTrigger>
-
-</TabsList> */}
+</TabsList>
+      
           <TabsContent value="new">
             <Card>
               <CardHeader>
