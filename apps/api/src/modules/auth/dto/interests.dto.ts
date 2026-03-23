@@ -1,4 +1,10 @@
-import { IsArray, IsString, IsNotEmpty, ArrayMaxSize, ArrayMinSize } from 'class-validator';
+import {
+  IsArray,
+  IsString,
+  IsNotEmpty,
+  ArrayMaxSize,
+  ArrayMinSize,
+} from 'class-validator';
 import { ERROR_MESSAGES } from '../../../common/constants/error-messages';
 
 export class InterestsDto {

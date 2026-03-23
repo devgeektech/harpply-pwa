@@ -52,7 +52,6 @@ export interface OnboardingData {
   longitude?: number | null;
   location?: string | null;
   locationEnabled?: boolean | null;
-  profilePhoto?: string | null;
   bio?: string | null;
   churchInvolvement?: string | null;
   yearsInFaith?: number | null;

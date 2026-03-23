@@ -34,9 +34,15 @@ import { FaithLifestyleDto } from './dto/faith-lifestyle.dto';
 import { InterestsDto } from './dto/interests.dto';
 import { OnboardingService } from './onboarding.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { CurrentUserId, CurrentUser } from './decorators/current-user.decorator';
+import {
+  CurrentUserId,
+  CurrentUser,
+} from './decorators/current-user.decorator';
 import { AllowEmptyBody } from '../../common/decorators/allow-empty-body.decorator';
-import { ACCESS_TOKEN_COOKIE, accessTokenCookieOptions } from './auth-cookie.constants';
+import {
+  ACCESS_TOKEN_COOKIE,
+  accessTokenCookieOptions,
+} from './auth-cookie.constants';
 import * as Express from 'express';
 import { ConfigService } from '@nestjs/config';
 import { successResponse } from '../../common/response/api-response';
@@ -51,7 +57,7 @@ export class AuthController {
     private readonly onboardingService: OnboardingService,
     private readonly config: ConfigService,
     private readonly googleOauthExchange: GoogleOauthExchangeStore,
-  ) { }
+  ) {}
 
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
@@ -96,12 +102,14 @@ export class AuthController {
 
   /** Redirect to sign-in after Google OAuth failure. In non-production, `reason` helps debug (check API logs too). */
   private googleSignInErrorRedirect(reason: string): string {
-    const base = (this.config.get<string>('FRONTEND_APP_URL') ?? 'http://localhost:3000').replace(
-      /\/$/,
-      '',
-    );
+    const base = (
+      this.config.get<string>('FRONTEND_APP_URL') ?? 'http://localhost:3000'
+    ).replace(/\/$/, '');
     const q = new URLSearchParams({ error: 'google_signin_failed' });
-    const nodeEnv = this.config.get<string>('NODE_ENV') ?? process.env.NODE_ENV ?? 'development';
+    const nodeEnv =
+      this.config.get<string>('NODE_ENV') ??
+      process.env.NODE_ENV ??
+      'development';
     if (nodeEnv !== 'production') {
       q.set('reason', reason);
     }
@@ -115,14 +123,19 @@ export class AuthController {
     callbackUri: string;
   } | null {
     const clientId = this.config.get<string>('GOOGLE_CLIENT_ID')?.trim() ?? '';
-    const clientSecret = this.config.get<string>('GOOGLE_CLIENT_SECRET')?.trim() ?? '';
-    const callbackUri = this.config.get<string>('GOOGLE_CALLBACK_URI')?.trim() ?? '';
+    const clientSecret =
+      this.config.get<string>('GOOGLE_CLIENT_SECRET')?.trim() ?? '';
+    const callbackUri =
+      this.config.get<string>('GOOGLE_CALLBACK_URI')?.trim() ?? '';
     if (!clientId || !clientSecret || !callbackUri) return null;
     return { clientId, clientSecret, callbackUri };
   }
 
   @Get('google/redirect')
-  @ApiOperation({ summary: 'Redirect to Google OAuth (server-side flow); avoids Firebase handler' })
+  @ApiOperation({
+    summary:
+      'Redirect to Google OAuth (server-side flow); avoids Firebase handler',
+  })
   async googleRedirect(
     @Query('returnTo') returnTo: string,
     @Req() req: Request,
@@ -136,7 +149,10 @@ export class AuthController {
     }
     const { clientId: clientIdStr, callbackUri: callbackUriStr } = oauth;
     const safeReturnTo = this.sanitizeReturnTo(returnTo);
-    const state = Buffer.from(JSON.stringify({ returnTo: safeReturnTo }), 'utf8').toString('base64url');
+    const state = Buffer.from(
+      JSON.stringify({ returnTo: safeReturnTo }),
+      'utf8',
+    ).toString('base64url');
     const params = new URLSearchParams({
       client_id: clientIdStr,
       redirect_uri: callbackUriStr,
@@ -146,11 +162,17 @@ export class AuthController {
       access_type: 'offline',
       prompt: 'consent',
     });
-    return res.redirect(302, `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`);
+    return res.redirect(
+      302,
+      `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`,
+    );
   }
 
   @Get('google/callback')
-  @ApiOperation({ summary: 'Google OAuth callback; exchanges code for session, redirects to frontend' })
+  @ApiOperation({
+    summary:
+      'Google OAuth callback; exchanges code for session, redirects to frontend',
+  })
   async googleCallback(
     @Query('code') code: string,
     @Query('state') state: string,
@@ -158,17 +180,24 @@ export class AuthController {
     @Res() res: Express.Response,
   ) {
     if (error) {
-      this.logger.warn(`Google callback: error from Google query param: ${error}`);
+      this.logger.warn(
+        `Google callback: error from Google query param: ${error}`,
+      );
       return res.redirect(302, this.googleSignInErrorRedirect('google_denied'));
     }
     if (!code || !state) {
       this.logger.warn('Google callback: missing code or state');
-      return res.redirect(302, this.googleSignInErrorRedirect('missing_code_or_state'));
+      return res.redirect(
+        302,
+        this.googleSignInErrorRedirect('missing_code_or_state'),
+      );
     }
 
     let returnTo: string;
     try {
-      const decoded = JSON.parse(Buffer.from(state, 'base64url').toString('utf8'));
+      const decoded = JSON.parse(
+        Buffer.from(state, 'base64url').toString('utf8'),
+      );
       returnTo = this.sanitizeReturnTo(decoded?.returnTo);
     } catch (e) {
       this.logger.warn('Google callback: invalid state', (e as Error)?.message);
@@ -177,8 +206,13 @@ export class AuthController {
 
     const oauth = this.getGoogleOAuthConfig();
     if (!oauth) {
-      this.logger.warn('Google callback: missing GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, or GOOGLE_CALLBACK_URI');
-      return res.redirect(302, this.googleSignInErrorRedirect('oauth_not_configured'));
+      this.logger.warn(
+        'Google callback: missing GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, or GOOGLE_CALLBACK_URI',
+      );
+      return res.redirect(
+        302,
+        this.googleSignInErrorRedirect('oauth_not_configured'),
+      );
     }
     const { clientId, clientSecret, callbackUri } = oauth;
 
@@ -195,8 +229,13 @@ export class AuthController {
     });
     if (!tokenRes.ok) {
       const body = await tokenRes.text();
-      this.logger.warn(`Google callback: token exchange failed ${tokenRes.status}: ${body.slice(0, 200)}`);
-      return res.redirect(302, this.googleSignInErrorRedirect('token_exchange_failed'));
+      this.logger.warn(
+        `Google callback: token exchange failed ${tokenRes.status}: ${body.slice(0, 200)}`,
+      );
+      return res.redirect(
+        302,
+        this.googleSignInErrorRedirect('token_exchange_failed'),
+      );
     }
     const tokens = (await tokenRes.json()) as { id_token?: string };
     const idToken = tokens?.id_token;
@@ -205,7 +244,12 @@ export class AuthController {
       return res.redirect(302, this.googleSignInErrorRedirect('no_id_token'));
     }
 
-    let payload: { email?: string; name?: string; picture?: string; sub?: string };
+    let payload: {
+      email?: string;
+      name?: string;
+      picture?: string;
+      sub?: string;
+    };
     try {
       const oauth2Client = new OAuth2Client(clientId);
       const ticket = await oauth2Client.verifyIdToken({
@@ -214,12 +258,21 @@ export class AuthController {
       });
       payload = ticket.getPayload() ?? {};
     } catch (e) {
-      this.logger.warn('Google callback: verifyIdToken failed', (e as Error)?.message);
-      return res.redirect(302, this.googleSignInErrorRedirect('verify_id_token_failed'));
+      this.logger.warn(
+        'Google callback: verifyIdToken failed',
+        (e as Error)?.message,
+      );
+      return res.redirect(
+        302,
+        this.googleSignInErrorRedirect('verify_id_token_failed'),
+      );
     }
     if (!payload?.email || !payload?.sub) {
       this.logger.warn('Google callback: payload missing email or sub');
-      return res.redirect(302, this.googleSignInErrorRedirect('missing_email_or_sub'));
+      return res.redirect(
+        302,
+        this.googleSignInErrorRedirect('missing_email_or_sub'),
+      );
     }
 
     try {
@@ -230,30 +283,46 @@ export class AuthController {
         sub: payload.sub,
       });
       const accessToken = result?.data?.accessToken;
-      const onboardingCompleted = result?.data?.user?.onboardingCompleted ?? false;
+      const onboardingCompleted =
+        result?.data?.user?.onboardingCompleted ?? false;
       if (!accessToken) {
         this.logger.warn('Google callback: no accessToken in result');
-        return res.redirect(302, this.googleSignInErrorRedirect('no_session_token'));
+        return res.redirect(
+          302,
+          this.googleSignInErrorRedirect('no_session_token'),
+        );
       }
-      const exchangeCode = this.googleOauthExchange.create(accessToken, onboardingCompleted);
+      const exchangeCode = this.googleOauthExchange.create(
+        accessToken,
+        onboardingCompleted,
+      );
       const base = returnTo.replace(/#.*$/, '').replace(/\?$/, '');
       const sep = base.includes('?') ? '&' : '?';
       const target = `${base}${sep}exchange=${encodeURIComponent(exchangeCode)}`;
       return res.redirect(302, target);
     } catch (e) {
-      this.logger.error('Google callback: googleLoginWithPayload failed', (e as Error)?.stack ?? (e as Error)?.message);
-      return res.redirect(302, this.googleSignInErrorRedirect('login_with_payload_failed'));
+      this.logger.error(
+        'Google callback: googleLoginWithPayload failed',
+        (e as Error)?.stack ?? (e as Error)?.message,
+      );
+      return res.redirect(
+        302,
+        this.googleSignInErrorRedirect('login_with_payload_failed'),
+      );
     }
   }
 
   @Get('google/session')
   @ApiOperation({
-    summary: 'Exchange one-time code from Google redirect for access token (avoids URL fragment issues)',
+    summary:
+      'Exchange one-time code from Google redirect for access token (avoids URL fragment issues)',
   })
   googleSession(@Query('exchange') exchange: string) {
     const entry = this.googleOauthExchange.consume(exchange);
     if (!entry) {
-      throw new UnauthorizedException('Invalid or expired Google session. Try signing in again.');
+      throw new UnauthorizedException(
+        'Invalid or expired Google session. Try signing in again.',
+      );
     }
     return successResponse('OK', {
       data: {
@@ -264,7 +333,8 @@ export class AuthController {
   }
 
   private sanitizeReturnTo(returnTo: string | undefined): string {
-    const frontendUrl = this.config.get<string>('FRONTEND_APP_URL') ?? 'http://localhost:3000';
+    const frontendUrl =
+      this.config.get<string>('FRONTEND_APP_URL') ?? 'http://localhost:3000';
     const base = frontendUrl.replace(/\/$/, '');
     const allowedOrigins = new Set([
       'http://localhost:3000',
@@ -294,7 +364,9 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Logout – removes token from DB; clears HttpOnly cookie' })
+  @ApiOperation({
+    summary: 'Logout – removes token from DB; clears HttpOnly cookie',
+  })
   async logout(
     @CurrentUser('jti') jti: string,
     @CurrentUserId() userId: string,
@@ -348,7 +420,8 @@ export class AuthController {
 
   @Get('verify-reset')
   @ApiOperation({
-    summary: 'Validate reset token from email link; redirects to frontend set-password page',
+    summary:
+      'Validate reset token from email link; redirects to frontend set-password page',
   })
   async verifyResetFromLink(
     @Query('token') token: string,
@@ -369,7 +442,9 @@ export class AuthController {
   }
 
   @Get('validate-reset-token/:token')
-  @ApiOperation({ summary: 'Validate reset token; returns email for pre-fill (JSON)' })
+  @ApiOperation({
+    summary: 'Validate reset token; returns email for pre-fill (JSON)',
+  })
   async validateResetToken(@Param('token') token: string) {
     return this.authService.validateResetToken(token);
   }
@@ -377,7 +452,9 @@ export class AuthController {
   @Post('onboarding/identity')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Save identity – auth by token, update user by decoded sub' })
+  @ApiOperation({
+    summary: 'Save identity – auth by token, update user by decoded sub',
+  })
   async saveIdentity(
     @CurrentUserId() userId: string,
     @Body() dto: IdentityDto,
@@ -388,7 +465,9 @@ export class AuthController {
   @Post('onboarding/location')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Save location – auth by token, update user by decoded sub' })
+  @ApiOperation({
+    summary: 'Save location – auth by token, update user by decoded sub',
+  })
   async saveLocation(
     @CurrentUserId() userId: string,
     @Body() dto: LocationDto,
@@ -399,18 +478,20 @@ export class AuthController {
   @Post('onboarding/story')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Save story – auth by token, update user by decoded sub' })
-  async saveStory(
-    @CurrentUserId() userId: string,
-    @Body() dto: StoryDto,
-  ) {
+  @ApiOperation({
+    summary: 'Save story – auth by token, update user by decoded sub',
+  })
+  async saveStory(@CurrentUserId() userId: string, @Body() dto: StoryDto) {
     return this.onboardingService.saveStory(userId, dto);
   }
 
   @Post('onboarding/faith-lifestyle')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Save faith & lifestyle – auth by token, update user by decoded sub' })
+  @ApiOperation({
+    summary:
+      'Save faith & lifestyle – auth by token, update user by decoded sub',
+  })
   async saveFaithLifestyle(
     @CurrentUserId() userId: string,
     @Body() dto: FaithLifestyleDto,
@@ -421,7 +502,9 @@ export class AuthController {
   @Post('onboarding/interests')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Save interests – auth by token, update user by decoded sub' })
+  @ApiOperation({
+    summary: 'Save interests – auth by token, update user by decoded sub',
+  })
   async saveInterests(
     @CurrentUserId() userId: string,
     @Body() dto: InterestsDto,
@@ -441,9 +524,10 @@ export class AuthController {
   @AllowEmptyBody()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Complete onboarding – auth by token, update user by decoded sub' })
+  @ApiOperation({
+    summary: 'Complete onboarding – auth by token, update user by decoded sub',
+  })
   async completeOnboarding(@CurrentUserId() userId: string) {
     return this.onboardingService.completeOnboarding(userId);
   }
-
 }

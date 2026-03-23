@@ -9,7 +9,10 @@ export class SignInDto {
     },
   )
   @IsNotEmpty({
-    message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'EMAIL'),
+    message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace(
+      '{FIELD}',
+      'EMAIL',
+    ),
   })
   email: string;
 
@@ -17,7 +20,10 @@ export class SignInDto {
     message: 'PASSWORD MUST BE A VALID STRING', // can also be moved to constant if needed
   })
   @IsNotEmpty({
-    message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'PASSWORD'),
+    message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace(
+      '{FIELD}',
+      'PASSWORD',
+    ),
   })
   password: string;
 }

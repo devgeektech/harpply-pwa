@@ -14,7 +14,9 @@ export function throwBadRequest(message: string): never {
   throw new BadRequestException(message);
 }
 
-export function throwUnauthorized(message: string = 'Invalid email or password.'): never {
+export function throwUnauthorized(
+  message: string = 'Invalid email or password.',
+): never {
   throw new UnauthorizedException(message);
 }
 
@@ -22,7 +24,9 @@ export function throwNotFound(message: string = 'Resource not found.'): never {
   throw new NotFoundException(message);
 }
 
-export function throwConflict(message: string = 'Resource already exists.'): never {
+export function throwConflict(
+  message: string = 'Resource already exists.',
+): never {
   throw new ConflictException(message);
 }
 

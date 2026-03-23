@@ -12,6 +12,11 @@ export class SignUpDto {
   password: string;
 
   @IsString()
-  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'confirmPassword') })
+  @IsNotEmpty({
+    message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace(
+      '{FIELD}',
+      'confirmPassword',
+    ),
+  })
   confirmPassword: string;
 }

@@ -34,12 +34,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // Token with jti: must match stored token (current session)
     if (payload.jti) {
       if (user.token !== payload.jti) {
-        throw new UnauthorizedException('Token has been invalidated. Please log in again.');
+        throw new UnauthorizedException(
+          'Token has been invalidated. Please log in again.',
+        );
       }
     } else {
       // Legacy token (no jti): allow if user exists and has a token set (session exists)
       if (!user.token) {
-        throw new UnauthorizedException('Token is invalid or expired. Please log in again.');
+        throw new UnauthorizedException(
+          'Token is invalid or expired. Please log in again.',
+        );
       }
     }
 

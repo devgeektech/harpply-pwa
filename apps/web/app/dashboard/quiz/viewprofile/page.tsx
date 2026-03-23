@@ -28,17 +28,17 @@ const ACCENT = "#C39936";
 export default function ViewProfilePage() {
   const [open, setOpen] = useState(false);
 
-  const { name, age, location } = useProfileStore();
-
   const {
-    profileImages = [],
-    aboutMe = "", // ✅ SAFE DEFAULT
-    faithLifestyle,
-    smoking,
-    alcohol,
-    diet,
-    setActiveSlideIndex,
-  } = useIdentityStore();
+    name,
+    age,
+    location,
+    bio,
+    smokingPreference,
+    alcoholPreference,
+    dietaryPreference,
+  } = useProfileStore();
+
+  const { profileImages = [], setActiveSlideIndex } = useIdentityStore();
 
   const onSwiper = useCallback(
     (swiper: SwiperType) => {
@@ -56,11 +56,26 @@ export default function ViewProfilePage() {
 
   const lifestylePills = useMemo(
     () => [
-      { key: "smoking", label: "Smoking", value: smoking, image: "/images/smoke.png" },
-      { key: "alcohol", label: "Alcohol", value: alcohol, image: "/images/drink.png" },
-      { key: "diet", label: "Diet", value: diet, image: "/images/dietplan.png" },
+      {
+        key: "smoking",
+        label: "Smoking",
+        value: smokingPreference,
+        image: "/images/smoke.png",
+      },
+      {
+        key: "alcohol",
+        label: "Alcohol",
+        value: alcoholPreference,
+        image: "/images/drink.png",
+      },
+      {
+        key: "diet",
+        label: "Diet",
+        value: dietaryPreference,
+        image: "/images/dietplan.png",
+      },
     ],
-    [smoking, alcohol, diet]
+    [smokingPreference, alcoholPreference, dietaryPreference]
   );
 
   const faithDetails = [
@@ -108,7 +123,7 @@ export default function ViewProfilePage() {
 
             {/* About */}
             <div className="bg-white rounded-xl p-4 mt-4">
-              <p>{aboutMe}</p>
+              <p>{bio}</p>
             </div>
 
             {/* Faith */}

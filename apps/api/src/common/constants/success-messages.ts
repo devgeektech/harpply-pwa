@@ -14,20 +14,19 @@ export const SUCCESS_MESSAGES = {
     EMAIL_VERIFIED: 'Email verified successfully.',
     COMPLETE_SIGNUP_SET_PASSWORD:
       'Your email is already verified. Please set your password to complete signup.',
-    VERIFICATION_EMAIL_SENT:
-      'Verification link sent. Please check your email.',
+    VERIFICATION_EMAIL_SENT: 'Verification link sent. Please check your email.',
     EMAIL_ALREADY_VERIFIED: 'This email is already verified.',
   },
   ONBOARDING: {
-    IDENTITY_SAVED:'Identity saved successfully.',
-    LOCATION:'Location saved successfully.',
-    STORY:'Story saved successfully.',
-    FAITH_LIFESTYLE:'Faith & lifestyle saved successfully.',
-    INTEREST:'Interests saved successfully.',
-    ONBOARDING_COMPLETED:'Onboarding completed successfully.',
-    REVIEW_DATA:'Onboarding review data fetched.',
+    IDENTITY_SAVED: 'Identity saved successfully.',
+    LOCATION: 'Location saved successfully.',
+    STORY: 'Story saved successfully.',
+    FAITH_LIFESTYLE: 'Faith & lifestyle saved successfully.',
+    INTEREST: 'Interests saved successfully.',
+    ONBOARDING_COMPLETED: 'Onboarding completed successfully.',
+    REVIEW_DATA: 'Onboarding review data fetched.',
   },
-  PROFILE:{
+  PROFILE: {
     PROFILE_RETRIEVED: 'Profile retrieved.',
     PROFILE_UPDATED: 'Basic profile updated.',
     FAITH_LIFESTYLE_UPDATED: 'Faith & lifestyle updated.',
@@ -36,5 +35,5 @@ export const SUCCESS_MESSAGES = {
     PHOTO_SAVED: 'Photo saved successfully.',
     PHOTO_DELETED: 'Photo deleted successfully.',
     PHOTOS_RETRIEVED: 'Photos retrieved successfully.',
-  }
+  },
 };

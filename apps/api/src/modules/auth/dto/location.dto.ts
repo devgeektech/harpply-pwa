@@ -5,16 +5,31 @@ export class LocationDto {
   @IsNumber()
   @Min(-90)
   @Max(90)
-  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'latitude') })
+  @IsNotEmpty({
+    message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace(
+      '{FIELD}',
+      'latitude',
+    ),
+  })
   latitude: number;
 
   @IsNumber()
   @Min(-180)
   @Max(180)
-  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'longitude') })
+  @IsNotEmpty({
+    message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace(
+      '{FIELD}',
+      'longitude',
+    ),
+  })
   longitude: number;
 
   @IsBoolean()
-  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'locationEnabled') })
+  @IsNotEmpty({
+    message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace(
+      '{FIELD}',
+      'locationEnabled',
+    ),
+  })
   locationEnabled: boolean;
 }

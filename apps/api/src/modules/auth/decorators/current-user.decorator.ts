@@ -5,9 +5,9 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
  * Used by JwtAuthGuard-protected routes; the token is validated and this payload is attached to req.user.
  */
 export interface JwtPayload {
-  sub: string;   // user id – use this to update the authenticated user's details
+  sub: string; // user id – use this to update the authenticated user's details
   email: string;
-  jti: string;  // token id – use for logout
+  jti: string; // token id – use for logout
 }
 
 /**
@@ -15,7 +15,10 @@ export interface JwtPayload {
  * Use in routes protected by JwtAuthGuard; the guard decodes the Bearer token and validates it.
  */
 export const CurrentUser = createParamDecorator(
-  (data: keyof JwtPayload | undefined, ctx: ExecutionContext): JwtPayload | string => {
+  (
+    data: keyof JwtPayload | undefined,
+    ctx: ExecutionContext,
+  ): JwtPayload | string => {
     const request = ctx.switchToHttp().getRequest();
     const user = request.user as JwtPayload;
     return data ? user?.[data] : user;
@@ -30,7 +33,7 @@ export const CurrentUserId = createParamDecorator(
   (_data: unknown, ctx: ExecutionContext): string => {
     const request = ctx.switchToHttp().getRequest();
     const user = request.user as JwtPayload;
-    console.log('user===>>>>',user);
+    console.log('user===>>>>', user);
     return user.sub;
   },
 );

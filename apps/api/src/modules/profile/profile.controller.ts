@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Body, Controller, Get, Patch, Post, Delete, Param, UseGuards, UseInterceptors, UploadedFile, ParseIntPipe, BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -24,30 +25,12 @@ export class ProfileController {
   }
 
 @Patch('basic')
-@UseInterceptors(FileInterceptor('profilePhoto'))
 @ApiOperation({ summary: 'Edit profile: basic info (name, age, location, gender, photo)' })
-@ApiConsumes('multipart/form-data')
-@ApiBody({
-  schema: {
-    type: 'object',
-    properties: {
-      fullName: { type: 'string' },
-      age: { type: 'number' },
-      location: { type: 'string' },
-      gender: { type: 'string' },
-      profilePhoto: {
-        type: 'string',
-        format: 'binary',
-      },
-    },
-  },
-})
 updateBasic(
   @CurrentUserId() userId: string,
   @Body() dto: UpdateBasicDto,
-  @UploadedFile() file: Express.Multer.File,
 ) {
-  return this.profileService.updateBasic(userId, dto, file);
+  return this.profileService.updateBasic(userId, dto);
 }
 
   @Patch('faith-lifestyle')

@@ -4,14 +4,13 @@ import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.use(cookieParser())
+  app.use(cookieParser());
   app.enableCors({
-    origin:
-      process.env.CORS_ORIGIN?.split(',').map((o) => o.trim()) ?? [
-        'http://localhost:3000',
-        'http://127.0.0.1:3000',
-        'https://harpply.com'
-      ],
+    origin: process.env.CORS_ORIGIN?.split(',').map((o) => o.trim()) ?? [
+      'http://localhost:3000',
+      'http://127.0.0.1:3000',
+      'https://harpply.com',
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],

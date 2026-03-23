@@ -1,4 +1,7 @@
-import type { ApiResponse, SuccessResponse } from '../interfaces/api-response.interface';
+import type {
+  ApiResponse,
+  SuccessResponse,
+} from '../interfaces/api-response.interface';
 
 /**
  * Build a standard success response for all APIs.

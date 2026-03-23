@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 import { ERROR_MESSAGES } from '../../../common/constants/error-messages';
 
 export class ResetPasswordDto {
@@ -17,6 +23,11 @@ export class ResetPasswordDto {
   password: string;
 
   @IsString()
-  @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace('{FIELD}', 'confirmPassword') })
+  @IsNotEmpty({
+    message: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD.replace(
+      '{FIELD}',
+      'confirmPassword',
+    ),
+  })
   confirmPassword: string;
 }

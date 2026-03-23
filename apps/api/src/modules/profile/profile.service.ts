@@ -1,3 +1,7 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -17,7 +21,9 @@ const PHOTO_MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 const ALLOWED_PHOTO_MIMES = ['image/jpeg', 'image/png', 'image/webp'];
 const MIN_PHOTOS_REQUIRED = 3;
 
-export type ProfilePhotoItem = { key: string; url: string };
+// `user.profilePhotos` is stored as an array of S3 object keys (strings).
+// The web client then builds public URLs using your S3 public base URL.
+export type ProfilePhotoKey = string;
 
 const profileSelect = {
   id: true,
@@ -25,7 +31,6 @@ const profileSelect = {
   fullName: true,
   age: true,
   gender: true,
-  profilePhoto: true,
   profilePhotos: true,
   latitude: true,
   longitude: true,
@@ -71,59 +76,17 @@ export class ProfileService {
   async updateBasic(
     userId: string,
     dto: UpdateBasicDto,
-    file?: Express.Multer.File,
   ) {
     const hasField =
       dto.fullName !== undefined ||
       dto.age !== undefined ||
       dto.location !== undefined ||
       dto.gender !== undefined ||
-      dto.profilePhoto !== undefined ||
       dto.bio !== undefined;
-    if (!hasField && !file) {
+    if (!hasField) {
       throw new BadRequestException(
-        'Provide at least one field to update (fullName, age, location, gender, bio, or profilePhoto file).',
+        'Provide at least one field to update (fullName, age, location, gender, bio).',
       );
-    }
-
-    const bucket = this.config.get<string>('AWS_S3_BUCKET_PROFILE_PHOTOS')!;
-
-    let profilePhotoUrl: string | undefined;
-
-    if (file) {
-      if (!ALLOWED_PHOTO_MIMES.includes(file.mimetype)) {
-        throw new BadRequestException(ERROR_MESSAGES.PHOTOS.INVALID_FILE_TYPE);
-      }
-
-      if (file.size > PHOTO_MAX_SIZE_BYTES) {
-        throw new BadRequestException(ERROR_MESSAGES.PHOTOS.FILE_TOO_LARGE);
-      }
-
-      const keyPrefix =
-        this.config.get<string>('AWS_S3_KEY_PREFIX_PROFILE_PHOTOS') ??
-        'profile-photo';
-
-      const ext =
-        file.mimetype === 'image/png'
-          ? 'png'
-          : file.mimetype === 'image/webp'
-            ? 'webp'
-            : 'jpg';
-
-      const key = `${keyPrefix}/${userId}/${Date.now()}.${ext}`;
-
-      const publicBaseUrl =
-        this.config.get<string>('AWS_S3_PUBLIC_URL_PROFILE_PHOTOS') ?? null;
-
-      const { url } = await this.awsS3.upload(
-        bucket,
-        key,
-        file.buffer,
-        file.mimetype,
-        { publicBaseUrl },
-      );
-
-      profilePhotoUrl = url;
     }
 
     await this.prisma.user.update({
@@ -134,8 +97,6 @@ export class ProfileService {
         location: dto.location,
         gender: dto.gender,
         ...(dto.bio !== undefined && { bio: dto.bio }),
-        ...(profilePhotoUrl && { profilePhoto: profilePhotoUrl }),
-        ...(dto.profilePhoto && !profilePhotoUrl && { profilePhoto: dto.profilePhoto }),
       },
     });
 
@@ -187,7 +148,7 @@ export class ProfileService {
     if (!user) {
       throw new NotFoundException(ERROR_MESSAGES.USER.PROFILE_NOT_FOUND);
     }
-    const photos = (user.profilePhotos as ProfilePhotoItem[] | null) ?? [];
+    const photos = (user.profilePhotos as ProfilePhotoKey[] | null) ?? [];
     const meetsMinimum = photos.length >= MIN_PHOTOS_REQUIRED;
     return successResponse(SUCCESS_MESSAGES.PROFILE.PHOTOS_RETRIEVED, {
       data: { photos, meetsMinimum, minPhotosRequired: MIN_PHOTOS_REQUIRED },
@@ -254,15 +215,15 @@ export class ProfileService {
     if (!user) {
       throw new NotFoundException(ERROR_MESSAGES.USER.PROFILE_NOT_FOUND);
     }
-    const photos = (user.profilePhotos as ProfilePhotoItem[] | null) ?? [];
+    const photos = (user.profilePhotos as ProfilePhotoKey[] | null) ?? [];
     if (index < 0 || index >= photos.length) {
       throw new BadRequestException(ERROR_MESSAGES.PHOTOS.PHOTO_NOT_FOUND);
     }
 
-    const item = photos[index];
+    const key = photos[index];
     const bucket = this.config.get<string>('AWS_S3_BUCKET_PROFILE_PHOTOS');
     if (this.awsS3.isConfigured() && bucket) {
-      await this.awsS3.delete(bucket, item.key);
+      await this.awsS3.delete(bucket, key);
     }
     const updated = photos.filter((_, i) => i !== index);
     await this.prisma.user.update({

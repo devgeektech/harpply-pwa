@@ -4,10 +4,7 @@ import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { ERROR_MESSAGES } from '../../../../common/constants/error-messages';
 
 export class SignUpDto {
-  @IsEmail(
-    {},
-    { message: ERROR_MESSAGES.VALIDATION.EMAIL_INVALID },
-  )
+  @IsEmail({}, { message: ERROR_MESSAGES.VALIDATION.EMAIL_INVALID })
   @IsNotEmpty({ message: ERROR_MESSAGES.VALIDATION.EMAIL_REQUIRED })
   email: string;
 

@@ -15,7 +15,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { updateBasicProfile, fetchProfile } from "@/lib/api/profile";
+import {
+  fetchProfile,
+  fetchProfilePhotos,
+  updateBasicProfile,
+} from "@/lib/api/profile";
 import { useState, useEffect } from "react";
 
 const CARD_BG = "#1A0A26";
@@ -23,6 +27,15 @@ const GOLD_GRADIENT =
   "linear-gradient(135deg, #c58b00 0%, #e8b923 50%, #c58b00 100%)";
 const INPUT_BG = "rgba(255,255,255,0.06)";
 const BORDER_SUBTLE = "rgba(255,255,255,0.12)";
+
+function buildPhotoSrc(s3PublicUrl: string, key: string): string {
+  const safeKey = key?.toString?.().trim() ?? "";
+  if (!safeKey) return "/images/accountCircle.png";
+  if (/^https?:\/\//i.test(safeKey)) return safeKey;
+  const base = (s3PublicUrl ?? "").replace(/\/$/, "");
+  if (!base) return "/images/accountCircle.png";
+  return `${base}/${safeKey.replace(/^\/+/, "")}`;
+}
 
 export default function EditProfilePage() {
   const {
@@ -41,15 +54,34 @@ export default function EditProfilePage() {
   } = useProfileStore();
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const s3PublicUrl = process.env.NEXT_PUBLIC_AWS_S3_URL ?? "";
+  const [firstProfilePhotoSrc, setFirstProfilePhotoSrc] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
-    if (loaded) return;
-    fetchProfile()
+    if (!loaded) {
+      fetchProfile()
+        .then((res) => {
+          if (res?.data) hydrateFromApi(res.data);
+        })
+        .catch(() => {});
+    }
+
+    // Edit Profile needs a single preview image; it uses the first element
+    // from `/profile/photos` (if any). Otherwise keep the existing placeholder.
+    fetchProfilePhotos()
       .then((res) => {
-        if (res?.data) hydrateFromApi(res.data);
+        const firstKey = res?.photos?.[0];
+        setFirstProfilePhotoSrc(
+          firstKey ? buildPhotoSrc(s3PublicUrl, firstKey) : null,
+        );
       })
-      .catch(() => {});
-  }, [loaded, hydrateFromApi]);
+      .catch(() => {
+        // Keep placeholder on error.
+        setFirstProfilePhotoSrc(null);
+      });
+  }, [loaded, hydrateFromApi, s3PublicUrl]);
 
   const handleSave = async () => {
     if (saving) return;
@@ -91,26 +123,35 @@ export default function EditProfilePage() {
           <div className="flex flex-col items-center mb-8 w-full">
           <div className="relative w-[160px] h-[160px] mx-auto flex items-center">
                 <Avatar className="w-[130px] h-[130px] mx-auto bg-[#FEFDFB]">
-                  <div className="flex flex-col items-center justify-center w-full p-4">
+                  {firstProfilePhotoSrc ? (
                     <Image
-                      width={44}
-                      height={44}
-                      src="/images/accountCircle.png"
-                      alt="accountCircle.png"
+                      width={130}
+                      height={130}
+                      src={firstProfilePhotoSrc}
+                      alt="profile photo"
+                      className="rounded-full object-cover"
                     />
-                    <AvatarFallback className="bg-transparent text-[#252C36] text-base text-center">
-                      Upload photo
-                    </AvatarFallback>
-                  </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center w-full p-4">
+                      <Image
+                        width={44}
+                        height={44}
+                        src="/images/accountCircle.png"
+                        alt="accountCircle.png"
+                      />
+                      <AvatarFallback className="bg-transparent text-[#252C36] text-base text-center">
+                        Upload photo
+                      </AvatarFallback>
+                    </div>
+                  )}
                 </Avatar>
                 <Button
+                  type="button"
+                  aria-label="Edit profile photo"
+                  onClick={() => router.push("/profile/managephoto")}
                   className=" cursor-pointer group rounded-full w-[35px] h-[35px] bg-[#e3e3e3] absolute right-[15px]
                     top-[20px] z-[1] border-[1.08px] border-solid border-[#1A181880]"
                 >
-                  <Input
-                    type="file"
-                    className="absolute w-full h-full opacity-0 cursor-pointer"
-                  />
                   <Pencil className="text-black group-hover:text-white transition-colors" />
                 </Button>
               </div>

@@ -1,6 +1,7 @@
 export const ERROR_MESSAGES = {
   AUTH: {
-    EMAIL_ALREADY_EXISTS: 'An account with this email already exists. Sign in instead.',
+    EMAIL_ALREADY_EXISTS:
+      'An account with this email already exists. Sign in instead.',
     EMAIL_REGISTERED_VERIFY_FIRST:
       'This email is already registered. Please verify your email using the link we sent you.',
     USER_NOT_FOUND: 'No account found with this email address.',
@@ -9,16 +10,17 @@ export const ERROR_MESSAGES = {
     SAVE_FAILED: 'Failed to save. Please try again.',
     SIGNUP_NOT_PENDING:
       'No pending signup for this email, or password was already set.',
-    COMPLETE_SIGNUP:
-      'Please complete your signup by setting your password.',
+    COMPLETE_SIGNUP: 'Please complete your signup by setting your password.',
     INVALID_CREDENTIALS: 'Invalid email or password.',
-    INVALID_ROLE: 'Invalid role selected. Please choose Admin, Employer, or Individual.',
-    ACCOUNT_INACTIVE: 'Your account is currently inactive. Please contact support.',
+    INVALID_ROLE:
+      'Invalid role selected. Please choose Admin, Employer, or Individual.',
+    ACCOUNT_INACTIVE:
+      'Your account is currently inactive. Please contact support.',
     EMAIL_NOT_VERIFIED: 'Please verify your email address before signing in.',
     TOKEN_INVALID: 'The token is invalid or has expired.',
     TOKEN_MISSING: 'Authentication token is required.',
     REFRESH_TOKEN_INVALID: 'The refresh token is invalid or has expired.',
-    INVALID_OR_EXPIRED_OTP: 'Invalid or expired OTP.'
+    INVALID_OR_EXPIRED_OTP: 'Invalid or expired OTP.',
   },
 
   VALIDATION: {
@@ -31,7 +33,8 @@ export const ERROR_MESSAGES = {
     FIELD_REQUIRED: 'This field is required and cannot be empty.',
     /** Use with .replace('{FIELD}', fieldName) for optional fields that must not be empty when provided */
     CANNOT_BE_EMPTY_WHEN_PROVIDED: '{FIELD} cannot be empty when provided.',
-    INTERESTS_REQUIRED: 'interests is required and must contain at least one item.',
+    INTERESTS_REQUIRED:
+      'interests is required and must contain at least one item.',
     INTERESTS_MIN_ONE: 'interests must contain at least one item.',
     CONFIRM_PASSWORD_REQUIRED: 'Please confirm your password.',
     PASSWORDS_DO_NOT_MATCH: 'Passwords do not match.',
@@ -56,7 +59,8 @@ export const ERROR_MESSAGES = {
   PHOTOS: {
     UPLOAD_FAILED: 'Upload failed. Please try again.',
     PHOTO_NOT_FOUND: 'Photo not found.',
-    INVALID_FILE_TYPE: 'Invalid file type. Only JPEG, PNG and WebP are allowed.',
+    INVALID_FILE_TYPE:
+      'Invalid file type. Only JPEG, PNG and WebP are allowed.',
     FILE_TOO_LARGE: 'File size must not exceed 5MB.',
     MIN_PHOTOS_REQUIRED: 'Minimum 3 photos are required.',
   },

@@ -10,7 +10,11 @@ import {
   UnauthorizedException,
 } from '../../common/exceptions';
 import { ERROR_MESSAGES } from '../../common/constants/error-messages';
-import { encodeEmail, decodeEmail, decodeEmailSafe } from '../../common/utils/email-encode';
+import {
+  encodeEmail,
+  decodeEmail,
+  decodeEmailSafe,
+} from '../../common/utils/email-encode';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { randomUUID } from 'crypto';
 import type { Prisma } from '@prisma/client';
@@ -28,7 +32,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly onboardingService: OnboardingService,
     private readonly brevoEmailService: BrevoEmailService,
-  ) { }
+  ) {}
 
   /** Step 1: Register email only. User must call set-password to complete signup. */
   async registerEmail(dto: RegisterEmailDto) {
@@ -193,30 +197,21 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException(
-        ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS,
-      );
+      throw new UnauthorizedException(ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS);
     }
 
     if (user.password == null) {
-      throw new UnauthorizedException(
-        ERROR_MESSAGES.AUTH.COMPLETE_SIGNUP
-      );
+      throw new UnauthorizedException(ERROR_MESSAGES.AUTH.COMPLETE_SIGNUP);
     }
 
     if (!user.emailVerified) {
       throw new UnauthorizedException(ERROR_MESSAGES.AUTH.EMAIL_NOT_VERIFIED);
     }
 
-    const isPasswordValid = await bcrypt.compare(
-      dto.password,
-      user.password,
-    );
+    const isPasswordValid = await bcrypt.compare(dto.password, user.password);
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException(
-        ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS,
-      );
+      throw new UnauthorizedException(ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS);
     }
 
     const emailDecoded = decodeEmail(user.email);
@@ -263,7 +258,6 @@ export class AuthService {
         onboardingCompleted: true,
         emailVerified: true,
         fullName: true,
-        profilePhoto: true,
       },
     });
 
@@ -272,7 +266,6 @@ export class AuthService {
         data: {
           email: emailEncoded,
           fullName: name ?? undefined,
-          profilePhoto: picture ?? undefined,
           googleId: uid,
           emailVerified: true,
         },
@@ -284,7 +277,6 @@ export class AuthService {
           onboardingCompleted: true,
           emailVerified: true,
           fullName: true,
-          profilePhoto: true,
         },
       });
     }

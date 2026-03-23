@@ -11,7 +11,6 @@ export interface ProfileData {
   fullName: string | null;
   age: number | null;
   gender: string | null;
-  profilePhoto: string | null;
   location: string | null;
   bio: string | null;
   denomination: string | null;
@@ -142,5 +141,101 @@ export async function updateLifestyleProfile(
     ...fetchOptions,
   });
   return handleJson<{ message: string }>(res, "Failed to update lifestyle.");
+}
+
+export interface ProfilePhotosData {
+  photos: string[];
+  meetsMinimum: boolean;
+  minPhotosRequired: number;
+}
+
+async function getErrorMessageFromResponse(
+  res: Response,
+  fallback: string,
+): Promise<string> {
+  const contentType = res.headers.get("content-type") ?? "";
+  if (contentType.includes("application/json")) {
+    const data = await res.json().catch(() => null);
+    if (data && typeof data === "object") {
+      const msg = (data as any).message;
+      if (typeof msg === "string" && msg.trim()) return msg;
+      if (Array.isArray(msg)) return msg.join(", ");
+      const err = (data as any).error;
+      if (typeof err === "string" && err.trim()) return err;
+    }
+  }
+
+  const text = await res.text().catch(() => "");
+  if (text.trim()) {
+    try {
+      const parsed = JSON.parse(text);
+      const msg = parsed?.message;
+      if (typeof msg === "string" && msg.trim()) return msg;
+    } catch {
+      // ignore non-json error bodies
+    }
+    return text.slice(0, 200);
+  }
+
+  return res.statusText || fallback;
+}
+
+export async function fetchProfilePhotos(): Promise<ProfilePhotosData> {
+  const token = await getAuthToken();
+  const res = await fetch(`${getBaseUrl()}/profile/photos`, {
+    method: "GET",
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    ...fetchOptions,
+  });
+
+  if (!res.ok) {
+    const msg = await getErrorMessageFromResponse(res, "Failed to load profile photos.");
+    throw new Error(msg);
+  }
+
+  const json = (await res.json().catch(() => ({}))) as any;
+  return json.data as ProfilePhotosData;
+}
+
+export async function addProfilePhoto(
+  file: File,
+): Promise<{ photos: string[] }> {
+  const token = await getAuthToken();
+  const formData = new FormData();
+  formData.append("photo", file);
+
+  const res = await fetch(`${getBaseUrl()}/profile/photos`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    body: formData,
+    ...fetchOptions,
+  });
+
+  if (!res.ok) {
+    const msg = await getErrorMessageFromResponse(res, "Upload failed. Please try again.");
+    throw new Error(msg);
+  }
+
+  const json = (await res.json().catch(() => ({}))) as any;
+  return json.data as { photos: string[] };
+}
+
+export async function deleteProfilePhoto(
+  index: number,
+): Promise<{ photos: string[]; meetsMinimum: boolean }> {
+  const token = await getAuthToken();
+  const res = await fetch(`${getBaseUrl()}/profile/photos/${index}`, {
+    method: "DELETE",
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    ...fetchOptions,
+  });
+
+  if (!res.ok) {
+    const msg = await getErrorMessageFromResponse(res, "Failed to delete photo.");
+    throw new Error(msg);
+  }
+
+  const json = (await res.json().catch(() => ({}))) as any;
+  return json.data as { photos: string[]; meetsMinimum: boolean };
 }
 
