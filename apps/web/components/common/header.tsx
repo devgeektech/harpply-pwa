@@ -1,6 +1,6 @@
 "use client"
 
-import { Search } from "lucide-react"
+import { CircleUserRound, LogOut, Search, Settings } from "lucide-react"
 import { Button, Input } from "@repo/ui"
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui"
 import Link from "next/link"
@@ -32,7 +32,7 @@ export default function Header() {
               <Image src="/images/bell-icon.svg" alt="dropdown" width={30} height={30} />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent className="border-white/10 bg-gradient-to-b from-[rgba(100, 28, 60, 0.296)] to-[rgba(7, 1, 26, 0.74)]">
             <DropdownMenuGroup>
               {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
               <DropdownMenuItem>
@@ -40,22 +40,65 @@ export default function Header() {
                   <div className="">
                     <Image src="/images/notificationicon.png" alt="dropdown" width={45} height={45} />
                   </div>
-                  <div className="flex flex-col gap-2 relative">
+                  <div className="flex flex-col gap-1 relative">
                     <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-[#C39936]">New Connection New Connection New Connection New Connection</label>
-                      <p className="text-sm text-gray-500 text-[#FAF5EB99] absolute right-0 top-0">1 min ago</p>
+                      <label className="text-sm font-medium text-[#C39936] max-w-[150px] truncate">New Connection New Connection New Connection New Connection</label>
+                      <p className="text-[12px] text-gray-400 absolute right-0 top-0">1 min ago</p>
                     </div>
                     <p className="text-sm text-gray-500 w-[250px]  truncate">A new connection awaits you, start a meaningful conversation. </p>
                   </div>
-                </div>
+                </div>                
               </DropdownMenuItem>
-              <DropdownMenuItem>Billing</DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-white/10" />
+              <DropdownMenuItem>
+                <div className="flex items-center gap-2">
+                  <div className="">
+                    <Image src="/images/notificationicon.png" alt="dropdown" width={45} height={45} />
+                  </div>
+                  <div className="flex flex-col gap-1 relative">
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium text-[#C39936] max-w-[150px] truncate">New Connection New Connection New Connection New Connection</label>
+                      <p className="text-[12px] text-gray-400 absolute right-0 top-0">1 min ago</p>
+                    </div>
+                    <p className="text-sm text-gray-500 w-[250px]  truncate">A new connection awaits you, start a meaningful conversation. </p>
+                  </div>
+                </div>                
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-white/10" />
+              <DropdownMenuItem>
+                <div className="flex items-center gap-2">
+                  <div className="">
+                    <Image src="/images/notificationicon.png" alt="dropdown" width={45} height={45} />
+                  </div>
+                  <div className="flex flex-col gap-1 relative">
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium text-[#C39936] max-w-[150px] truncate">New Connection New Connection New Connection New Connection</label>
+                      <p className="text-[12px] text-gray-400 absolute right-0 top-0">1 min ago</p>
+                    </div>
+                    <p className="text-sm text-gray-500 w-[250px]  truncate">A new connection awaits you, start a meaningful conversation. </p>
+                  </div>
+                </div>                
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-white/10" />
+              <DropdownMenuItem>
+                <div className="flex items-center gap-2">
+                  <div className="">
+                    <Image src="/images/notificationicon.png" alt="dropdown" width={45} height={45} />
+                  </div>
+                  <div className="flex flex-col gap-1 relative">
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium text-[#C39936] max-w-[150px] truncate">New Connection New Connection New Connection New Connection</label>
+                      <p className="text-[12px] text-gray-400 absolute right-0 top-0">1 min ago</p>
+                    </div>
+                    <p className="text-sm text-gray-500 w-[250px]  truncate">A new connection awaits you, start a meaningful conversation. </p>
+                  </div>
+                </div>                
+              </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Team</DropdownMenuItem>
-              <DropdownMenuItem>Subscription</DropdownMenuItem>
-            </DropdownMenuGroup>
+            <DropdownMenuSeparator className="bg-white/10" />
+            
+              <Link href="/notifications" className="flex items-center justify-center cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60">View All Notifications</Link>
+         
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -72,17 +115,15 @@ export default function Header() {
             </span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Billing</DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Team</DropdownMenuItem>
-              <DropdownMenuItem>Subscription</DropdownMenuItem>
-            </DropdownMenuGroup>
+          <DropdownMenuContent className="border-white/10 bg-gradient-to-b from-[rgba(100, 28, 60, 0.296)] to-[rgba(7, 1, 26, 0.74)]">
+              {/* <DropdownMenuLabel className="text-sm font-medium text-[#C39936]">My Account</DropdownMenuLabel> */}
+              <DropdownMenuSeparator  className="bg-white/10" />
+              <DropdownMenuItem asChild><Link href="/profile" className="cursor-pointer text-sm font-medium text-[#C39936]"><CircleUserRound className="text-[#C39936]" /> Profile</Link></DropdownMenuItem>
+              <DropdownMenuSeparator  className="bg-white/10" />
+              <DropdownMenuItem asChild><Link href="/settings" className="cursor-pointer text-sm font-medium text-[#C39936]"><Settings className="text-[#C39936]" /> Settings</Link></DropdownMenuItem>
+              <DropdownMenuSeparator  className="bg-white/10" />
+              <DropdownMenuItem asChild><Link href="/logout" className="cursor-pointer text-sm font-medium text-[#C39936]"><LogOut className="text-[#C39936]" /> Logout</Link></DropdownMenuItem>
+
           </DropdownMenuContent>
         </DropdownMenu>
        
