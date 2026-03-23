@@ -194,6 +194,25 @@ html {
 
 
 /* New css JK Style */
+.btns-container + button.absolute[data-slot="dialog-close"] {
+  display: none;
+}
+
+[data-radix-slider-track] {
+  background: rgba(255,255,255,0.3);
+}
+
+[data-radix-slider-range] {
+  background: #C39936;
+}
+
+[data-radix-slider-thumb] {
+  background: #C39936;
+  border: 2px solid white;
+}
+.filters .bg-primary {
+  background: #C39936;
+}
 .container {
   height: 100vh;
   display: flex;
@@ -254,5 +273,15 @@ html {
   100% {
     transform: translate(-50%, -50%) scale(6);
     opacity: 0;
+  }
+}
+
+
+@media only screen and (max-width: 768px) {
+  body:has(.view-profile) .wrapper {
+    display: block;
+  }
+  .view-profile {
+    max-width: 100%;
   }
 }

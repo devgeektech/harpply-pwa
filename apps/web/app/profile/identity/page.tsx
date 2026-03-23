@@ -25,6 +25,13 @@ import { fetchProfile, fetchProfilePhotos } from "@/lib/api/profile";
 
 import "swiper/css";
 import "swiper/css/pagination";
+import ChurchIcon from "@/icons/chruch";
+import Bookfaith from "@/icons/bookfaith";
+import Chruchweekly from "@/icons/chruchweekly";
+import Faithvalues from "@/icons/faithvalues";
+import Partnervalues from "@/icons/partnervalues";
+import Denomination from "@/icons/denomination";
+import Lifestyle from "@/icons/lifestyle";
 
 const ACCENT = "#C39936";
 const BULLET_INACTIVE = "#3d3a4a";
@@ -57,12 +64,18 @@ function ShimmerBox({ className }: { className: string }) {
 }
 
 const faithIconMap: Record<string, React.ReactNode> = {
-  church: <Church className="size-8 shrink-0" style={{ color: ACCENT }} />,
-  scroll: <BookOpen className="size-8 shrink-0" style={{ color: ACCENT }} />,
-  attendance: <Church className="size-8 shrink-0" style={{ color: ACCENT }} />,
-  hands: <Heart className="size-8 shrink-0" style={{ color: ACCENT }} />,
-  heart: <Heart className="size-8 shrink-0" style={{ color: ACCENT }} />,
-  denomination: <Landmark className="size-8 shrink-0" style={{ color: ACCENT }} />,
+  church: <ChurchIcon />,
+  // church: <Church className="size-8 shrink-0" style={{ color: ACCENT }} />,
+  // scroll: <BookOpen className="size-8 shrink-0" style={{ color: ACCENT }} />,
+  scroll: <Bookfaith />,
+  // attendance: <Church className="size-8 shrink-0" style={{ color: ACCENT }} />,
+  attendance: <Chruchweekly />,
+  // hands: <Heart className="size-8 shrink-0" style={{ color: ACCENT }} />,
+  hands: <Faithvalues />,
+  // heart: <Heart className="size-8 shrink-0" style={{ color: ACCENT }} />,
+  heart: <Partnervalues />,
+  // denomination: <Landmark className="size-8 shrink-0" style={{ color: ACCENT }} />,
+  denomination: <Denomination />,
 };
 
 export default function ProfileIdentityPage() {

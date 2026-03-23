@@ -1,8 +1,9 @@
 import { create } from "zustand";
 
 export interface IdentityState {
-  /** Profile image URLs for swiper (can be placeholders) */
+  /** Profile image URLs for swiper */
   profileImages: string[];
+
   /** Active swiper slide index */
   activeSlideIndex: number;
 
