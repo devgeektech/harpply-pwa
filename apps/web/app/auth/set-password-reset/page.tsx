@@ -14,12 +14,13 @@ import {
 } from "@/lib/api/auth";
 import { MIN_PASSWORD_LENGTH } from "@/lib/constants";
 import { ERROR_MESSAGES } from "@/lib/messages";
+import { PASSWORD_REGEX } from "@/lib/validation/regex";
 
 const setPasswordSchema = yup.object({
   password: yup
     .string()
     .required(ERROR_MESSAGES.VALIDATION.PASSWORD_REQUIRED)
-    .min(MIN_PASSWORD_LENGTH, ERROR_MESSAGES.VALIDATION.PASSWORD_TOO_SHORT),
+    .matches(PASSWORD_REGEX, ERROR_MESSAGES.VALIDATION.PASSWORD_WEAK),
   confirmPassword: yup
     .string()
     .required(ERROR_MESSAGES.VALIDATION.CONFIRM_PASSWORD_REQUIRED)

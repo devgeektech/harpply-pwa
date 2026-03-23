@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useAuthStore } from "store/useAuthStore";
 import { Button, Card, CardContent, Input, Label } from "@repo/ui";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { MIN_PASSWORD_LENGTH } from "@/lib/constants";
+import { ERROR_MESSAGES } from "@/lib/messages";
+import { isStrongPassword, isValidEmail } from "@/lib/validation/regex";
 export default function SignupPage() {
   const {
     email,
@@ -33,13 +36,13 @@ export default function SignupPage() {
       return;
     }
 
-    if (!email.includes("@")) {
+    if (!isValidEmail(email)) {
       setError("Please enter a valid email address.");
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+    if (password.length < MIN_PASSWORD_LENGTH || !isStrongPassword(password)) {
+      setError(ERROR_MESSAGES.VALIDATION.PASSWORD_WEAK);
       return;
     }
 

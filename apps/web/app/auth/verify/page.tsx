@@ -8,9 +8,10 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useMemo, useEffect } from "react";
 import { useSignupStore } from "store/useSignupStore";
 import { resendVerificationEmail } from "@/lib/api/auth";
+import { isValidEmail } from "@/lib/validation/regex";
 
 function maskEmail(email: string): string {
-  if (!email || !email.includes("@")) return "***@*****.com";
+  if (!email || !isValidEmail(email)) return "***@*****.com";
   const [local, domain] = email.split("@");
   const maskedLocal =
     !local || local.length <= 2

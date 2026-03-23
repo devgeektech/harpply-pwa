@@ -1,5 +1,6 @@
 import { AUTH_STORAGE_KEYS } from "@/lib/constants";
 import { getApiBaseUrl } from "./base-url";
+import { redirectIfUnauthorizedForAuthApi } from "./session-expired";
 
 const getBaseUrl = () => getApiBaseUrl();
 
@@ -37,6 +38,7 @@ async function getAuthToken(): Promise<string | null> {
 }
 
 async function handleJson<T>(res: Response, fallbackMsg: string): Promise<T> {
+  redirectIfUnauthorizedForAuthApi(res);
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     const msg = text || fallbackMsg;
@@ -188,6 +190,8 @@ export async function fetchProfilePhotos(): Promise<ProfilePhotosData> {
     ...fetchOptions,
   });
 
+  redirectIfUnauthorizedForAuthApi(res);
+
   if (!res.ok) {
     const msg = await getErrorMessageFromResponse(res, "Failed to load profile photos.");
     throw new Error(msg);
@@ -211,6 +215,8 @@ export async function addProfilePhoto(
     ...fetchOptions,
   });
 
+  redirectIfUnauthorizedForAuthApi(res);
+
   if (!res.ok) {
     const msg = await getErrorMessageFromResponse(res, "Upload failed. Please try again.");
     throw new Error(msg);
@@ -229,6 +235,8 @@ export async function deleteProfilePhoto(
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     ...fetchOptions,
   });
+
+  redirectIfUnauthorizedForAuthApi(res);
 
   if (!res.ok) {
     const msg = await getErrorMessageFromResponse(res, "Failed to delete photo.");

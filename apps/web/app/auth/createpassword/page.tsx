@@ -12,13 +12,14 @@ import { setPassword as apiSetPassword, AUTH_STORAGE_KEYS } from "@/lib/api/auth
 import { MIN_PASSWORD_LENGTH } from "@/lib/constants";
 import { ERROR_MESSAGES } from "@/lib/messages";
 import { hydrateOnboardingStores } from "@/store/onboardingStore";
+import { PASSWORD_REGEX } from "@/lib/validation/regex";
 import { useSignupStore } from "store/useSignupStore";
 
 const setPasswordSchema = yup.object({
   password: yup
     .string()
     .required(ERROR_MESSAGES.VALIDATION.PASSWORD_REQUIRED)
-    .min(MIN_PASSWORD_LENGTH, ERROR_MESSAGES.VALIDATION.PASSWORD_TOO_SHORT),
+    .matches(PASSWORD_REGEX, ERROR_MESSAGES.VALIDATION.PASSWORD_WEAK),
   confirmPassword: yup
     .string()
     .required(ERROR_MESSAGES.VALIDATION.CONFIRM_PASSWORD_REQUIRED)
