@@ -38,24 +38,46 @@ const Connectionlist = () => {
         <h2 className="text-[20px] mb-4 text-white text-left">Your Connections</h2>
 
         <Tabs defaultValue="new" className="w-full">
-          <TabsList className="bg-transparent border-0 gap-4">
-            <TabsTrigger value="new" 
-            className="relative px-0 pb-2 cursor-pointer border-t-none border-r-none border-l-none border-b-2 bg-transparent border-transparent text-sm font-medium text-white data-[state=active]:text-[#C39936] 
-            hover:text-[#C39936] data-[state=active]:border-t-none data-[state=active]:border-r-none data-[state=active]:border-l-none
-            data-[state=active]:border-b-2 border-[#C39936] data-[state=active]:bg-transparent
-            after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 
-            after:bg-[#C39936] after:transition-all 
-            data-[state=active]:after:w-full"
-            >New</TabsTrigger>
-            <TabsTrigger value="matched" 
-            className="relative px-0 pb-2 cursor-pointer border-t-transparent border-r-transparent border-l-transparent border-b-2 bg-transparent border-transparent text-sm font-medium text-white data-[state=active]:text-[#C39936] 
-            hover:text-[#C39936]
-            data-[state=active]:border-b-2 border-[#C39936] data-[state=active]:bg-transparent
-            after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 
-            after:bg-[#C39936] after:transition-all 
-            data-[state=active]:after:w-full"
-            >Matched</TabsTrigger>
-          </TabsList>
+        <TabsList variant="line">
+        <TabsTrigger value="overview" className="cursor-pointer text-white">Overview</TabsTrigger>
+        <TabsTrigger value="analytics" className="cursor-pointer text-white">Analytics</TabsTrigger>
+        <TabsTrigger value="reports" className="cursor-pointer text-white">Reports</TabsTrigger>
+      </TabsList>
+        {/* <TabsList className="bg-transparent border-0 gap-4" variant="line">
+  
+  <TabsTrigger
+    value="new"
+    className="
+      relative px-0 pb-2 cursor-pointer
+      text-sm font-medium text-white/70
+      hover:text-[#C39936]
+      data-[state=active]:text-[#C39936]
+      data-[state=active]:border-b-2
+      data-[state=active]:border-b-solid
+      data-[state=active]:border-[#C39936]
+      data-[state=active]:bg-transparent
+    "
+  >
+    New
+  </TabsTrigger>
+
+  <TabsTrigger
+    value="matched"
+    className="
+      relative px-0 pb-2 cursor-pointer
+      text-sm font-medium text-white/70
+      border-none
+      hover:text-[#C39936]
+      data-[state=active]:text-[#C39936]
+      data-[state=active]:border-b-2
+      data-[state=active]:border-[#C39936]
+      data-[state=active]:bg-transparent
+    "
+  >
+    Matched
+  </TabsTrigger>
+
+</TabsList> */}
           <TabsContent value="new">
             <Card>
               <CardHeader>
