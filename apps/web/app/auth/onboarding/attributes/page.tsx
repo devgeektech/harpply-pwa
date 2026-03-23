@@ -40,7 +40,7 @@ export default function AttributesPage() {
   return (
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex  sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
       <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
-        <CardContent className="flex items-center flex-col gap-6 sm:p-10 px-3">
+        <CardContent className="flex items-start flex-col gap-3 sm:p-10 px-3">
           <div className="text-left text-white w-full ">
             <Link href="/auth/onboarding/faith">
               <ChevronLeft size={24} />
@@ -58,12 +58,12 @@ export default function AttributesPage() {
             Choose 3 biblical attributes that reflect your walk with Christ
           </h2>
 
-          <p className="text-sm text-white mt-2 mb-6 text-left w-full">
+          <p className="text-sm text-white mt-0 mb-6 text-left w-full">
             Select the qualities most important to you.
           </p>
 
           {/* Cards */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 w-full">
             {myFaithValues.map((item) => (
               <AttributeCard
                 key={item.value}
