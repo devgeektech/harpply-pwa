@@ -98,14 +98,8 @@ function VerifyEmailContent() {
                 The link may be invalid or expired. Try signing up again or use the latest link from your email.
               </p>
               <div className="mt-6 flex flex-col gap-3 w-full">
-                <Link href="/auth/signup" className="w-full">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] border-white/30 text-white hover:bg-white/10"
-                  >
-                    Back to sign up
-                  </Button>
+                <Link href="/auth/signup" className="flex items-center justify-center cursor-pointer w-full text-base h-[52px] mt-[12px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60">
+                  Back to sign up
                 </Link>
               </div>
             </>

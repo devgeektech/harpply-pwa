@@ -64,13 +64,9 @@ export default function VerifyEmailDialog({
             Resend
           </Link>
 
-          <Link href={createPasswordUrl} className="w-full">
-            <Button
-              type="button"
-              className="cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition"
-            >
+          <Link href={createPasswordUrl} className="cursor-pointer w-full text-base h-[52px] mt-[12px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60">
               Create password
-            </Button>
+  
           </Link>
         </div>
       </DialogContent>

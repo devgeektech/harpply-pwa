@@ -34,8 +34,21 @@ export default function Header() {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuGroup>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuItem>Profile</DropdownMenuItem>
+              {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
+              <DropdownMenuItem>
+                <div className="flex items-center gap-2">
+                  <div className="">
+                    <Image src="/images/notificationicon.png" alt="dropdown" width={45} height={45} />
+                  </div>
+                  <div className="flex flex-col gap-2 relative">
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium text-[#C39936]">New Connection New Connection New Connection New Connection</label>
+                      <p className="text-sm text-gray-500 text-[#FAF5EB99] absolute right-0 top-0">1 min ago</p>
+                    </div>
+                    <p className="text-sm text-gray-500 w-[250px]  truncate">A new connection awaits you, start a meaningful conversation. </p>
+                  </div>
+                </div>
+              </DropdownMenuItem>
               <DropdownMenuItem>Billing</DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuGroup>
