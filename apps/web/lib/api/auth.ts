@@ -371,6 +371,50 @@ export async function saveInterests(
   return data as { message: string };
 }
 
+/** Save onboarding user-attributes for the current user. */
+export async function saveMyFaithValues(
+  myFaithValues: string[],
+  accessToken: string
+): Promise<{ message: string }> {
+  const res = await fetch(`${getAuthBaseUrl()}/auth/onboarding/my-attributes`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ attribute: myFaithValues }),
+  });
+  redirectIfUnauthorizedForAuthApi(res);
+  if (!res.ok) {
+    const msg = await getErrorMessage(res, "Failed to save attributes.");
+    throw new Error(msg);
+  }
+  const data = await res.json().catch(() => ({}));
+  return data as { message: string };
+}
+
+/** Save onboarding user-attributes for the current user. */
+export async function savePartnerValues(
+  partnerValues: string[],
+  accessToken: string
+): Promise<{ message: string }> {
+  const res = await fetch(`${getAuthBaseUrl()}/auth/onboarding/partner-attributes`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ attribute: partnerValues }),
+  });
+  redirectIfUnauthorizedForAuthApi(res);
+  if (!res.ok) {
+    const msg = await getErrorMessage(res, "Failed to save partner-attributes.");
+    throw new Error(msg);
+  }
+  const data = await res.json().catch(() => ({}));
+  return data as { message: string };
+}
+
 /** Mark onboarding complete for the current user. */
 export async function completeOnboarding(accessToken: string): Promise<{ message: string }> {
   const res = await fetch(`${getAuthBaseUrl()}/auth/onboarding/complete`, {

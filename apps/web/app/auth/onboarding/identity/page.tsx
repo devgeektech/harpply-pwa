@@ -10,6 +10,8 @@ export default function Identity() {
 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [ageError, setAgeError] = useState<string | null>(null);
 
   const {
     name,
@@ -23,6 +25,21 @@ export default function Identity() {
 
   const handleSubmit = async () => {
     try {
+      setNameError(null);
+      setAgeError(null);
+
+      const trimmedName = name.trim();
+      if (!trimmedName) {
+        setNameError("Please enter a valid name");
+        return;
+      }
+
+      const parsedAge = Number(age);
+      if (!Number.isFinite(parsedAge) || parsedAge < 18) {
+        setAgeError("You must be 18 or older to use Harpply");
+        return;
+      }
+
       setLoading(true);
 
       await submitIdentity();
@@ -68,6 +85,9 @@ export default function Identity() {
               onChange={(e) => setName(e.target.value)}
               className="mt-2 bg-white border-[#FBFAF9] h-[52px] border border-[#E7ECF2] rounded-[12px] md:rounded-[8px] text-[#3B3B3B] placeholder:text-[#3B3B3B] focus-visible:ring-0"
             />
+            {nameError && (
+              <p className="text-sm text-red-400 mt-2">{nameError}</p>
+            )}
           </div>
 
           {/* Age */}
@@ -80,6 +100,9 @@ export default function Identity() {
               onChange={(e) => setAge(e.target.value)}
               className="mt-2 bg-white border-[#FBFAF9] h-[52px] border border-[#E7ECF2] rounded-[12px] md:rounded-[8px] text-[#3B3B3B] placeholder:text-[#3B3B3B] focus-visible:ring-0"
             />
+            {ageError && (
+              <p className="text-sm text-red-400 mt-2">{ageError}</p>
+            )}
           </div>
 
           {/* Gender */}
@@ -107,7 +130,7 @@ export default function Identity() {
           {/* Continue Button */}
           <Button
             onClick={handleSubmit}
-            disabled={!name || !age || !gender || loading}
+            disabled={!name.trim() || !age || !gender || loading}
             className="cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60"
           >
             {loading ? "Submitting..." : "Continue"}
