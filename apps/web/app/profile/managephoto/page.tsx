@@ -11,7 +11,7 @@ import {
   fetchProfilePhotos,
   type ProfilePhotosData,
 } from "@/lib/api/profile"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import Image from "next/image";
 
 const MAX_PHOTOS = 6
@@ -32,13 +32,15 @@ function buildPhotoSrc(s3PublicUrl: string, key: string): string {
 
 export default function ManagePhotoPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const lastSelectedFileRef = useRef<File | null>(null)
-  const returnTo = useMemo(() => {
-    const raw = searchParams.get("returnTo") ?? "";
-    return raw.startsWith("/") ? raw : "";
-  }, [searchParams])
+  const [returnTo, setReturnTo] = useState("")
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const raw = new URLSearchParams(window.location.search).get("returnTo") ?? ""
+    setReturnTo(raw.startsWith("/") ? raw : "")
+  }, [])
 
   // Note: Next.js exposes only NEXT_PUBLIC vars to client bundles.
   // This may be undefined in the browser unless your setup inlines it.
@@ -200,7 +202,7 @@ export default function ManagePhotoPage() {
       router.push(returnTo)
       return
     }
-    router.push("/profile/identity")
+    router.push("/profile/edit")
   }
 
   return (

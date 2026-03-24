@@ -20,7 +20,12 @@ import {
   fetchProfilePhotos,
   updateBasicProfile,
 } from "@/lib/api/profile";
-import { useState, useEffect } from "react";
+import {
+  fetchCityStateFromPlaceId,
+  fetchGooglePlaceSuggestions,
+  type PlaceSuggestion,
+} from "@/lib/utils";
+import { useState, useEffect, useRef } from "react";
 
 const CARD_BG = "#1A0A26";
 const GOLD_GRADIENT =
@@ -58,6 +63,14 @@ export default function EditProfilePage() {
   const [firstProfilePhotoSrc, setFirstProfilePhotoSrc] = useState<string | null>(
     null,
   );
+  const [locationSuggestions, setLocationSuggestions] = useState<PlaceSuggestion[]>(
+    [],
+  );
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+  const [loadingLocationSuggestions, setLoadingLocationSuggestions] =
+    useState(false);
+  const [locationInputDirty, setLocationInputDirty] = useState(false);
+  const locationContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!loaded) {
@@ -65,7 +78,7 @@ export default function EditProfilePage() {
         .then((res) => {
           if (res?.data) hydrateFromApi(res.data);
         })
-        .catch(() => {});
+        .catch(() => { });
     }
 
     // Edit Profile needs a single preview image; it uses the first element
@@ -82,6 +95,63 @@ export default function EditProfilePage() {
         setFirstProfilePhotoSrc(null);
       });
   }, [loaded, hydrateFromApi, s3PublicUrl]);
+
+  useEffect(() => {
+    if (!locationInputDirty) return;
+
+    const q = location.trim();
+    if (!q) {
+      setLocationSuggestions([]);
+      setShowLocationSuggestions(false);
+      setLoadingLocationSuggestions(false);
+      return;
+    }
+
+    let cancelled = false;
+    setLoadingLocationSuggestions(true);
+    const timeoutId = window.setTimeout(() => {
+      fetchGooglePlaceSuggestions(q)
+        .then((results) => {
+          if (cancelled) return;
+          setLocationSuggestions(results);
+          setShowLocationSuggestions(results.length > 0);
+        })
+        .catch(() => {
+          if (cancelled) return;
+          setLocationSuggestions([]);
+          setShowLocationSuggestions(false);
+        })
+        .finally(() => {
+          if (cancelled) return;
+          setLoadingLocationSuggestions(false);
+        });
+    }, 250);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeoutId);
+    };
+  }, [location, locationInputDirty]);
+
+  useEffect(() => {
+    const onMouseDown = (event: MouseEvent) => {
+      if (!locationContainerRef.current) return;
+      const target = event.target as Node | null;
+      if (target && !locationContainerRef.current.contains(target)) {
+        setShowLocationSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", onMouseDown);
+    return () => document.removeEventListener("mousedown", onMouseDown);
+  }, []);
+
+  const handleSelectLocationSuggestion = async (suggestion: PlaceSuggestion) => {
+    const cityState = await fetchCityStateFromPlaceId(suggestion.placeId);
+    setLocation(cityState || suggestion.text);
+    setLocationSuggestions([]);
+    setShowLocationSuggestions(false);
+    setLocationInputDirty(false);
+  };
 
   const handleSave = async () => {
     if (saving) return;
@@ -105,8 +175,8 @@ export default function EditProfilePage() {
   };
   return (
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex  sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
-    <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
-      <CardContent className="flex items-center flex-col gap-2 sm:p-10 px-3 w-full">
+      <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
+        <CardContent className="flex items-center flex-col gap-2 sm:p-10 px-3 w-full">
           {/* Header: back + title */}
           <div className="relative mb-6 w-full">
             <Link
@@ -121,40 +191,44 @@ export default function EditProfilePage() {
 
           {/* Profile photo + name */}
           <div className="flex flex-col items-center mb-8 w-full">
-          <div className="relative w-[160px] h-[160px] mx-auto flex items-center">
-                <Avatar className="w-[130px] h-[130px] mx-auto bg-[#FEFDFB]">
-                  {firstProfilePhotoSrc ? (
+            <div className="relative w-[160px] h-[160px] mx-auto flex items-center">
+              <Avatar className="w-[130px] h-[130px] mx-auto bg-[#FEFDFB]">
+                {firstProfilePhotoSrc ? (
+                  <Image
+                    width={130}
+                    height={130}
+                    src={firstProfilePhotoSrc}
+                    alt="profile photo"
+                    className="rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center w-full p-4">
                     <Image
-                      width={130}
-                      height={130}
-                      src={firstProfilePhotoSrc}
-                      alt="profile photo"
-                      className="rounded-full object-cover"
+                      width={44}
+                      height={44}
+                      src="/images/accountCircle.png"
+                      alt="accountCircle.png"
                     />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center w-full p-4">
-                      <Image
-                        width={44}
-                        height={44}
-                        src="/images/accountCircle.png"
-                        alt="accountCircle.png"
-                      />
-                      <AvatarFallback className="bg-transparent text-[#252C36] text-base text-center">
-                        Upload photo
-                      </AvatarFallback>
-                    </div>
-                  )}
-                </Avatar>
-                <Button
-                  type="button"
-                  aria-label="Edit profile photo"
-                  onClick={() => router.push("/profile/managephoto")}
-                  className=" cursor-pointer group rounded-full w-[35px] h-[35px] bg-[#e3e3e3] absolute right-[15px]
+                    <AvatarFallback className="bg-transparent text-[#252C36] text-base text-center">
+                      Upload photo
+                    </AvatarFallback>
+                  </div>
+                )}
+              </Avatar>
+              <Button
+                type="button"
+                aria-label="Edit profile photo"
+                  onClick={() =>
+                    router.push(
+                      `/profile/managephoto?returnTo=${encodeURIComponent("/profile/edit")}`,
+                    )
+                  }
+                className=" cursor-pointer group rounded-full w-[35px] h-[35px] bg-[#e3e3e3] absolute right-[15px]
                     top-[20px] z-[1] border-[1.08px] border-solid border-[#1A181880]"
-                >
-                  <Pencil className="text-black group-hover:text-white transition-colors" />
-                </Button>
-              </div>
+              >
+                <Pencil className="text-black group-hover:text-white transition-colors" />
+              </Button>
+            </div>
             <p className="mt-1 text-[24px] font-normal font-serif text-white">{name}</p>
             <p className="text-base font-normal text-[#C39936]">Update your basic information</p>
           </div>
@@ -194,15 +268,42 @@ export default function EditProfilePage() {
                 Location
               </label>
               <div
-                className="flex h-[52px] items-center gap-2 rounded-xl border px-3 bg-white"
+                ref={locationContainerRef}
+                className="relative flex h-[52px] items-center gap-2 rounded-xl border px-3 bg-white"
               >
                 <MapPin className="size-4 shrink-0 text-[#C39936]" />
                 <Input
                   value={location}
-                  onChange={(e) => setLocation(e.target.value)}
+                  onChange={(e) => {
+                    setLocation(e.target.value);
+                    setLocationInputDirty(true);
+                  }}
+                  onFocus={() => {
+                    if (locationSuggestions.length > 0) setShowLocationSuggestions(true);
+                  }}
                   placeholder="City, State"
                   className="h-[52px] rounded-[8px]  border-white/15 bg-white text-black placeholder:text-black/40 focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
+                {showLocationSuggestions && (
+                  <div className="absolute left-0 top-full z-50 mt-1 w-full max-h-56 overflow-auto rounded-lg border border-white/20 bg-white shadow-lg">
+                    {locationSuggestions.map((suggestion) => (
+                      <button
+                        key={suggestion.placeId}
+                        type="button"
+                        onClick={() => void handleSelectLocationSuggestion(suggestion)}
+                        className="w-full cursor-pointer px-3 py-2 text-left text-sm text-black hover:bg-[#F7F1DE]"
+                      >
+                        {suggestion.text}
+                      </button>
+                    ))}
+                    {!locationSuggestions.length && !loadingLocationSuggestions && (
+                      <p className="px-3 py-2 text-sm text-black/60">No locations found</p>
+                    )}
+                    {loadingLocationSuggestions && (
+                      <p className="px-3 py-2 text-sm text-black/60">Searching...</p>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -219,26 +320,26 @@ export default function EditProfilePage() {
                 border: `1px solid ${BORDER_SUBTLE}`,
               }}
             >
-            {(["Male", "Female", "Other"] as const).map((g) => (
-              <button
-                key={g}
-                type="button"
-                onClick={() => setGender(g)}
-                className="cursor-pointer flex-1 py-2.5 text-sm font-medium rounded-lg transition-all"
-                style={
-                  gender === g
-                    ? {
+              {(["Male", "Female", "Other"] as const).map((g) => (
+                <button
+                  key={g}
+                  type="button"
+                  onClick={() => setGender(g)}
+                  className="cursor-pointer flex-1 py-2.5 text-sm font-medium rounded-lg transition-all"
+                  style={
+                    gender === g
+                      ? {
                         // background: GOLD_GRADIENT,
                         color: "#C39936",
                         border: "1px solid #C39936",
                         boxShadow: "0 2px 8px rgba(197, 139, 0, 0.35)",
                       }
-                    : { color: "rgba(0,0,0,0.9)" }
-                }
-              >
-                {g}
-              </button>
-            ))}
+                      : { color: "rgba(0,0,0,0.9)" }
+                  }
+                >
+                  {g}
+                </button>
+              ))}
             </div>
           </div>
 
