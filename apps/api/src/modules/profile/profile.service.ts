@@ -46,7 +46,6 @@ const profileSelect = {
   smokingPreference: true,
   alcoholPreference: true,
   dietaryPreference: true,
-  interests: true,
   onboardingCompleted: true,
   createdAt: true,
 } as const;

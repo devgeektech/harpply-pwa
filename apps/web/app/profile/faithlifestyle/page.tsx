@@ -83,6 +83,7 @@ export default function FaithLifestylePage() {
   const { loaded, hydrateFromApi } = useProfileStore()
   const router = useRouter()
   const [saving, setSaving] = useState(false)
+  const [denominationError, setDenominationError] = useState("")
 
   useEffect(() => {
     if (!loaded) {
@@ -115,6 +116,11 @@ export default function FaithLifestylePage() {
 
   const handleSave = async () => {
     if (saving) return
+    if (!denomination?.trim()) {
+      setDenominationError("Denomination is required.")
+      return
+    }
+    setDenominationError("")
     setSaving(true)
     try {
       await updateFaithLifestyleProfile({
@@ -160,18 +166,24 @@ export default function FaithLifestylePage() {
 
           <Select
             value={denomination}
-            onValueChange={setDenomination}
+            onValueChange={(value) => {
+              setDenomination(value)
+              if (denominationError) setDenominationError("")
+            }}
           >
             <SelectTrigger className="w-full bg-[#FBFAF9] !h-[52px] rounded-[8px] text-[#1A1A1A] text-sm">
               <SelectValue placeholder="Non-denominational" />
             </SelectTrigger>
 
             <SelectContent>
-              <SelectItem value="non">Non-denominational</SelectItem>
+              <SelectItem value="non-denominational">Non-denominational</SelectItem>
               <SelectItem value="catholic">Catholic</SelectItem>
               <SelectItem value="protestant">Protestant</SelectItem>
             </SelectContent>
           </Select>
+          {denominationError && (
+            <p className="mt-1 text-sm text-red-300">{denominationError}</p>
+          )}
         </div>
 
         {/* Years in faith */}

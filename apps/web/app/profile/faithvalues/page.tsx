@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { ValueTag } from "@/components/common/value-tag";
 import {
-  myFaithValues,
+  attributeValues,
   normalizeFaithValueTokenToValue,
   parseFaithValuesFromApi,
 } from "@/data/myFaithValues";
@@ -94,7 +94,7 @@ export default function FaithValuesPage() {
           <h2 className="text-white text-[20px] font-light mb-3">My Faith Values</h2>
 
           <div className="flex flex-wrap gap-3 bg-[#FBFAF914] border border-[#E7ECF214] rounded-[8px] px-[10px] py-[18px]">
-            {myFaithValues.map((item) => (
+            {attributeValues.map((item) => (
               <ValueTag
                 key={item.value}
                 label={item.title}
@@ -110,7 +110,7 @@ export default function FaithValuesPage() {
           <h2 className="text-white text-sm mb-3">Partner Values</h2>
 
           <div className="flex flex-wrap gap-3 bg-[#FBFAF914] border border-[#E7ECF214] rounded-[8px] px-[10px] py-[18px]">
-            {myFaithValues.map((item) => (
+            {attributeValues.map((item) => (
               <ValueTag
                 key={item.value}
                 label={item.title}

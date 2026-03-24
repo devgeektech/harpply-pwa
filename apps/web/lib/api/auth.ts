@@ -50,6 +50,7 @@ export interface OnboardingData {
   fullName?: string | null;
   age?: number | null;
   gender?: string | null;
+  profilePhotos?: string[] | null;
   latitude?: number | null;
   longitude?: number | null;
   location?: string | null;
@@ -58,12 +59,11 @@ export interface OnboardingData {
   churchInvolvement?: string | null;
   yearsInFaith?: number | null;
   churchAttendance?: string | null;
-  myFaithValues?: unknown;
-  partnerValues?: unknown;
+  myFaithValues?: string[] | null;
+  partnerValues?: string[] | null;
   smokingPreference?: string | null;
   alcoholPreference?: string | null;
   dietaryPreference?: string | null;
-  interests?: unknown;
 }
 
 export interface SetPasswordResponse {
@@ -326,6 +326,7 @@ export interface LocationPayload {
   latitude: number;
   longitude: number;
   locationEnabled: boolean;
+  location?: string;
 }
 
 export async function saveLocation(
@@ -343,28 +344,6 @@ export async function saveLocation(
   redirectIfUnauthorizedForAuthApi(res);
   if (!res.ok) {
     const msg = await getErrorMessage(res, "Failed to save location.");
-    throw new Error(msg);
-  }
-  const data = await res.json().catch(() => ({}));
-  return data as { message: string };
-}
-
-/** Save onboarding interests (attributes) for the current user. */
-export async function saveInterests(
-  interests: string[],
-  accessToken: string
-): Promise<{ message: string }> {
-  const res = await fetch(`${getAuthBaseUrl()}/auth/onboarding/interests`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({ interests }),
-  });
-  redirectIfUnauthorizedForAuthApi(res);
-  if (!res.ok) {
-    const msg = await getErrorMessage(res, "Failed to save interests.");
     throw new Error(msg);
   }
   const data = await res.json().catch(() => ({}));

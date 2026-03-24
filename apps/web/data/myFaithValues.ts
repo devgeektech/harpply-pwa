@@ -5,7 +5,7 @@ export type FaithValueItem = {
   value: string;
 };
 
-export const myFaithValues: FaithValueItem[] = [
+export const attributeValues: FaithValueItem[] = [
   {
     value: "brave",
     title: "Brave",
@@ -181,17 +181,17 @@ export function parseFaithValuesFromApi(raw: unknown): string[] {
 
 /** Map stored token (value slug or legacy display title) to canonical `value` for API/store. */
 export function normalizeFaithValueTokenToValue(token: string): string {
-  const byValue = myFaithValues.find((v) => v.value === token);
+  const byValue = attributeValues.find((v) => v.value === token);
   if (byValue) return byValue.value;
-  const byTitle = myFaithValues.find((v) => v.title === token);
+  const byTitle = attributeValues.find((v) => v.title === token);
   return byTitle?.value ?? token;
 }
 
 /** Human-readable label for profile UI (value slug or legacy title → title). */
 export function faithValueLabelForStored(token: string): string {
-  const byValue = myFaithValues.find((v) => v.value === token);
+  const byValue = attributeValues.find((v) => v.value === token);
   if (byValue) return byValue.title;
-  const byTitle = myFaithValues.find((v) => v.title === token);
+  const byTitle = attributeValues.find((v) => v.title === token);
   return byTitle?.title ?? token;
 }
 

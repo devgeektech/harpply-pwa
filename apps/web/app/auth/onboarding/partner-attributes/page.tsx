@@ -1,8 +1,11 @@
 "use client";
 
 import AttributeCard from "@/components/common/attribute-card";
-import { myFaithValues } from "@/data/myFaithValues";
-import { useAttributesStore } from "@/store/useAttributesStore";
+import { attributeValues } from "@/data/myFaithValues";
+import {
+  MAX_ONBOARDING_ATTRIBUTES,
+  useFaithAttributesStore,
+} from "@/store/faithAttributesStore";
 import { Button, Card, CardContent, Progress } from "@repo/ui";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
@@ -12,12 +15,13 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function PartnerAttributesPage() {
-  const selected = useAttributesStore((s) => s.selected);
+  const partnerValues = useFaithAttributesStore((s) => s.partnerValues);
+  const togglePartnerValue = useFaithAttributesStore((s) => s.togglePartnerValue);
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
 
   const handleContinue = async () => {
-    if (submitting || selected.length !== 3) return;
+    if (submitting || partnerValues.length !== MAX_ONBOARDING_ATTRIBUTES) return;
     const token =
       typeof window !== "undefined"
         ? window.localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN)
@@ -28,7 +32,7 @@ export default function PartnerAttributesPage() {
     }
     setSubmitting(true);
     try {
-      await savePartnerValues(selected, token);
+      await savePartnerValues(partnerValues, token);
     } catch {
       // soft‑fail, still move forward
     } finally {
@@ -60,24 +64,26 @@ export default function PartnerAttributesPage() {
           </h2>
 
           <p className="text-sm text-white mt-0 mb-6 text-left w-full">
-            SSelect the qualities most important to you.
+            Select the qualities most important to you.
           </p>
 
           {/* Cards */}
           <div className="grid grid-cols-2 gap-4 w-full">
-            {myFaithValues.map((item) => (
+            {attributeValues.map((item) => (
               <AttributeCard
                 key={item.value}
                 value={item.value}
                 title={item.title}
                 desc={item.desc}
+                isSelected={partnerValues.includes(item.value)}
+                onToggle={() => togglePartnerValue(item.value)}
               />
             ))}
           </div>
 
           {/* Button */}
           <Button
-            disabled={selected.length !== 3 || submitting}
+            disabled={partnerValues.length !== MAX_ONBOARDING_ATTRIBUTES || submitting}
             onClick={handleContinue}
             className="cursor-pointer mt-6 w-full h-[52px] text-base text-[#913C01] font-semibold bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] hover:opacity-90 disabled:opacity-60"
           >

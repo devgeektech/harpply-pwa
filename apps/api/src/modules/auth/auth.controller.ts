@@ -34,7 +34,6 @@ import { IdentityDto } from './dto/identity.dto';
 import { LocationDto } from './dto/location.dto';
 import { StoryDto } from './dto/story.dto';
 import { FaithLifestyleDto } from './dto/faith-lifestyle.dto';
-import { InterestsDto } from './dto/interests.dto';
 import { OnboardingService } from './onboarding.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import {
@@ -61,7 +60,7 @@ export class AuthController {
     private readonly onboardingService: OnboardingService,
     private readonly config: ConfigService,
     private readonly googleOauthExchange: GoogleOauthExchangeStore,
-  ) { }
+  ) {}
 
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
@@ -501,19 +500,6 @@ export class AuthController {
     @Body() dto: FaithLifestyleDto,
   ) {
     return this.onboardingService.saveFaithLifestyle(userId, dto);
-  }
-
-  @Post('onboarding/interests')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary: 'Save interests – auth by token, update user by decoded sub',
-  })
-  async saveInterests(
-    @CurrentUserId() userId: string,
-    @Body() dto: InterestsDto,
-  ) {
-    return this.onboardingService.saveInterests(userId, dto);
   }
 
   @Post('onboarding/my-attributes')

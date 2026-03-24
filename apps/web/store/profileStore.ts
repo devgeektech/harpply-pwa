@@ -15,9 +15,8 @@ interface ProfileState {
   denomination: string;
   yearsInFaith: number | null;
   churchAttendance: string;
-  myFaithValues: string;
-  partnerValues: string;
-  interests: string[];
+  myFaithValues: string[];
+  partnerValues: string[];
   smokingPreference: string;
   alcoholPreference: string;
   dietaryPreference: string;
@@ -41,9 +40,8 @@ export const useProfileStore = create<ProfileState>((set) => ({
   denomination: "",
   yearsInFaith: null,
   churchAttendance: "",
-  myFaithValues: "",
-  partnerValues: "",
-  interests: [],
+  myFaithValues: [],
+  partnerValues: [],
   smokingPreference: "",
   alcoholPreference: "",
   dietaryPreference: "",
@@ -66,9 +64,10 @@ export const useProfileStore = create<ProfileState>((set) => ({
       denomination: data.denomination ?? "",
       yearsInFaith: data.yearsInFaith ?? null,
       churchAttendance: data.churchAttendance ?? "",
-      myFaithValues: formatFaithValuesForDisplay(data.myFaithValues),
-      partnerValues: formatFaithValuesForDisplay(data.partnerValues),
-      interests: data.interests ?? [],
+      myFaithValues: data.myFaithValues ?? [],
+      partnerValues: data.partnerValues ?? [],
+      // myFaithValues: formatFaithValuesForDisplay(data.myFaithValues),
+      // partnerValues: formatFaithValuesForDisplay(data.partnerValues),
       smokingPreference: data.smokingPreference ?? "",
       alcoholPreference: data.alcoholPreference ?? "",
       dietaryPreference: data.dietaryPreference ?? "",

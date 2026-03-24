@@ -33,9 +33,9 @@ export const ERROR_MESSAGES = {
     FIELD_REQUIRED: 'This field is required and cannot be empty.',
     /** Use with .replace('{FIELD}', fieldName) for optional fields that must not be empty when provided */
     CANNOT_BE_EMPTY_WHEN_PROVIDED: '{FIELD} cannot be empty when provided.',
-    INTERESTS_REQUIRED:
-      'interests is required and must contain at least one item.',
-    INTERESTS_MIN_ONE: 'interests must contain at least one item.',
+    ATTRIBUTES_REQUIRED:
+      'Attributes is required and must contain at least one item.',
+    ATTRIBUTES_MIN_ONE: 'Attributes must contain at least one item.',
     CONFIRM_PASSWORD_REQUIRED: 'Please confirm your password.',
     PASSWORDS_DO_NOT_MATCH: 'Passwords do not match.',
     INVALID: 'Invalid.',

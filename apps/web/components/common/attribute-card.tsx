@@ -1,6 +1,5 @@
 "use client";
 
-import { useAttributesStore } from "@/store/useAttributesStore";
 import { CheckboxField } from "@repo/ui";
 
 interface Props {
@@ -8,17 +7,16 @@ interface Props {
   value: string;
   title: string;
   desc: string;
+  isSelected: boolean;
+  onToggle: () => void;
 }
 
-export default function AttributeCard({ value, title, desc }: Props) {
-  const { selected, toggle } = useAttributesStore();
-  const active = selected.includes(value);
-
+export default function AttributeCard({ title, desc, isSelected, onToggle }: Props) {
   return (
     <div
-      onClick={() => toggle(value)}
-      className={`cursor-pointer rounded-xl border p-4 transition w-full
-      ${active ? "border-yellow-400 bg-yellow-50" : "bg-white border-gray-200"}
+      onClick={onToggle}
+      className={`cursor-pointer rounded-xl border p-4 transition
+      ${isSelected ? "border-yellow-400 bg-yellow-50" : "bg-white border-gray-200"}
       `}
     >
       <div className="flex justify-between items-center">
@@ -26,13 +24,13 @@ export default function AttributeCard({ value, title, desc }: Props) {
 
         <CheckboxField
           label=""
-          checked={active}
-          onChange={() => toggle(value)}
+          checked={isSelected}
+          onChange={onToggle}
           className="data-[state=checked]:bg-yellow-400 rounded-full data-[state=checked]:border-yellow-400"
         />
       </div>
 
-      <p className="text-sm text-gray-500 mt-1">{desc}</p>
+      <p className="text-gray-500 mt-1 text-sm">{desc}</p>
     </div>
   );
 }
