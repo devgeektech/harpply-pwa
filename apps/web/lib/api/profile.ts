@@ -19,8 +19,8 @@ export interface ProfileData {
   yearsInFaith: number | null;
   churchAttendance: string | null;
   /** JSON array of value slugs (or legacy display titles) from API. */
-  myFaithValues: unknown;
-  partnerValues: unknown;
+  myFaithValues:  string[] | null;
+  partnerValues: string[] | null;
   interests: string[] | null;
   smokingPreference: string | null;
   alcoholPreference: string | null;

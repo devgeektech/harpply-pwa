@@ -1,5 +1,6 @@
 import { AUTH_STORAGE_KEYS, saveFaithLifestyle, type OnboardingData } from "@/lib/api/auth";
 import { redirectIfUnauthorizedForAuthApi } from "@/lib/api/session-expired";
+import { useFaithAttributesStore } from "@/store/faithAttributesStore";
 import { create } from "zustand";
 
 interface OnboardingState {
@@ -9,14 +10,12 @@ interface OnboardingState {
   setName: (name: string) => void;
   setAge: (age: string) => void;
   setGender: (gender: string) => void;
-
   submitIdentity: () => Promise<any>;
 }
 
 interface BioState {
   bio: string;
   setBio: (bio: string) => void;
-  
   submitBio: () => Promise<any>;
 }
 
@@ -35,7 +34,7 @@ interface FaithState {
   setAlcoholSelection: (v: string) => void;
   setDietaryPreference: (v: string) => void;
   submitFaith: () => Promise<{ message: string }>;
-} 
+}
 
 export const useOnboardingStore = create<OnboardingState>((set, get) => ({
   name: "",
@@ -169,4 +168,7 @@ export function hydrateOnboardingStores(data: OnboardingData) {
   useFaithStore.getState().setSmokingSelection(data.smokingPreference ?? "");
   useFaithStore.getState().setAlcoholSelection(data.alcoholPreference ?? "");
   useFaithStore.getState().setDietaryPreference(data.dietaryPreference ?? "");
+
+  useFaithAttributesStore.getState().setMyFaithValues(data.myFaithValues ?? []);
+  useFaithAttributesStore.getState().setPartnerValues(data.partnerValues ?? []);
 }

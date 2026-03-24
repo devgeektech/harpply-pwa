@@ -110,7 +110,7 @@ export default function ProfileIdentityPage() {
             hydrateFromApi(res.data);
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     }
 
     fetchProfilePhotos()
@@ -121,7 +121,7 @@ export default function ProfileIdentityPage() {
           .filter(Boolean);
         setProfileImages(images);
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setPhotosLoaded(true));
   }, [loaded, hydrateFromApi, setProfileImages, s3PublicUrl]);
 
@@ -168,6 +168,9 @@ export default function ProfileIdentityPage() {
     ]
   );
 
+  console.log("faithLifestyle >>>>>>>>>>>>>>> ", faithLifestyle);
+
+
   const lifestylePills = useMemo(
     () => [
       {
@@ -188,6 +191,23 @@ export default function ProfileIdentityPage() {
     ],
     [smokingPreference, alcoholPreference, dietaryPreference]
   );
+
+  const formatValue = (val: any) => {
+    const capitalize = (str: string) =>
+      str.charAt(0).toUpperCase() + str.slice(1);
+
+    if (Array.isArray(val)) {
+      return val.length
+        ? val.map((v) => capitalize(v)).join(", ")
+        : "N/A";
+    }
+
+    if (typeof val === "string") {
+      return val ? capitalize(val) : "N/A";
+    }
+
+    return "N/A";
+  };
 
   return (
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex items-center justify-center px-4">
@@ -371,7 +391,8 @@ export default function ProfileIdentityPage() {
                           </span>
                           <div className="min-w-0">
                             <p className="text-base font-medium text-[#1A1a1a]">{item.title}</p>
-                            <p className="text-sm text-[#1A1A1A]">{item.value}</p>
+                            {/* <p className="text-sm text-[#1A1A1A]">{item.value}</p> */}
+                            <p className="text-sm text-[#1A1A1A]">{formatValue(item.value)}</p>
                           </div>
                         </li>
                       ))}

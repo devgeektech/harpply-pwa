@@ -58,8 +58,8 @@ export interface OnboardingData {
   churchInvolvement?: string | null;
   yearsInFaith?: number | null;
   churchAttendance?: string | null;
-  myFaithValues?: unknown;
-  partnerValues?: unknown;
+  myFaithValues?: string[] | null;
+  partnerValues?: string[] | null;
   smokingPreference?: string | null;
   alcoholPreference?: string | null;
   dietaryPreference?: string | null;

@@ -1,6 +1,12 @@
 "use client";
 
-import { useProfileStore } from "@/store/profileStore";
+import { formatFaithValuesForDisplay } from "@/data/myFaithValues";
+import { useFaithAttributesStore } from "@/store/faithAttributesStore";
+import {
+  useBioStore,
+  useFaithStore,
+  useOnboardingStore,
+} from "@/store/onboardingStore";
 import {
   Avatar,
   AvatarFallback,
@@ -18,8 +24,35 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 
+function displayOrDash(value: string | number | undefined | null): string {
+  if (value === undefined || value === null) return "—";
+  const s = String(value).trim();
+  return s.length > 0 ? s : "—";
+}
+
+function formatYearsInFaith(years: number): string {
+  if (years < 0) return "—";
+  if (years === 0) return "0 years";
+  return `${years} year${years === 1 ? "" : "s"}`;
+}
+
 export default function ReviewProfilePage() {
-  const { name, age, location, church, bio } = useProfileStore();
+  const name = useOnboardingStore((s) => s.name);
+  const age = useOnboardingStore((s) => s.age);
+  const gender = useOnboardingStore((s) => s.gender);
+  const bio = useBioStore((s) => s.bio);
+  const churchInvolvement = useFaithStore((s) => s.churchInvolvement);
+  const yearsInFaith = useFaithStore((s) => s.yearsInFaith);
+  const churchAttendance = useFaithStore((s) => s.churchAttendance);
+  const smokingSelection = useFaithStore((s) => s.smokingSelection);
+  const alcoholSelection = useFaithStore((s) => s.alcoholSelection);
+  const dietaryPreference = useFaithStore((s) => s.dietaryPreference);
+  const myFaithValues = useFaithAttributesStore((s) => s.myFaithValues);
+  const partnerValues = useFaithAttributesStore((s) => s.partnerValues);
+
+  const myFaithDisplay = formatFaithValuesForDisplay(myFaithValues);
+  const partnerDisplay = formatFaithValuesForDisplay(partnerValues);
+
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
 
@@ -52,7 +85,7 @@ export default function ReviewProfilePage() {
               <ChevronLeft size={24} />
             </Link>
           </div>
-          
+
           {/* Progress */}
           <div className="space-y-2 mb-6">
             <p className="text-xs text-white/60">FINAL STEP</p>
@@ -95,15 +128,18 @@ export default function ReviewProfilePage() {
                   <Pencil className="text-black group-hover:text-white transition-colors" />
                 </Button>
               </div>
+
               <div className="flex flex-col gap-1">
                 <h3 className="font-normal font-serif text-[#1A1A1A] text-[24px]">
-                  {name}
+                  {displayOrDash(name)}
                 </h3>
                 <p className="text-base font-normal text-[#C39936]">
-                  {age} • {location}
+                  {[displayOrDash(age), displayOrDash(gender)].filter((v) => v !== "—").join(" • ") ||
+                    "—"}
                 </p>
-
-                <p className="text-base text-[#1A1A1ACC] mt-1">⛪ {church}</p>
+                <p className="text-base text-[#1A1A1ACC] mt-1">
+                  ⛪ {displayOrDash(churchInvolvement)}
+                </p>
               </div>
 
               {/* Bio */}
@@ -112,13 +148,8 @@ export default function ReviewProfilePage() {
                   BIO SNIPPET
                 </p>
                 <p className="text-[#1A1A1A] text-base italic font-light text-left">
-                  {bio}
+                  {displayOrDash(bio)}
                 </p>
-
-                <Pencil
-                  size={14}
-                  className="absolute right-0 top-4 text-yellow-600 cursor-pointer"
-                />
               </div>
             </CardContent>
           </Card>
@@ -126,17 +157,17 @@ export default function ReviewProfilePage() {
           {/* Info Sections */}
           <div className="mt-2 space-y-3">
             <div className="pt-2 text-sm text-white">Faith & Lifestyle</div>
-            <InfoRow label="Church Involvement" value="Member" />
-            <InfoRow label="Years in Faith" value="5 years" />
-            <InfoRow label="Church Attendance Frequency" value="Weekly" />
-            <InfoRow label="My Faith Values" value="Kindness" />
-            <InfoRow label="Partner Values" value="Forgiveness" />
+            <InfoRow label="Church Involvement" value={displayOrDash(churchInvolvement)} />
+            <InfoRow label="Years in Faith" value={formatYearsInFaith(yearsInFaith)} />
+            <InfoRow label="Church Attendance Frequency" value={displayOrDash(churchAttendance)} />
+            <InfoRow label="My Faith Values" value={myFaithDisplay || "—"} />
+            <InfoRow label="Partner Values" value={partnerDisplay || "—"} />
 
             <div className="pt-2 text-sm text-white">Lifestyle Habits</div>
 
-            <InfoRow label="Smoking" value="Never" />
-            <InfoRow label="Alcohol" value="Socially" />
-            <InfoRow label="Dietary Preferences" value="No specific diet" />
+            <InfoRow label="Smoking" value={displayOrDash(smokingSelection)} />
+            <InfoRow label="Alcohol" value={displayOrDash(alcoholSelection)} />
+            <InfoRow label="Dietary Preferences" value={displayOrDash(dietaryPreference)} />
           </div>
 
           {/* Secure box */}
