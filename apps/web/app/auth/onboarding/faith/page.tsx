@@ -53,7 +53,19 @@ export default function FaithLifestylePage() {
     setYearsInFaith(raw === "" ? 0 : Math.min(100, parseInt(raw, 10)));
   };
 
+  const isFormComplete =
+    Boolean(churchInvolvement?.trim()) &&
+    yearsInFaith > 0 &&
+    Boolean(churchAttendance?.trim()) &&
+    Boolean(smokingSelection?.trim()) &&
+    Boolean(alcoholSelection?.trim()) &&
+    Boolean(dietaryPreference?.trim());
+
   const handleContinue = async () => {
+    if (!isFormComplete) {
+      setError("Please complete all fields before continuing.");
+      return;
+    }
     setError(null);
     setSubmitting(true);
     try {
@@ -194,7 +206,7 @@ export default function FaithLifestylePage() {
 
           <Button
             onClick={handleContinue}
-            disabled={submitting}
+            disabled={submitting || !isFormComplete}
             className="cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60"
           >
             {submitting ? (
