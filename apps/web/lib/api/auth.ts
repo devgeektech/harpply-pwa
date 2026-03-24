@@ -50,6 +50,7 @@ export interface OnboardingData {
   fullName?: string | null;
   age?: number | null;
   gender?: string | null;
+  profilePhotos?: string[] | null;
   latitude?: number | null;
   longitude?: number | null;
   location?: string | null;
@@ -325,6 +326,7 @@ export interface LocationPayload {
   latitude: number;
   longitude: number;
   locationEnabled: boolean;
+  location?: string;
 }
 
 export async function saveLocation(

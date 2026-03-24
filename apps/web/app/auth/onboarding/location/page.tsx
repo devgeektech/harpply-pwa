@@ -8,10 +8,16 @@ import { useRouter } from "next/navigation";
 import { AUTH_STORAGE_KEYS } from "@/lib/constants";
 import { saveLocation } from "@/lib/api/auth";
 import { useState } from "react";
+import { useOnboardingStore } from "@/store/onboardingStore";
+import { reverseGeocodeCityState } from "@/lib/utils";
 
 export default function Location() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
+  const setLatitude = useOnboardingStore((s) => s.setLatitude);
+  const setLongitude = useOnboardingStore((s) => s.setLongitude);
+  const setLocation = useOnboardingStore((s) => s.setLocation);
+  const setLocationEnabled = useOnboardingStore((s) => s.setLocationEnabled);
 
   const goNext = () => {
     router.push("/auth/onboarding/bio");
@@ -53,10 +59,18 @@ export default function Location() {
         longitude = 0;
       }
 
+      const cityState = await reverseGeocodeCityState(latitude, longitude);
+
+      setLatitude(latitude);
+      setLongitude(longitude);
+      setLocation(cityState);
+      setLocationEnabled(true);
+
       await saveLocation(
         {
           latitude,
           longitude,
+          location: cityState,
           locationEnabled: true,
         },
         token
@@ -70,6 +84,7 @@ export default function Location() {
   };
 
   const handleSkip = () => {
+    setLocationEnabled(false);
     goNext();
   };
 

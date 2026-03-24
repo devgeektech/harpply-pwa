@@ -1,6 +1,7 @@
 "use client";
 
 import { formatFaithValuesForDisplay } from "@/data/myFaithValues";
+import { fetchProfilePhotos } from "@/lib/api/profile";
 import { useFaithAttributesStore } from "@/store/faithAttributesStore";
 import {
   useBioStore,
@@ -13,16 +14,17 @@ import {
   Button,
   Card,
   CardContent,
-  Input,
   Progress,
 } from "@repo/ui";
-import { ChevronLeft, Pencil } from "lucide-react";
+import { ChevronLeft, MapPin, Pencil } from "lucide-react";
 import Image from "next/image";
 import { AUTH_STORAGE_KEYS } from "@/lib/constants";
 import { completeOnboarding } from "@/lib/api/auth";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+const ACCENT = "#C39936";
+
 
 function displayOrDash(value: string | number | undefined | null): string {
   if (value === undefined || value === null) return "—";
@@ -36,10 +38,22 @@ function formatYearsInFaith(years: number): string {
   return `${years} year${years === 1 ? "" : "s"}`;
 }
 
+function buildPhotoSrc(s3PublicUrl: string, key: string): string {
+  const safeKey = key?.toString?.().trim() ?? "";
+  if (!safeKey) return "/images/accountCircle.png";
+  if (/^https?:\/\//i.test(safeKey)) return safeKey;
+  const base = (s3PublicUrl ?? "").replace(/\/$/, "");
+  if (!base) return "/images/accountCircle.png";
+  return `${base}/${safeKey.replace(/^\/+/, "")}`;
+}
+
 export default function ReviewProfilePage() {
   const name = useOnboardingStore((s) => s.name);
   const age = useOnboardingStore((s) => s.age);
   const gender = useOnboardingStore((s) => s.gender);
+  const profilePhotos = useOnboardingStore((s) => s.profilePhotos);
+  const setProfilePhotos = useOnboardingStore((s) => s.setProfilePhotos);
+  const location = useOnboardingStore((s) => s.location);
   const bio = useBioStore((s) => s.bio);
   const churchInvolvement = useFaithStore((s) => s.churchInvolvement);
   const yearsInFaith = useFaithStore((s) => s.yearsInFaith);
@@ -52,9 +66,28 @@ export default function ReviewProfilePage() {
 
   const myFaithDisplay = formatFaithValuesForDisplay(myFaithValues);
   const partnerDisplay = formatFaithValuesForDisplay(partnerValues);
+  const s3PublicUrl = process.env.NEXT_PUBLIC_AWS_S3_URL ?? "";
+  const firstPhoto = profilePhotos[0] ?? "";
+  const hasAtLeastOnePhoto = profilePhotos.length > 0;
+  const avatarSrc = buildPhotoSrc(s3PublicUrl, firstPhoto);
 
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchProfilePhotos()
+      .then((res) => {
+        if (cancelled) return;
+        setProfilePhotos(res?.photos ?? []);
+      })
+      .catch(() => {
+        // Keep existing hydrated value if request fails.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [setProfilePhotos]);
 
   const handleComplete = async () => {
     if (submitting) return;
@@ -104,27 +137,39 @@ export default function ReviewProfilePage() {
           <Card className="bg-white text-black rounded-xl">
             <CardContent className="p-6 text-center space-y-4">
               <div className="relative w-[160px] h-[160px] mx-auto">
-                <Avatar className="w-[130px] h-[130px] mx-auto bg-[#FEFDFB] border-dashed border-2 border-[#252C3680]">
-                  <div className="flex flex-col items-center justify-center w-full p-4">
+                <Avatar className="w-[130px] h-[130px] mx-auto bg-[#FEFDFB] border-dashed border-2 border-[#252C3680] overflow-hidden">
+                  {hasAtLeastOnePhoto ? (
                     <Image
-                      width={44}
-                      height={44}
-                      src="/images/accountCircle.png"
-                      alt="accountCircle.png"
+                      src={avatarSrc}
+                      alt="Profile photo"
+                      width={130}
+                      height={130}
+                      className="w-full h-full object-cover"
                     />
-                    <AvatarFallback className="bg-transparent text-[#252C36] text-base">
-                      Upload photo
-                    </AvatarFallback>
-                  </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center w-full p-4">
+                      <Image
+                        width={44}
+                        height={44}
+                        src="/images/accountCircle.png"
+                        alt="accountCircle.png"
+                      />
+                      <AvatarFallback className="bg-transparent text-[#252C36] text-base">
+                        Upload photo
+                      </AvatarFallback>
+                    </div>
+                  )}
                 </Avatar>
                 <Button
+                  type="button"
+                  onClick={() =>
+                    router.push(
+                      `/profile/managephoto?returnTo=${encodeURIComponent("/auth/onboarding/profile")}`
+                    )
+                  }
                   className=" cursor-pointer group rounded-full w-[35px] h-[35px] bg-[#e3e3e3] absolute right-[10px]
                     top-[10px] z-[1] border-[1.08px] border-solid border-[#1A181880]"
                 >
-                  <Input
-                    type="file"
-                    className="absolute w-full h-full opacity-0 cursor-pointer"
-                  />
                   <Pencil className="text-black group-hover:text-white transition-colors" />
                 </Button>
               </div>
@@ -137,9 +182,13 @@ export default function ReviewProfilePage() {
                   {[displayOrDash(age), displayOrDash(gender)].filter((v) => v !== "—").join(" • ") ||
                     "—"}
                 </p>
-                <p className="text-base text-[#1A1A1ACC] mt-1">
-                  ⛪ {displayOrDash(churchInvolvement)}
-                </p>
+
+                <div className="flex items-center justify-center gap-1.5 mt-1">
+                  <MapPin className="size-4 shrink-0 text-[#C39936]" style={{ color: ACCENT }} />
+                  <span className="text-base font-normal tracking-wider text-[#C39936]">
+                    {displayOrDash(location)}
+                  </span>
+                </div>
               </div>
 
               {/* Bio */}
@@ -156,6 +205,9 @@ export default function ReviewProfilePage() {
 
           {/* Info Sections */}
           <div className="mt-2 space-y-3">
+            <div className="pt-2 text-sm text-white">Location</div>
+            <InfoRow label="Current Location" value={displayOrDash(location)} />
+
             <div className="pt-2 text-sm text-white">Faith & Lifestyle</div>
             <InfoRow label="Church Involvement" value={displayOrDash(churchInvolvement)} />
             <InfoRow label="Years in Faith" value={formatYearsInFaith(yearsInFaith)} />
@@ -185,11 +237,16 @@ export default function ReviewProfilePage() {
           {/* Button */}
           <Button
             onClick={handleComplete}
-            disabled={submitting}
+            disabled={submitting || !hasAtLeastOnePhoto}
             className="cursor-pointer w-full text-base h-[52px] mt-[12px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60"
           >
             {submitting ? "Completing..." : "Complete Setup"}
           </Button>
+          {!hasAtLeastOnePhoto && (
+            <p className="text-xs text-white/80 text-center">
+              Upload at least one profile photo to continue.
+            </p>
+          )}
         </CardContent>
       </Card>
     </div>

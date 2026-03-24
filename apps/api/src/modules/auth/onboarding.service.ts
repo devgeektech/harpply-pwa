@@ -16,7 +16,7 @@ import { AttributeDto } from './dto/attribute.dto';
 
 @Injectable()
 export class OnboardingService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async saveIdentity(userId: string, dto: IdentityDto) {
     await this.prisma.user.update({
@@ -36,6 +36,7 @@ export class OnboardingService {
       data: {
         latitude: dto.latitude,
         longitude: dto.longitude,
+        location: dto.location ?? null,
         locationEnabled: dto.locationEnabled,
       } as Prisma.UserUpdateInput,
     });
@@ -100,6 +101,7 @@ export class OnboardingService {
     fullName: true,
     age: true,
     gender: true,
+    profilePhotos: true,
     latitude: true,
     longitude: true,
     location: true,

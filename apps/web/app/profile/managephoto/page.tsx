@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react"
 import { Button, Card, CardContent, Progress } from "@repo/ui"
 import { Trash2, Camera, ChevronLeft, Info } from "lucide-react"
-import Link from "next/link"
 import { Uploaderrordialog } from "@/components/common/UploadErrorDialog"
 import { ERROR_MESSAGES } from "@/lib/messages/error-messages"
 import {
@@ -12,7 +11,7 @@ import {
   fetchProfilePhotos,
   type ProfilePhotosData,
 } from "@/lib/api/profile"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image";
 
 const MAX_PHOTOS = 6
@@ -33,8 +32,13 @@ function buildPhotoSrc(s3PublicUrl: string, key: string): string {
 
 export default function ManagePhotoPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const lastSelectedFileRef = useRef<File | null>(null)
+  const returnTo = useMemo(() => {
+    const raw = searchParams.get("returnTo") ?? "";
+    return raw.startsWith("/") ? raw : "";
+  }, [searchParams])
 
   // Note: Next.js exposes only NEXT_PUBLIC vars to client bundles.
   // This may be undefined in the browser unless your setup inlines it.
@@ -172,9 +176,11 @@ export default function ManagePhotoPage() {
       return
     }
 
-    // Go back to the page user came from (previous step in profile flow).
-    // `document.referrer` is sometimes empty for client-side navigations,
-    // so we also fall back to browser history.
+    if (returnTo) {
+      router.push(returnTo)
+      return
+    }
+
     if (typeof window !== "undefined") {
       const referrer = document.referrer
       if (referrer) {
@@ -189,18 +195,27 @@ export default function ManagePhotoPage() {
     router.push("/profile/identity")
   }
 
+  const handleBack = () => {
+    if (returnTo) {
+      router.push(returnTo)
+      return
+    }
+    router.push("/profile/identity")
+  }
+
   return (
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
       <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
         <CardContent className="flex flex-col md:gap-6 gap-3 sm:p-6 px-3 text-white">
           <div className="flex items-center px-0 pb-2 w-full">
-            <Link
-              href="/profile/identity"
+            <button
+              type="button"
+              onClick={handleBack}
               className="flex items-center justify-center size-10 rounded-full text-white/90 hover:bg-white/10 transition-colors"
               aria-label="Back"
             >
               <ChevronLeft className="size-6" />
-            </Link>
+            </button>
           </div>
 
           <div className="flex items-center gap-2 ">

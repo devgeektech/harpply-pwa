@@ -7,9 +7,19 @@ interface OnboardingState {
   name: string;
   age: string;
   gender: string;
+  profilePhotos: string[];
+  latitude: number | null;
+  longitude: number | null;
+  location: string;
+  locationEnabled: boolean;
   setName: (name: string) => void;
   setAge: (age: string) => void;
   setGender: (gender: string) => void;
+  setProfilePhotos: (photos: string[]) => void;
+  setLatitude: (latitude: number | null) => void;
+  setLongitude: (longitude: number | null) => void;
+  setLocation: (location: string) => void;
+  setLocationEnabled: (enabled: boolean) => void;
   submitIdentity: () => Promise<any>;
 }
 
@@ -40,10 +50,20 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
   name: "",
   age: "",
   gender: "",
+  profilePhotos: [],
+  latitude: null,
+  longitude: null,
+  location: "",
+  locationEnabled: false,
 
   setName: (name) => set({ name }),
   setAge: (age) => set({ age }),
   setGender: (gender) => set({ gender }),
+  setProfilePhotos: (photos) => set({ profilePhotos: photos }),
+  setLatitude: (latitude) => set({ latitude }),
+  setLongitude: (longitude) => set({ longitude }),
+  setLocation: (location) => set({ location }),
+  setLocationEnabled: (enabled) => set({ locationEnabled: enabled }),
 
   submitIdentity: async () => {
     const { name, age, gender } = get();
@@ -158,9 +178,19 @@ function normalizeGenderForUI(apiGender: string | null | undefined): string {
  */
 export function hydrateOnboardingStores(data: OnboardingData) {
   if (!data) return;
+  const profilePhotos = Array.isArray(data.profilePhotos)
+    ? data.profilePhotos.filter((v): v is string => typeof v === "string")
+    : [];
   useOnboardingStore.getState().setName(data.fullName ?? "");
   useOnboardingStore.getState().setAge(data.age != null ? String(data.age) : "");
   useOnboardingStore.getState().setGender(normalizeGenderForUI(data.gender));
+  useOnboardingStore.getState().setProfilePhotos(profilePhotos);
+  useOnboardingStore.getState().setLatitude(data.latitude ?? null);
+  useOnboardingStore.getState().setLongitude(data.longitude ?? null);
+  useOnboardingStore.getState().setLocation(data.location ?? "");
+  useOnboardingStore
+    .getState()
+    .setLocationEnabled(Boolean(data.locationEnabled));
   useBioStore.getState().setBio(data.bio ?? "");
   useFaithStore.getState().setChurchInvolvement(data.churchInvolvement ?? "");
   useFaithStore.getState().setYearsInFaith(data.yearsInFaith ?? 0);

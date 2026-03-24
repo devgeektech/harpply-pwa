@@ -1,4 +1,13 @@
-import { IsNumber, IsBoolean, IsNotEmpty, Min, Max } from 'class-validator';
+import {
+  IsNumber,
+  IsBoolean,
+  IsNotEmpty,
+  Min,
+  Max,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 import { ERROR_MESSAGES } from '../../../common/constants/error-messages';
 
 export class LocationDto {
@@ -32,4 +41,9 @@ export class LocationDto {
     ),
   })
   locationEnabled: boolean;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  location?: string;
 }
