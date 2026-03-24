@@ -205,9 +205,6 @@ export default function ReviewProfilePage() {
 
           {/* Info Sections */}
           <div className="mt-2 space-y-3">
-            <div className="pt-2 text-sm text-white">Location</div>
-            <InfoRow label="Current Location" value={displayOrDash(location)} />
-
             <div className="pt-2 text-sm text-white">Faith & Lifestyle</div>
             <InfoRow label="Church Involvement" value={displayOrDash(churchInvolvement)} />
             <InfoRow label="Years in Faith" value={formatYearsInFaith(yearsInFaith)} />
