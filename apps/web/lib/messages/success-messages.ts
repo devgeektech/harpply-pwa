@@ -20,7 +20,7 @@ export const SUCCESS_MESSAGES = {
     LOCATION: 'Location saved successfully.',
     STORY: 'Story saved successfully.',
     FAITH_LIFESTYLE: 'Faith & lifestyle saved successfully.',
-    INTEREST: 'Interests saved successfully.',
+    ATTRIBUTES: 'Attributes saved successfully.',
     ONBOARDING_COMPLETED: 'Onboarding completed successfully.',
     REVIEW_DATA: 'Onboarding review data fetched.',
   },

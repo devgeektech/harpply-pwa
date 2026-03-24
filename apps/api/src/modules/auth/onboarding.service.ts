@@ -9,7 +9,6 @@ import type { Prisma } from '@prisma/client';
 import { LocationDto } from './dto/location.dto';
 import { StoryDto } from './dto/story.dto';
 import { FaithLifestyleDto } from './dto/faith-lifestyle.dto';
-import { InterestsDto } from './dto/interests.dto';
 import { successResponse } from '../../common/response/api-response';
 import { SUCCESS_MESSAGES } from 'src/common/constants/success-messages';
 import { ERROR_MESSAGES } from 'src/common/constants/error-messages';
@@ -68,16 +67,6 @@ export class OnboardingService {
     return successResponse(SUCCESS_MESSAGES.ONBOARDING.FAITH_LIFESTYLE);
   }
 
-  async saveInterests(userId: string, dto: InterestsDto) {
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: {
-        interests: dto.interests as Prisma.InputJsonValue,
-      } as Prisma.UserUpdateInput,
-    });
-    return successResponse(SUCCESS_MESSAGES.ONBOARDING.INTEREST);
-  }
-
   async saveMyFaithValues(userId: string, dto: AttributeDto) {
     await this.prisma.user.update({
       where: { id: userId },
@@ -106,7 +95,7 @@ export class OnboardingService {
     return successResponse(SUCCESS_MESSAGES.ONBOARDING.ONBOARDING_COMPLETED);
   }
 
-  /** Select for all onboarding screens (identity, location, story, faith, interests). */
+  /** Select for all onboarding screens (identity, location, story, faith). */
   private readonly onboardingDataSelect = {
     fullName: true,
     age: true,
@@ -124,7 +113,6 @@ export class OnboardingService {
     smokingPreference: true,
     alcoholPreference: true,
     dietaryPreference: true,
-    interests: true,
   } as const;
 
   /**

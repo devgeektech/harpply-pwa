@@ -63,7 +63,6 @@ export interface OnboardingData {
   smokingPreference?: string | null;
   alcoholPreference?: string | null;
   dietaryPreference?: string | null;
-  interests?: unknown;
 }
 
 export interface SetPasswordResponse {
@@ -343,28 +342,6 @@ export async function saveLocation(
   redirectIfUnauthorizedForAuthApi(res);
   if (!res.ok) {
     const msg = await getErrorMessage(res, "Failed to save location.");
-    throw new Error(msg);
-  }
-  const data = await res.json().catch(() => ({}));
-  return data as { message: string };
-}
-
-/** Save onboarding interests (attributes) for the current user. */
-export async function saveInterests(
-  interests: string[],
-  accessToken: string
-): Promise<{ message: string }> {
-  const res = await fetch(`${getAuthBaseUrl()}/auth/onboarding/interests`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({ interests }),
-  });
-  redirectIfUnauthorizedForAuthApi(res);
-  if (!res.ok) {
-    const msg = await getErrorMessage(res, "Failed to save interests.");
     throw new Error(msg);
   }
   const data = await res.json().catch(() => ({}));

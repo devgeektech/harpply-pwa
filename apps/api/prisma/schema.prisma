@@ -51,9 +51,6 @@ model User {
   alcoholPreference    String?   // Never, Socially, Regularly
   dietaryPreference    String?
 
-  // Onboarding - Choose 3 (stored as JSON array of selected keys)
-  interests            Json?
-
   onboardingCompleted  Boolean @default(false)
 
   @@schema("auth")

@@ -21,7 +21,6 @@ export interface ProfileData {
   /** JSON array of value slugs (or legacy display titles) from API. */
   myFaithValues:  string[] | null;
   partnerValues: string[] | null;
-  interests: string[] | null;
   smokingPreference: string | null;
   alcoholPreference: string | null;
   dietaryPreference: string | null;
