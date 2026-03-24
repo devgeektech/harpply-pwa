@@ -400,7 +400,8 @@ export default function ProfileIdentityPage() {
                       {/* Lifestyle Habits with pills */}
                       <li className="flex sm:items-center items-start gap-3">
                         <span className="mt-0.5 shadow-[0px_0px_4px_0px_#0000001A] rounded-[12px] bg-white min-w-[60px] min-h-[60px] flex items-center justify-center">
-                          <Popcorn className="size-5 shrink-0  text-[#C39936]" />
+                          {/* <Popcorn className="size-5 shrink-0  text-[#C39936]" /> */}
+                          <Lifestyle/>
                         </span>
                         <div className="min-w-0 flex-1">
                           <p className="text-base font-medium mb-2 text-[#1A1a1a]">
