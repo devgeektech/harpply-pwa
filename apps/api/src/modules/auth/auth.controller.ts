@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/require-await */
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
@@ -108,6 +110,7 @@ export class AuthController {
     const base = (
       this.config.get<string>('FRONTEND_APP_URL') ?? 'http://localhost:3000'
     ).replace(/\/$/, '');
+    
     const q = new URLSearchParams({ error: 'google_signin_failed' });
     const nodeEnv =
       this.config.get<string>('NODE_ENV') ??
@@ -116,7 +119,7 @@ export class AuthController {
     if (nodeEnv !== 'production') {
       q.set('reason', reason);
     }
-    return `${base}/auth/signin?${q.toString()}`;
+    return `${base}/auth/signupemail?${q.toString()}`;
   }
 
   /** Google OAuth: same Client ID/Secret/Callback must be used for redirect and token exchange. */
@@ -186,7 +189,21 @@ export class AuthController {
       this.logger.warn(
         `Google callback: error from Google query param: ${error}`,
       );
-      return res.redirect(302, this.googleSignInErrorRedirect('google_denied'));
+      // Map common cancellation/denial values to a clearer reason so frontend
+      // can show a friendly message.
+      const cancelledErrorCodes = new Set([
+        "access_denied",
+        "user_cancelled",
+        "popup_closed",
+        "popup_closed_by_user",
+        "cancelled",
+        "consent_denied",
+      ]);
+      const reason = cancelledErrorCodes.has(error) ? "google_cancelled" : error;
+      return res.redirect(
+        302,
+        this.googleSignInErrorRedirect(reason),
+      );
     }
     if (!code || !state) {
       this.logger.warn('Google callback: missing code or state');

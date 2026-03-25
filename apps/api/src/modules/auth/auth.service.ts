@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -268,6 +271,7 @@ export class AuthService {
           fullName: name ?? undefined,
           googleId: uid,
           emailVerified: true,
+          onboardingCompleted: false,
         },
         select: {
           id: true,

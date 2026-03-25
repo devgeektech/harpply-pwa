@@ -8,40 +8,53 @@ import {
   useBioStore,
   useFaithStore,
 } from "@/store/onboardingStore";
+import { useFaithAttributesStore } from "@/store/faithAttributesStore";
 
 /**
  * When onboarding stores are empty (e.g. after refresh) but user has a token,
  * fetch onboarding data and hydrate so pre-filled values persist across refresh.
  */
 function useHydrateOnboardingOnLoad() {
-  const hydrated = useRef(false);
+  const lastTokenRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined" || hydrated.current) return;
+    if (typeof window === "undefined") return;
 
     const token = window.localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN);
     if (!token) return;
 
-    const identity = useOnboardingStore.getState();
-    const bio = useBioStore.getState();
-    const faith = useFaithStore.getState();
+    // If token changed (e.g. new user signs in), always reset + re-hydrate.
+    if (lastTokenRef.current === token) return;
+    lastTokenRef.current = token;
 
-    const storesLookEmpty =
-      !identity.name &&
-      !identity.age &&
-      !bio.bio &&
-      !faith.churchInvolvement &&
-      faith.yearsInFaith === 0;
+    // Prevent "previous user" values from flashing before API hydration.
+    useOnboardingStore.getState().setName("");
+    useOnboardingStore.getState().setAge("");
+    useOnboardingStore.getState().setGender("");
+    useOnboardingStore.getState().setLatitude(null);
+    useOnboardingStore.getState().setLongitude(null);
+    useOnboardingStore.getState().setLocation("");
+    useOnboardingStore.getState().setLocationEnabled(false);
 
-    if (!storesLookEmpty) return;
+    useBioStore.getState().setBio("");
 
-    hydrated.current = true;
+    useFaithStore.getState().setChurchInvolvement("");
+    useFaithStore.getState().setYearsInFaith(0);
+    useFaithStore.getState().setChurchAttendance("");
+    useFaithStore.getState().setSmokingSelection("");
+    useFaithStore.getState().setAlcoholSelection("");
+    useFaithStore.getState().setDietaryPreference("");
+
+    useFaithAttributesStore.getState().setMyFaithValues([]);
+    useFaithAttributesStore.getState().setPartnerValues([]);
+
     getOnboardingData(token)
       .then((res) => {
         if (res?.data) hydrateOnboardingStores(res.data);
       })
       .catch(() => {
-        hydrated.current = false;
+        // If hydration fails, keep the cleared state so users don't see
+        // stale values from a previous account.
       });
   }, []);
 }
