@@ -148,6 +148,8 @@ export class AuthController {
     @Res() res: Express.Response,
   ) {
     const oauth = this.getGoogleOAuthConfig();
+    console.log('oauth 151 ============ ', oauth);
+    
     if (!oauth) {
       throw new BadRequestException(
         'Google OAuth not configured. Set GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, and GOOGLE_CALLBACK_URI in apps/api/.env (same Web client for all three) and restart the API.',
@@ -225,6 +227,8 @@ export class AuthController {
     }
 
     const oauth = this.getGoogleOAuthConfig();
+    console.log('oauth 230 ========== ', oauth);
+    
     if (!oauth) {
       this.logger.warn(
         'Google callback: missing GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, or GOOGLE_CALLBACK_URI',
