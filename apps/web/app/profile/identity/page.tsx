@@ -168,9 +168,6 @@ export default function ProfileIdentityPage() {
     ]
   );
 
-  console.log("faithLifestyle >>>>>>>>>>>>>>> ", faithLifestyle);
-
-
   const lifestylePills = useMemo(
     () => [
       {

@@ -34,12 +34,17 @@ export function redirectIfUnauthorizedForAuthApi(res: Response): void {
   if (res.status !== 401) return;
   if (typeof window === "undefined") return;
   clearClientAuthSession();
+  const pathname = window.location.pathname ?? "";
+  const isAuthRoute = pathname.startsWith("/auth/");
+  const redirectTo = isAuthRoute ? "/auth/signupemail" : "/auth/signin";
   if (!sessionExpiredFlowStarted) {
     sessionExpiredFlowStarted = true;
     toast.warning(SESSION_EXPIRED_MESSAGE);
     window.setTimeout(() => {
       sessionExpiredFlowStarted = false;
-      window.location.replace(`${window.location.origin}/auth/signin`);
+      window.location.replace(
+        `${window.location.origin}${redirectTo}`,
+      );
     }, SESSION_EXPIRED_REDIRECT_MS);
   }
   throw new SessionExpiredError();

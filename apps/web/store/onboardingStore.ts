@@ -71,17 +71,24 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
     const { getApiBaseUrl } = await import("@/lib/api/base-url");
     const baseUrl = getApiBaseUrl();
 
+    const token =
+      typeof window !== "undefined"
+        ? window.localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN)
+        : null;
+
     const res = await fetch(
       `${baseUrl}/auth/onboarding/identity`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
           fullName: name,
           age: Number(age),
           gender: gender.toLowerCase(),
         }),
-        credentials: "include",
       }
     );
 
@@ -105,15 +112,22 @@ export const useBioStore = create<BioState>((set, get) => ({
     const { getApiBaseUrl } = await import("@/lib/api/base-url");
     const baseUrl = getApiBaseUrl();
 
+    const token =
+      typeof window !== "undefined"
+        ? window.localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN)
+        : null;
+
     const res = await fetch(
       `${baseUrl}/auth/onboarding/story`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
           bio: bio,
         }),
-        credentials: "include",
       }
     );
 
