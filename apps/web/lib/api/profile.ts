@@ -122,6 +122,16 @@ export async function updateFaithValuesProfile(
   return handleJson<{ message: string }>(res, "Failed to update faith values.");
 }
 
+export async function deleteMyAccount(): Promise<{ message: string }> {
+  const token = await getAuthToken();
+  const res = await fetch(`${getBaseUrl()}/profile/account`, {
+    method: "DELETE",
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    ...fetchOptions,
+  });
+  return handleJson<{ message: string }>(res, "Failed to delete account.");
+}
+
 export interface UpdateLifestylePayload {
   smokingPreference?: string;
   alcoholPreference?: string;

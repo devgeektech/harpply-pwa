@@ -434,3 +434,22 @@ export async function getOnboardingData(
   const json = await res.json().catch(() => ({}));
   return json as { message: string; data: OnboardingData };
 }
+
+/** Logout current session (clears server-side token + HttpOnly cookie). */
+export async function logout(accessToken: string): Promise<{ message: string }> {
+  const res = await fetch(`${getAuthBaseUrl()}/auth/logout`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${accessToken}` },
+    ...authFetchOptions,
+  });
+  // If we got a 401, the session is already gone; treat as logged out.
+  if (res.status === 401) {
+    return { message: "Logged out." };
+  }
+  if (!res.ok) {
+    const msg = await getErrorMessage(res, "Logout failed.");
+    throw new Error(msg);
+  }
+  const json = await res.json().catch(() => ({}));
+  return json as { message: string };
+}

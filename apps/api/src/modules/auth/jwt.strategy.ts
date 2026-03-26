@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -14,8 +18,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (req: Request) => req?.cookies?.[ACCESS_TOKEN_COOKIE] ?? null,
+        // Prefer explicit Authorization header over cookies to avoid
+        // cross-session leakage when multiple accounts are used in the same browser.
         ExtractJwt.fromAuthHeaderAsBearerToken(),
+        (req: Request) => req?.cookies?.[ACCESS_TOKEN_COOKIE] ?? null,
       ]),
       secretOrKey: configService.get<string>('JWT_SECRET'),
     });

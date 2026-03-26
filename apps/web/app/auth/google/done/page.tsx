@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AUTH_STORAGE_KEYS } from "@/lib/constants";
 import { exchangeGoogleSessionCode } from "@/lib/api/auth";
+import { getResumeOnboardingPath } from "@/lib/onboarding-resume";
 
 function GoogleDoneInner() {
   const router = useRouter();
@@ -41,7 +42,9 @@ function GoogleDoneInner() {
           onboardingCompleted ? "true" : "false"
         );
         router.replace(
-          onboardingCompleted ? "/dashboard" : "/auth/onboarding/identity"
+          onboardingCompleted
+            ? "/dashboard"
+            : getResumeOnboardingPath(accessToken)
         );
       } catch (e) {
         setMessage(

@@ -20,6 +20,7 @@ import { ChevronLeft, MapPin, Pencil } from "lucide-react";
 import Image from "next/image";
 import { AUTH_STORAGE_KEYS } from "@/lib/constants";
 import { completeOnboarding } from "@/lib/api/auth";
+import { clearOnboardingResume } from "@/lib/onboarding-resume";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -99,6 +100,7 @@ export default function ReviewProfilePage() {
     try {
       if (token) {
         await completeOnboarding(token);
+        clearOnboardingResume(token);
         window.localStorage.setItem(AUTH_STORAGE_KEYS.ONBOARDING_COMPLETED, "true");
       }
       router.push("/profile/identity");
