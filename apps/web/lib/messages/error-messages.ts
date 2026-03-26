@@ -28,7 +28,7 @@ export const ERROR_MESSAGES = {
     PASSWORD_REQUIRED: 'Password is required.',
     PASSWORD_TOO_SHORT: 'Password must be at least 8 characters long.',
     PASSWORD_WEAK:
-      'Password must be at least 8 characters and include uppercase, lowercase, and a number.',
+      'Password must be at least 8 characters and include uppercase, lowercase, special character and a number.',
     PASSWORD_MUST_BE_STRING: 'Password must be a valid string.',
     REQUIRED_FIELD: '{FIELD} is required.',
     FIELD_REQUIRED: 'This field is required and cannot be empty.',

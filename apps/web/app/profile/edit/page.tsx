@@ -32,6 +32,8 @@ const GOLD_GRADIENT =
   "linear-gradient(135deg, #c58b00 0%, #e8b923 50%, #c58b00 100%)";
 const INPUT_BG = "rgba(255,255,255,0.06)";
 const BORDER_SUBTLE = "rgba(255,255,255,0.12)";
+const MIN_AGE = 18;
+const MAX_AGE = 100;
 
 function buildPhotoSrc(s3PublicUrl: string, key: string): string {
   const safeKey = key?.toString?.().trim() ?? "";
@@ -59,6 +61,10 @@ export default function EditProfilePage() {
   } = useProfileStore();
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const [nameError, setNameError] = useState("");
+  const [ageError, setAgeError] = useState("");
+  const [genderError, setGenderError] = useState("");
+  const [bioError, setBioError] = useState("");
   const s3PublicUrl = process.env.NEXT_PUBLIC_AWS_S3_URL ?? "";
   const [firstProfilePhotoSrc, setFirstProfilePhotoSrc] = useState<string | null>(
     null,
@@ -155,14 +161,51 @@ export default function EditProfilePage() {
 
   const handleSave = async () => {
     if (saving) return;
+    const trimmedName = (name ?? "").trim();
+    const trimmedBio = (bio ?? "").trim();
+    const normalizedGender = (gender ?? "").toString().trim();
+
+    let hasError = false;
+    if (!trimmedName) {
+      setNameError("Full name is required.");
+      hasError = true;
+    } else {
+      setNameError("");
+    }
+
+    if (!age || Number.isNaN(Number(age))) {
+      setAgeError("Age is required.");
+      hasError = true;
+    } else if (age < MIN_AGE || age > MAX_AGE) {
+      setAgeError(`Age must be between ${MIN_AGE} and ${MAX_AGE}.`);
+      hasError = true;
+    } else {
+      setAgeError("");
+    }
+
+    if (!normalizedGender) {
+      setGenderError("Gender is required.");
+      hasError = true;
+    } else {
+      setGenderError("");
+    }
+
+    if (!trimmedBio) {
+      setBioError("About me is required.");
+      hasError = true;
+    } else {
+      setBioError("");
+    }
+
+    if (hasError) return;
     setSaving(true);
     try {
       await updateBasicProfile({
-        fullName: name,
+        fullName: trimmedName,
         age: age || undefined,
         location: location || undefined,
-        gender: gender.toLowerCase(),
-        bio,
+        gender: normalizedGender.toLowerCase(),
+        bio: trimmedBio,
       });
       toast.success("Profile updated successfully.");
       router.push("/profile/faithlifestyle");
@@ -244,10 +287,14 @@ export default function EditProfilePage() {
               </label>
               <Input
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (nameError) setNameError("");
+                }}
                 placeholder="Full Name"
                 className="h-[52px] rounded-[8px]  border-white/15 bg-white text-black placeholder:text-black/40 focus-visible:ring-2 focus-visible:ring-amber-500/40"
               />
+              {nameError && <p className="mt-1 text-sm text-red-300">{nameError}</p>}
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-medium text-white/80">
@@ -255,13 +302,29 @@ export default function EditProfilePage() {
               </label>
               <Input
                 type="number"
-                min={18}
-                max={120}
+                min={MIN_AGE}
+                max={MAX_AGE}
                 value={age || ""}
-                onChange={(e) => setAge(Number(e.target.value) || 0)}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  if (!raw) {
+                    setAge(0);
+                    if (ageError) setAgeError("");
+                    return;
+                  }
+                  const n = Number(raw);
+                  if (!Number.isFinite(n)) return;
+                  setAge(Math.trunc(n));
+                  if (n < MIN_AGE || n > MAX_AGE) {
+                    setAgeError(`Age must be between ${MIN_AGE} and ${MAX_AGE}.`);
+                  } else if (ageError) {
+                    setAgeError("");
+                  }
+                }}
                 placeholder="Age"
                 className="h-[52px] rounded-[8px]  border-white/15 bg-white text-black placeholder:text-black/40 focus-visible:ring-2 focus-visible:ring-amber-500/40"
               />
+              {ageError && <p className="mt-1 text-sm text-red-300">{ageError}</p>}
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-medium text-white/80">
@@ -324,7 +387,10 @@ export default function EditProfilePage() {
                 <button
                   key={g}
                   type="button"
-                  onClick={() => setGender(g)}
+                  onClick={() => {
+                    setGender(g);
+                    if (genderError) setGenderError("");
+                  }}
                   className="cursor-pointer flex-1 py-2.5 text-sm font-medium rounded-lg transition-all"
                   style={
                     gender === g
@@ -341,6 +407,7 @@ export default function EditProfilePage() {
                 </button>
               ))}
             </div>
+            {genderError && <p className="mt-1 text-sm text-red-300">{genderError}</p>}
           </div>
 
           {/* About Me */}
@@ -350,12 +417,16 @@ export default function EditProfilePage() {
             </label>
             <Textarea
               value={bio}
-              onChange={(e) => setBio(e.target.value)}
+              onChange={(e) => {
+                setBio(e.target.value);
+                if (bioError) setBioError("");
+              }}
               placeholder="I'm a believer who finds peace in..."
               maxLength={300}
               rows={4}
               className="w-full rounded-xl border-0 bg-white text-black placeholder:text-black/40 focus-visible:ring-2 focus-visible:ring-amber-500/40 resize-y min-h-[100px] shadow-none"
             />
+            {bioError && <p className="mt-1 text-sm text-red-300">{bioError}</p>}
             <p className="mt-1.5 text-right text-sm text-white/80">
               {bio.length} / 300 characters
             </p>

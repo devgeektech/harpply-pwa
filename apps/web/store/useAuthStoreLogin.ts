@@ -43,7 +43,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const onboardingCompleted = result?.data?.user?.onboardingCompleted ?? false;
       const token = result?.data?.accessToken;
       return onboardingCompleted
-        ? "/dashboard"
+        ? "/dashboard/quiz/introduction"
         : token
           ? getResumeOnboardingPath(token)
           : "/auth/onboarding/identity";

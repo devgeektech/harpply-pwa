@@ -43,7 +43,7 @@ function GoogleDoneInner() {
         );
         router.replace(
           onboardingCompleted
-            ? "/dashboard"
+            ? "/dashboard/quiz/introduction"
             : getResumeOnboardingPath(accessToken)
         );
       } catch (e) {

@@ -1,10 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input, Label, Button, Card, CardContent } from "@repo/ui";
 import Link from "next/link";
 import { ChevronLeft, AlertCircle } from "lucide-react";
 import { useForgotPasswordStore } from "store/useForgotPasswordStore";
+import { isValidEmail } from "@/lib/validation/regex";
+import { ERROR_MESSAGES } from "@/lib/messages";
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -18,11 +21,26 @@ export default function ForgotPasswordPage() {
     clearMessage,
   } = useForgotPasswordStore();
 
+  const [emailError, setEmailError] = useState<string | null>(null);
+
   const handleSendResetLink = async () => {
+    setEmailError(null);
+
+    const trimmed = email?.trim() ?? "";
+    if (!trimmed) {
+      setEmailError(ERROR_MESSAGES.VALIDATION.EMAIL_REQUIRED);
+      return;
+    }
+
+    if (!isValidEmail(trimmed)) {
+      setEmailError(ERROR_MESSAGES.VALIDATION.EMAIL_INVALID);
+      return;
+    }
+
     const success = await sendResetLink();
-    if (success && email?.trim()) {
+    if (success) {
       router.push(
-        `/auth/forgot-password-verify?email=${encodeURIComponent(email.trim())}`
+        `/auth/forgot-password-verify?email=${encodeURIComponent(trimmed)}`
       );
     }
   };
@@ -62,13 +80,17 @@ export default function ForgotPasswordPage() {
                 onChange={(e) => {
                   clearMessage();
                   setEmail(e.target.value);
+                  setEmailError(null);
                 }}
                 className="bg-white border-white/10 h-[52px] border border-[#E7ECF2] rounded-[12px] md:rounded-[8px] text-[#3B3B3B] placeholder:text-[#3B3B3B] focus-visible:ring-0"
               />
+              {emailError && (
+                <p className="text-sm text-red-400">{emailError}</p>
+              )}
             </div>
 
             <Button
-              disabled={!email?.trim() || loading}
+              disabled={!email?.trim() || loading || !isValidEmail(email.trim())}
               onClick={handleSendResetLink}
               className="cursor-pointer w-full text-base h-[52px] mt-[12px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60"
             >

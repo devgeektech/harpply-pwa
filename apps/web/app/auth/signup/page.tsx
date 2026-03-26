@@ -8,12 +8,17 @@ import { useRouter } from "next/navigation";
 import { registerEmail as apiRegisterEmail } from "@/lib/api/auth";
 import { ERROR_MESSAGES } from "@/lib/messages";
 import { useSignupStore } from "store/useSignupStore";
+import { isValidEmail } from "@/lib/validation/regex";
 
 const registerEmailSchema = yup.object({
   email: yup
     .string()
     .required(ERROR_MESSAGES.VALIDATION.EMAIL_REQUIRED)
-    .email(ERROR_MESSAGES.VALIDATION.EMAIL_INVALID),
+    .test(
+      "is-valid-email",
+      ERROR_MESSAGES.VALIDATION.EMAIL_INVALID,
+      (value) => (typeof value === "string" ? isValidEmail(value) : false)
+    ),
 });
 
 // --- Final-form validator from yup ---

@@ -129,11 +129,21 @@ function SignupEmailInner() {
           <p className="md:text-base text-sm text-white/60 leading-relaxed">
             By tapping Create Account or Sign In, you agree to our Terms. Learn
             how we process your data in our{" "}
-            <Link href={"/"} className="underline cursor-pointer">
+            <Link
+              href="/privacy-policy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline cursor-pointer"
+            >
               Privacy Policy
-            </Link>{" "}
-            and{" "}
-            <Link href={"/"} className="underline cursor-pointer">
+            </Link>
+            {" "}and{" "}
+            <Link
+              href="/terms-and-conditions"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline cursor-pointer"
+            >
               Terms and Conditions
             </Link>
             .

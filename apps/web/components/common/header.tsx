@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { CircleUserRound, LogOut, Search, Settings, Trash } from "lucide-react"
 import { Button, Input } from "@repo/ui"
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui"
@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import GlobalModal from "./common-modal";
 import { toast } from "sonner";
 import { AUTH_STORAGE_KEYS, logout } from "@/lib/api/auth";
-import { deleteMyAccount } from "@/lib/api/profile";
+import { deleteMyAccount, fetchProfile } from "@/lib/api/profile";
 import { clearClientAuthSession } from "@/lib/api/session-expired";
 
 const suggestionsData = [
@@ -31,10 +31,36 @@ export default function Header() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"deleteAccount" | "logout">("logout");
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [displayName, setDisplayName] = useState<string>("Account");
   const router = useRouter();
   const filteredSuggestions = suggestionsData.filter((item) =>
     item.toLowerCase().includes(query.toLowerCase())
   );
+
+  const initials = useMemo(() => {
+    const name = (displayName ?? "").trim();
+    if (!name) return "A";
+    const parts = name.split(/\s+/).filter(Boolean);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return `${parts[0][0] ?? ""}${parts[parts.length - 1][0] ?? ""}`.toUpperCase();
+  }, [displayName]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchProfile()
+      .then((res) => {
+        if (cancelled) return;
+        const name = (res?.data?.fullName ?? "").trim();
+        const email = (res?.data?.email ?? "").trim();
+        setDisplayName(name || email || "Account");
+      })
+      .catch(() => {
+        // ignore — header can still render with fallback
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleLogout = async () => {
     if (confirmLoading) return;
@@ -212,11 +238,12 @@ export default function Header() {
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="border-none h-auto relative bg-[#F5F3ED] py-[10px] px-[10px] md:rounded-[8px] rounded-full cursor-pointer whitespace-nowrap">
                 <span className="hidden md:flex text-sm font-medium text-[#C39936] flex items-center gap-2 whitespace-nowrap">
-                  Sarah Jensen <Image src="/images/circle-down.svg" alt="dropdown" width={24} height={24} />
+                  {displayName} <Image src="/images/circle-down.svg" alt="dropdown" width={24} height={24} />
                 </span>
                 <span className="block md:hidden text-[18px] font-medium text-[#C39936] flex items-center gap-2 whitespace-nowrap">
                   <Avatar>
-                    <AvatarFallback className="text-[18px] font-medium text-[#C39936]">SJ</AvatarFallback>
+                    <AvatarImage alt={displayName} />
+                    <AvatarFallback className="text-[18px] font-medium text-[#C39936]">{initials}</AvatarFallback>
                   </Avatar>
                 </span>
               </Button>
