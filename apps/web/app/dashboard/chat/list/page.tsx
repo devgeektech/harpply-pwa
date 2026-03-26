@@ -3,7 +3,7 @@ import {
   Card,
   CardContent,
   Tabs,
-  TabsContent,
+  TabsContent, 
   TabsList,
   TabsTrigger,
 } from "@repo/ui";
