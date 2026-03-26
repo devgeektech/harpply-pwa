@@ -14,7 +14,7 @@ export const SUCCESS_MESSAGES = {
     EMAIL_VERIFIED: 'Email verified successfully.',
     COMPLETE_SIGNUP_SET_PASSWORD:
       'Your email is already verified. Please set your password to complete signup.',
-    VERIFICATION_EMAIL_SENT: 'Verification link sent. Please check your email.',
+    VERIFICATION_EMAIL_SENT: 'Verification link resent. Please check your email.',
     EMAIL_ALREADY_VERIFIED: 'This email is already verified.',
   },
   ONBOARDING: {
