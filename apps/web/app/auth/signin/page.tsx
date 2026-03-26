@@ -4,7 +4,7 @@ import { Button, Card, CardContent, Input, Label } from "@repo/ui";
 import Link from "next/link";
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { ChevronLeft, Eye, EyeOff, Loader2 } from "lucide-react";
 import { AuthError, getGoogleLoginRedirectUrl } from "@/lib/api/auth";
 import { getApiBaseUrl } from "@/lib/api/base-url";
 import { ERROR_MESSAGES } from "@/lib/messages";
@@ -82,15 +82,49 @@ function SigninForm() {
       <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
         <CardContent className="flex items-center flex-col sm:p-10 px-3 text-left">
           <div className="w-full space-y-6">
+            <div className="text-left w-full">
+              <button
+                type="button"
+                onClick={() => router.push("/auth/signupemail")}
+                className="cursor-pointer text-white hover:opacity-90"
+                aria-label="Back"
+              >
+                <ChevronLeft size={24} />
+              </button>
+            </div>
             <h2 className="w-full text-[24px] font-light text-white font-serif tracking-wider mb-[32px] md:mb-0">
               Sign In
             </h2>
+
             {(apiError || googleError) && (
               <p className="text-sm text-amber-200 bg-amber-500/20 rounded-lg px-3 py-2">
                 {apiError ??
                   (googleError
                     ? googleFailReason
-                      ? `Google sign-in failed (${googleFailReason}). Check API terminal logs and GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET / GOOGLE_CALLBACK_URI.`
+                      ? (() => {
+                        const reason = googleFailReason.trim();
+                        const cancelledReasons = new Set([
+                          "access_denied",
+                          "user_denied",
+                          "user_cancelled",
+                          "user_cancelled_by_user",
+                          "user_cancelled_by_user",
+                          "cancelled",
+                          "cancelled_by_user",
+                          "popup_closed",
+                          "popup_closed_by_user",
+                          "request_canceled",
+                          "consent_denied",
+                          "oauth_canceled",
+                          "google_denied",
+                          "google_cancelled",
+                          "google_cancelled_by_user",
+                        ]);
+                        if (cancelledReasons.has(reason)) {
+                          return "Google sign-in was cancelled.";
+                        }
+                        return `Google sign-in failed (${reason}). Please try again.`;
+                      })()
                       : "Google sign-in failed. Please try again."
                     : null)}
               </p>

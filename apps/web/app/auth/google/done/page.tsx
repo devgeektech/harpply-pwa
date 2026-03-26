@@ -14,14 +14,20 @@ function GoogleDoneInner() {
     if (typeof window === "undefined") return;
 
     const error = searchParams.get("error");
+    const reason = searchParams.get("reason");
+    const reasonQuery = reason ? `&reason=${encodeURIComponent(reason)}` : "";
     if (error) {
-      router.replace("/auth/signin?error=google_signin_failed");
+      router.replace(
+        `/auth/signupemail?error=google_signin_failed${reasonQuery}`
+      );
       return;
     }
 
     const exchange = searchParams.get("exchange");
     if (!exchange) {
-      router.replace("/auth/signin?error=google_signin_failed");
+      router.replace(
+        `/auth/signupemail?error=google_signin_failed${reasonQuery}`
+      );
       return;
     }
 
@@ -35,14 +41,16 @@ function GoogleDoneInner() {
           onboardingCompleted ? "true" : "false"
         );
         router.replace(
-          onboardingCompleted ? "/profile/identity" : "/auth/onboarding/identity"
+          onboardingCompleted ? "/dashboard" : "/auth/onboarding/identity"
         );
       } catch (e) {
         setMessage(
           e instanceof Error ? e.message : "Could not complete sign-in."
         );
         setTimeout(() => {
-          router.replace("/auth/signin?error=google_signin_failed");
+          router.replace(
+            `/auth/signin?error=google_signin_failed${reasonQuery}`
+          );
         }, 2500);
       }
     })();

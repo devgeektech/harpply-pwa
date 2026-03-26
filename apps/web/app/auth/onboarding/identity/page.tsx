@@ -12,6 +12,7 @@ export default function Identity() {
   const [loading, setLoading] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
   const [ageError, setAgeError] = useState<string | null>(null);
+  const MAX_AGE = 100;
 
   const {
     name,
@@ -39,6 +40,10 @@ export default function Identity() {
         setAgeError("You must be 18 or older to use Harpply");
         return;
       }
+      if (parsedAge > MAX_AGE) {
+        setAgeError(`Age must be ${MAX_AGE} or less`);
+        return;
+      }
 
       setLoading(true);
 
@@ -63,7 +68,7 @@ export default function Identity() {
           </div>
           {/* Progress */}
           <div className="mb-6 w-full">
-            <p className="text-sm text-gray-300 mb-2">Step 1 of 5</p>
+            <p className="text-sm text-gray-300 mb-2">Step 1 of 7</p>
             <Progress value={20} />
           </div>
 
@@ -95,9 +100,21 @@ export default function Identity() {
             <label className="text-white font-normal text-sm">Age</label>
             <Input
               type="number"
+              max={MAX_AGE}
               placeholder="How old are you?"
               value={age}
-              onChange={(e) => setAge(e.target.value)}
+              onChange={(e) => {
+                const raw = e.target.value;
+                if (raw === "") {
+                  setAge("");
+                  return;
+                }
+                const num = Number(raw);
+                const clamped = Number.isFinite(num)
+                  ? Math.min(MAX_AGE, Math.max(0, num))
+                  : 0;
+                setAge(String(clamped));
+              }}
               className="mt-2 bg-white border-[#FBFAF9] h-[52px] border border-[#E7ECF2] rounded-[12px] md:rounded-[8px] text-[#3B3B3B] placeholder:text-[#3B3B3B] focus-visible:ring-0"
             />
             {ageError && (

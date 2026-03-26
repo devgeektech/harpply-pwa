@@ -3,14 +3,57 @@
 import Image from "next/image";
 import { Card, CardContent, Button } from "@repo/ui";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getApiBaseUrl } from "@/lib/api/base-url";
 import { getGoogleLoginRedirectUrl } from "@/lib/api/auth";
 
-export default function SignupEmail() {
+function googleBannerMessage(reasonRaw: string | null): string {
+  const reason = (reasonRaw ?? "").trim();
+  if (!reason) return "Google sign-in failed. Please try again.";
+  const cancelledReasons = new Set([
+    "access_denied",
+    "user_denied",
+    "user_cancelled",
+    "user_cancelled_by_user",
+    "cancelled",
+    "cancelled_by_user",
+    "popup_closed",
+    "popup_closed_by_user",
+    "request_canceled",
+    "consent_denied",
+    "oauth_canceled",
+    "google_denied",
+    "google_cancelled",
+    "google_cancelled_by_user",
+  ]);
+  if (cancelledReasons.has(reason)) return "Google sign-in was cancelled.";
+  return `Google sign-in failed (${reason}). Please try again.`;
+}
+
+function SignupEmailInner() {
   const router = useRouter();
   const [apiError, setApiError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const googleError = searchParams.get("error") === "google_signin_failed";
+  const googleFailReason = searchParams.get("reason");
+  const [googleBanner, setGoogleBanner] = useState<string | null>(null);
+
+  const computedGoogleBanner = useMemo(() => {
+    if (!googleError) return null;
+    return googleBannerMessage(googleFailReason);
+  }, [googleError, googleFailReason]);
+
+  useEffect(() => {
+    if (!computedGoogleBanner) return;
+    setGoogleBanner(computedGoogleBanner);
+
+    // Consume the query params so a refresh clears the banner.
+    if (typeof window !== "undefined") {
+      window.history.replaceState(null, "", "/auth/signupemail");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [computedGoogleBanner]);
 
   const handleGoogleLogin = async () => {
     setApiError(null);
@@ -47,9 +90,9 @@ export default function SignupEmail() {
 
           {/* Buttons */}
           <div className="w-full space-y-4 mt-[] mb-[67px] md:my-[67px]">
-            {apiError && (
+            {(apiError || googleBanner) && (
               <p className="text-sm text-amber-200 bg-amber-500/20 rounded-lg px-3 py-2">
-                {apiError}
+                {apiError ?? googleBanner}
               </p>
             )}
             <Button
@@ -98,5 +141,13 @@ export default function SignupEmail() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function SignupEmail() {
+  return (
+    <Suspense fallback={null}>
+      <SignupEmailInner />
+    </Suspense>
   );
 }

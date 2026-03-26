@@ -121,13 +121,16 @@ export default function ManagePhotoPage() {
     setUploadError(null)
     setUploadDialogOpen(false)
 
+    // Always remember the file the user most recently selected.
+    // This prevents retry ("Try again") from uploading an older image when
+    // the error happened during validation.
+    lastSelectedFileRef.current = file
+
     const validationError = validateBeforeUpload(file)
     if (validationError) {
       setAndOpenUploadError(validationError)
       return
     }
-
-    lastSelectedFileRef.current = file
     setUploading(true)
 
     try {

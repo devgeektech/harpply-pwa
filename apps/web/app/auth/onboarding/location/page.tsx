@@ -99,7 +99,7 @@ export default function Location() {
           </div>
           {/* Progress */}
           <div className="mb-6 w-full text-left">
-            <p className="text-sm text-gray-300 mb-2 text-left">Step 2 of 5</p>
+            <p className="text-sm text-gray-300 mb-2 text-left">Step 2 of 7</p>
             <Progress value={40} />
           </div>
 
