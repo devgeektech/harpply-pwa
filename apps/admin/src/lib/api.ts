@@ -52,16 +52,18 @@ export async function adminForgotPassword(email: string): Promise<{ resetToken?:
   return { resetToken: data?.data?.resetToken, message: data?.message };
 }
 
-export async function adminChangePassword(payload: {
-  email: string;
-  resetToken: string;
+export async function adminChangePassword(accessToken: string, payload: {
+  currentPassword: string;
   newPassword: string;
   confirmPassword: string;
 }): Promise<{ message?: string }> {
-  const res = await fetch(`${apiBaseUrl}/auth/admin/change-password`, {
+  const res = await fetch(`${apiBaseUrl}/auth/admin/change-password-auth`, {
     method: "POST",
     credentials: "include",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
     body: JSON.stringify(payload),
   });
   const data = (await res.json().catch(() => ({}))) as { message?: string };

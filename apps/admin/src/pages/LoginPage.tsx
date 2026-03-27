@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { Button, Card, CardContent, Input, Label } from "@repo/ui";
 import { isValidEmail } from "../lib/validation";
 import { CARD_CLASS, INPUT_CLASS, PRIMARY_BTN_CLASS } from "../constants/ui";
@@ -15,6 +16,7 @@ export function LoginPage({
   const [apiError, setApiError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const validate = (): boolean => {
     setEmailError("");
@@ -66,23 +68,33 @@ export function LoginPage({
               placeholder="admin@harpply.com"
               className={INPUT_CLASS}
             />
-            {emailError && <p className="text-sm text-red-200">{emailError}</p>}
+            {emailError && <p className="text-sm text-red-500">{emailError}</p>}
           </div>
 
           <div className="space-y-2">
             <Label className="text-white">Password</Label>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                if (passwordError) setPasswordError("");
-                if (apiError) setApiError("");
-              }}
-              placeholder="Enter your password"
-              className={INPUT_CLASS}
-            />
-            {passwordError && <p className="text-sm text-red-200">{passwordError}</p>}
+            <div className="relative">
+              <Input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (passwordError) setPasswordError("");
+                  if (apiError) setApiError("");
+                }}
+                placeholder="Enter your password"
+                className={`${INPUT_CLASS} pr-12`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#1A1A1A]/70 hover:text-[#1A1A1A] cursor-pointer"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            {passwordError && <p className="text-sm text-red-500">{passwordError}</p>}
           </div>
 
           <Button className={PRIMARY_BTN_CLASS} disabled={auth.loading} onClick={handleLogin}>

@@ -35,6 +35,7 @@ import { ResendVerificationDto } from './dto/resend-verification.dto';
 import { AdminSignInDto } from './dto/admin-sign-in.dto';
 import { AdminForgotPasswordDto } from './dto/admin-forgot-password.dto';
 import { AdminChangePasswordDto } from './dto/admin-change-password.dto';
+import { AdminChangePasswordAuthDto } from './dto/admin-change-password-auth.dto';
 import { IdentityDto } from './dto/identity.dto';
 import { LocationDto } from './dto/location.dto';
 import { StoryDto } from './dto/story.dto';
@@ -431,6 +432,18 @@ export class AuthController {
   @ApiOperation({ summary: 'Admin change password using reset token' })
   async adminChangePassword(@Body() dto: AdminChangePasswordDto) {
     return this.authService.adminChangePassword(dto);
+  }
+
+  @Post('admin/change-password-auth')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Admin change password (authenticated)' })
+  async adminChangePasswordAuth(
+    @CurrentUserId() userId: string,
+    @Body() dto: AdminChangePasswordAuthDto,
+  ) {
+    return this.authService.adminChangePasswordAuth(userId, dto);
   }
 
   @Post('admin/logout')

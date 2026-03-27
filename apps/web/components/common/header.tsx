@@ -293,7 +293,7 @@ export default function Header() {
         }
         description={
           modalType === "logout"
-            ? "Are you sure want to logout."
+            ? "Are you sure want to logout?"
             : "This action is permanent and will delete all of your account data and photos."
         }
         onConfirm={modalType === "logout" ? handleLogout : handleConfirmDelete}

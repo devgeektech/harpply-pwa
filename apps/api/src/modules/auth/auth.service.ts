@@ -476,6 +476,46 @@ export class AuthService implements OnModuleInit {
     return successResponse(SUCCESS_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS);
   }
 
+  async adminChangePasswordAuth(
+    userId: string,
+    dto: {
+      currentPassword: string;
+      newPassword: string;
+      confirmPassword: string;
+    },
+  ) {
+    const { currentPassword, newPassword, confirmPassword } = dto;
+    if (newPassword !== confirmPassword) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.PASSWORD_MISMATCH);
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, role: true, password: true },
+    });
+
+    if (!user || user.role !== 'admin' || !user.password) {
+      throw new UnauthorizedException(ERROR_MESSAGES.GENERAL.UNAUTHORIZED);
+    }
+
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordValid) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS);
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashed,
+        token: null,
+        loggedOutAt: new Date(),
+      } as Prisma.UserUpdateInput,
+    });
+
+    return successResponse(SUCCESS_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS);
+  }
+
   async adminLogout(jti: string, userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },

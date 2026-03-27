@@ -32,7 +32,7 @@ export default function GlobalModal({
   const resolvedDescription =
     description ??
     (isLogout
-      ? "Are you sure want to logout."
+      ? "Are you sure want to logout?"
       : "This action is permanent and will delete all of your account data.");
   const resolvedConfirmLabel =
     confirmLabel ?? (isLogout ? "Yes" : "Delete");

@@ -7,11 +7,9 @@ import { CARD_CLASS, INPUT_CLASS, PRIMARY_BTN_CLASS } from "../constants/ui";
 export function ForgotPasswordPage({
   initialEmail,
   onBackToLogin,
-  onGoChangePassword,
 }: {
   initialEmail: string;
   onBackToLogin: () => void;
-  onGoChangePassword: (email: string, resetToken?: string) => void;
 }) {
   const [email, setEmail] = useState(initialEmail);
   const [loading, setLoading] = useState(false);
@@ -36,13 +34,8 @@ export function ForgotPasswordPage({
 
     setLoading(true);
     try {
-      const result = await adminForgotPassword(trimmed);
-      setApiMessage(
-        result.resetToken
-          ? "Reset token generated. Continue to change password."
-          : "If an admin account exists, password reset steps were issued."
-      );
-      onGoChangePassword(trimmed, result.resetToken);
+      await adminForgotPassword(trimmed);
+      setApiMessage("If an admin account exists, password reset steps were issued.");
     } catch (e) {
       setApiError(e instanceof Error ? e.message : "Failed to process forgot password.");
     } finally {
@@ -81,7 +74,7 @@ export function ForgotPasswordPage({
               placeholder="admin@harpply.com"
               className={INPUT_CLASS}
             />
-            {emailError && <p className="text-sm text-red-200">{emailError}</p>}
+            {emailError && <p className="text-sm text-red-500">{emailError}</p>}
           </div>
 
           <Button className={PRIMARY_BTN_CLASS} disabled={loading} onClick={handleGenerate}>

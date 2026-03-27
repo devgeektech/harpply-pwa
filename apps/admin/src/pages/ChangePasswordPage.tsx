@@ -1,44 +1,41 @@
 import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { Button, Card, CardContent, Input, Label } from "@repo/ui";
 import { adminChangePassword } from "../lib/api";
-import { isValidEmail } from "../lib/validation";
 import { CARD_CLASS, INPUT_CLASS, PRIMARY_BTN_CLASS } from "../constants/ui";
 
 export function ChangePasswordPage({
-  initialEmail,
-  initialResetToken,
-  onBackToLogin,
+  accessToken,
+  onPasswordChanged,
 }: {
-  initialEmail: string;
-  initialResetToken?: string;
+  accessToken: string;
   onBackToLogin: () => void;
+  onPasswordChanged?: () => void;
 }) {
-  const [email, setEmail] = useState(initialEmail);
-  const [resetToken, setResetToken] = useState(initialResetToken ?? "");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [apiMessage, setApiMessage] = useState("");
   const [apiError, setApiError] = useState("");
 
-  const [emailError, setEmailError] = useState("");
-  const [resetTokenError, setResetTokenError] = useState("");
+  const [currentPasswordError, setCurrentPasswordError] = useState("");
   const [newPasswordError, setNewPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = async () => {
     setApiError("");
     setApiMessage("");
-    setEmailError("");
-    setResetTokenError("");
+    setCurrentPasswordError("");
     setNewPasswordError("");
     setConfirmPasswordError("");
 
-    const trimmedEmail = email.trim();
-    if (!trimmedEmail) setEmailError("Email is required.");
-    else if (!isValidEmail(trimmedEmail)) setEmailError("Please enter a valid email address.");
-
-    if (!resetToken.trim()) setResetTokenError("Reset token is required.");
+    if (!currentPassword.trim()) {
+      setCurrentPasswordError("Current password is required.");
+    }
 
     if (!newPassword.trim() || newPassword.length < 8) {
       setNewPasswordError("New password must be at least 8 characters.");
@@ -48,9 +45,7 @@ export function ChangePasswordPage({
     }
 
     if (
-      !trimmedEmail ||
-      !isValidEmail(trimmedEmail) ||
-      !resetToken.trim() ||
+      !currentPassword.trim() ||
       !newPassword.trim() ||
       newPassword.length < 8 ||
       newPassword !== confirmPassword
@@ -60,15 +55,16 @@ export function ChangePasswordPage({
 
     setLoading(true);
     try {
-      await adminChangePassword({
-        email: trimmedEmail,
-        resetToken: resetToken.trim(),
+      await adminChangePassword(accessToken, {
+        currentPassword: currentPassword.trim(),
         newPassword,
         confirmPassword,
       });
-      setApiMessage("Password changed successfully. Please log in.");
+      setApiMessage("Password changed successfully.");
+      setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
+      onPasswordChanged?.();
     } catch (e) {
       setApiError(e instanceof Error ? e.message : "Failed to change password.");
     } finally {
@@ -79,8 +75,8 @@ export function ChangePasswordPage({
   return (
     <Card className={CARD_CLASS}>
       <CardContent className="p-8 text-white">
-        <h1 className="text-[28px] font-serif mb-1">Admin Change Password</h1>
-        <p className="text-white/70 mb-6">Use reset token to set a new password.</p>
+        <h1 className="text-[28px] font-serif mb-1">Change Password</h1>
+        <p className="text-white/70 mb-6">Update your account password.</p>
 
         {apiMessage && (
           <div className="mb-4 rounded-lg border border-emerald-300/30 bg-emerald-500/15 px-3 py-2 text-sm text-emerald-100">
@@ -95,79 +91,89 @@ export function ChangePasswordPage({
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label className="text-white">Email</Label>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                if (emailError) setEmailError("");
-                if (apiError) setApiError("");
-              }}
-              placeholder="admin@harpply.com"
-              className={INPUT_CLASS}
-            />
-            {emailError && <p className="text-sm text-red-200">{emailError}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-white">Reset Token</Label>
-            <Input
-              value={resetToken}
-              onChange={(e) => {
-                setResetToken(e.target.value);
-                if (resetTokenError) setResetTokenError("");
-                if (apiError) setApiError("");
-              }}
-              placeholder="Paste reset token"
-              className={INPUT_CLASS}
-            />
-            {resetTokenError && <p className="text-sm text-red-200">{resetTokenError}</p>}
+            <Label className="text-white">Current Password</Label>
+            <div className="relative">
+              <Input
+                type={showCurrentPassword ? "text" : "password"}
+                value={currentPassword}
+                onChange={(e) => {
+                  setCurrentPassword(e.target.value);
+                  if (currentPasswordError) setCurrentPasswordError("");
+                  if (apiError) setApiError("");
+                }}
+                placeholder="Enter current password"
+                className={`${INPUT_CLASS} pr-12`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowCurrentPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#1A1A1A]/70 hover:text-[#1A1A1A] cursor-pointer"
+                aria-label={showCurrentPassword ? "Hide current password" : "Show current password"}
+              >
+                {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            {currentPasswordError && (
+              <p className="text-sm text-red-500">{currentPasswordError}</p>
+            )}
           </div>
 
           <div className="space-y-2">
             <Label className="text-white">New Password</Label>
-            <Input
-              type="password"
-              value={newPassword}
-              onChange={(e) => {
-                setNewPassword(e.target.value);
-                if (newPasswordError) setNewPasswordError("");
-                if (apiError) setApiError("");
-              }}
-              placeholder="Minimum 8 characters"
-              className={INPUT_CLASS}
-            />
-            {newPasswordError && <p className="text-sm text-red-200">{newPasswordError}</p>}
+            <div className="relative">
+              <Input
+                type={showNewPassword ? "text" : "password"}
+                value={newPassword}
+                onChange={(e) => {
+                  setNewPassword(e.target.value);
+                  if (newPasswordError) setNewPasswordError("");
+                  if (apiError) setApiError("");
+                }}
+                placeholder="Minimum 8 characters"
+                className={`${INPUT_CLASS} pr-12`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowNewPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#1A1A1A]/70 hover:text-[#1A1A1A] cursor-pointer"
+                aria-label={showNewPassword ? "Hide new password" : "Show new password"}
+              >
+                {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            {newPasswordError && <p className="text-sm text-red-500">{newPasswordError}</p>}
           </div>
 
           <div className="space-y-2">
             <Label className="text-white">Confirm Password</Label>
-            <Input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => {
-                setConfirmPassword(e.target.value);
-                if (confirmPasswordError) setConfirmPasswordError("");
-                if (apiError) setApiError("");
-              }}
-              placeholder="Re-enter new password"
-              className={INPUT_CLASS}
-            />
-            {confirmPasswordError && <p className="text-sm text-red-200">{confirmPasswordError}</p>}
+            <div className="relative">
+              <Input
+                type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  if (confirmPasswordError) setConfirmPasswordError("");
+                  if (apiError) setApiError("");
+                }}
+                placeholder="Re-enter new password"
+                className={`${INPUT_CLASS} pr-12`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#1A1A1A]/70 hover:text-[#1A1A1A] cursor-pointer"
+                aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            {confirmPasswordError && <p className="text-sm text-red-500">{confirmPasswordError}</p>}
           </div>
 
           <Button className={PRIMARY_BTN_CLASS} disabled={loading} onClick={handleChange}>
             {loading ? "Updating..." : "Change Password"}
           </Button>
 
-          <Button
-            variant="outline"
-            className="cursor-pointer w-full h-[50px] rounded-[10px] border border-[#C39936] text-[#F3D35D] bg-transparent hover:bg-white/10"
-            onClick={onBackToLogin}
-          >
-            Back to Login
-          </Button>
         </div>
       </CardContent>
     </Card>
