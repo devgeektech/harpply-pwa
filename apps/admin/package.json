@@ -11,22 +11,24 @@
   },
   "dependencies": {
     "@repo/ui": "workspace:*",
+    "lucide-react": "catalog:",
     "next-themes": "^0.4.4",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
-    "react-hook-form": "catalog:"
+    "react-hook-form": "catalog:",
+    "zustand": "catalog:"
   },
   "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@types/node": "catalog:",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
-    "@types/node": "catalog:",
-    "@eslint/js": "catalog:",
-    "eslint": "catalog:",
-    "typescript": "catalog:",
     "@vitejs/plugin-react": "^5.1.1",
+    "eslint": "catalog:",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "typescript": "catalog:",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4"
   }

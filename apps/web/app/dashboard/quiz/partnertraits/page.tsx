@@ -38,49 +38,47 @@ export default function PartnerTraits() {
 
           {/* Title */}
           <h1 className="text-[24px] font-light font-serif text-white mb-2 w-full">
-          Choose your denomination
+            Choose your denomination
           </h1>
 
 
-                  {/* Options */}
-                  <div className="space-y-4 w-full">
-                    {options.map((item: string) => {
-                      const active = selected.includes(item);
+          {/* Options */}
+          <div className="space-y-4 w-full">
+            {options.map((item: string) => {
+              const active = selected.includes(item);
 
-                      return (
-                        <button
-                          key={item}
-                          onClick={() => {
-                            setSelected((prev) =>
-                              prev.includes(item)
-                                ? prev.filter((i) => i !== item)
-                                : [...prev, item]
-                            );
-                          }}
-                          className={`cursor-pointer relative w-full text-base font-normal flex items-center justify-between px-4 py-4 rounded-xl transition border
-                          ${
-                            active
-                              ? "border-[#C8A851] border-[2px] bg-white text-black"
-                              : "border-white/10 border-[2px] bg-white/90 text-black"
-                          }`}
-                        >
-                          <input type="checkbox" className="absolute opacity-0" />
-                          <span className="text-[#3B3B3B]">{item}</span>
+              return (
+                <button
+                  key={item}
+                  onClick={() => {
+                    setSelected((prev) =>
+                      prev.includes(item)
+                        ? prev.filter((i) => i !== item)
+                        : [...prev, item]
+                    );
+                  }}
+                  className={`cursor-pointer relative w-full text-base font-normal flex items-center justify-between px-4 py-4 rounded-xl transition border
+                          ${active
+                      ? "border-[#C8A851] border-[2px] bg-white text-black"
+                      : "border-white/10 border-[2px] bg-white/90 text-black"
+                    }`}
+                >
+                  <input type="checkbox" className="absolute opacity-0" />
+                  <span className="text-[#3B3B3B]">{item}</span>
 
-                          <div
-                            className={`flex items-center justify-center w-5 h-5 rounded-full border
-                            ${
-                              active
-                                ? "bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] border-[#C8A851]"
-                                : "border-gray-400"
-                            }`}
-                          >
-                            {active && <Check className="w-3 h-3 text-[#913C01]" />}
-                          </div>
-                        </button>
-                      );
-                    })}
+                  <div
+                    className={`flex items-center justify-center w-5 h-5 rounded-full border
+                            ${active
+                        ? "bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] border-[#C8A851]"
+                        : "border-gray-400"
+                      }`}
+                  >
+                    {active && <Check className="w-3 h-3 text-[#913C01]" />}
                   </div>
+                </button>
+              );
+            })}
+          </div>
 
           {/* Continue Button */}
           <Button

@@ -23,11 +23,11 @@ const page = () => {
           <p className='text-center text-white text-base font-light'>Your traits reveal timeless patterns that shape how we lead, love, and serve. Let us guide you through this discovery.</p>
 
           <Button
-                type="submit"
-                className="cursor-pointer w-full text-base h-[52px] mt-[20px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60"
-              >Begin Assessment
-              </Button>
-              <button className='text-white text-base font-medium cursor-pointer w-full text-center mt-4'>Skip for Now</button>
+            type="submit"
+            className="cursor-pointer w-full text-base h-[52px] mt-[20px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60"
+          >Begin Assessment
+          </Button>
+          <button className='text-white text-base font-medium cursor-pointer w-full text-center mt-4'>Skip for Now</button>
         </CardContent>
       </Card>
     </div>

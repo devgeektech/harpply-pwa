@@ -1,9 +1,10 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, OnModuleInit } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -29,15 +30,47 @@ import { SUCCESS_MESSAGES } from '../../common/constants/success-messages';
 import { successResponse } from '../../common/response/api-response';
 import { OnboardingService } from './onboarding.service';
 import { BrevoEmailService } from '../../common/email/brevo-email.service';
+import { DEFAULT_ADMIN_CREDENTIALS } from './admin-default.credentials';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly onboardingService: OnboardingService,
     private readonly brevoEmailService: BrevoEmailService,
-  ) {}
+  ) { }
+
+  async onModuleInit(): Promise<void> {
+    try {
+      const emailEncoded = encodeEmail(DEFAULT_ADMIN_CREDENTIALS.email);
+      const existingAdmin = await this.prisma.user.findUnique({
+        where: { email: emailEncoded },
+        select: { id: true },
+      });
+      if (existingAdmin) return;
+
+      const hashedPassword = await bcrypt.hash(
+        DEFAULT_ADMIN_CREDENTIALS.password,
+        10,
+      );
+      await this.prisma.user.create({
+        data: {
+          email: emailEncoded,
+          fullName: DEFAULT_ADMIN_CREDENTIALS.fullName,
+          password: hashedPassword,
+          role: 'admin',
+          emailVerified: true,
+          onboardingCompleted: true,
+        },
+      });
+    } catch (e) {
+      // If the DB migration hasn't been applied yet (e.g. role column missing),
+      // don't crash the whole server on boot. Admin can be created after migrate.
+      // eslint-disable-next-line no-console
+      console.warn('[admin bootstrap] skipped:', (e as Error)?.message ?? e);
+    }
+  }
 
   /** Step 1: Register email only. User must call set-password to complete signup. */
   async registerEmail(dto: RegisterEmailDto) {
@@ -144,6 +177,7 @@ export class AuthService {
       select: {
         id: true,
         email: true,
+        role: true,
         password: true,
         createdAt: true,
         onboardingCompleted: true,
@@ -194,6 +228,7 @@ export class AuthService {
       select: {
         id: true,
         email: true,
+        role: true,
         password: true,
         createdAt: true,
         onboardingCompleted: true,
@@ -272,12 +307,14 @@ export class AuthService {
           email: emailEncoded,
           fullName: name ?? undefined,
           googleId: uid,
+          role: 'user',
           emailVerified: true,
           onboardingCompleted: false,
         },
         select: {
           id: true,
           email: true,
+          role: true,
           password: true,
           createdAt: true,
           onboardingCompleted: true,
@@ -322,6 +359,132 @@ export class AuthService {
       });
     }
     return successResponse(SUCCESS_MESSAGES.AUTH.LOGOUT_SUCCESS);
+  }
+
+  async adminLogin(email: string, password: string) {
+    const emailEncoded = encodeEmail(email);
+    const user = await this.prisma.user.findUnique({
+      where: { email: emailEncoded },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        password: true,
+        createdAt: true,
+        onboardingCompleted: true,
+        emailVerified: true,
+      },
+    });
+
+    if (!user || user.role !== 'admin' || !user.password) {
+      throw new UnauthorizedException(ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS);
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException(ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS);
+    }
+
+    const emailDecoded = decodeEmail(user.email);
+    const jti = randomUUID();
+    const token = this.jwtService.sign({
+      sub: user.id,
+      email: emailDecoded,
+      jti,
+    });
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { token: jti },
+    });
+
+    const { password: _p, ...rest } = user;
+    return successResponse(SUCCESS_MESSAGES.AUTH.LOGIN_SUCCESS, {
+      data: { accessToken: token, user: { ...rest, email: emailDecoded } },
+    });
+  }
+
+  async adminForgotPassword(email: string) {
+    const emailEncoded = encodeEmail(email);
+    const user = await this.prisma.user.findUnique({
+      where: { email: emailEncoded },
+      select: { id: true, role: true },
+    });
+    // Do not reveal whether admin exists.
+    if (!user || user.role !== 'admin') {
+      return successResponse(SUCCESS_MESSAGES.AUTH.FORGOT_PASSWORD_GENERIC);
+    }
+
+    const resetToken = randomUUID();
+    const resetTokenExpires = new Date(Date.now() + 30 * 60 * 1000); // 30 min
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        resetToken,
+        resetTokenExpires,
+      } as Prisma.UserUpdateInput,
+    });
+
+    return successResponse(SUCCESS_MESSAGES.AUTH.FORGOT_PASSWORD_GENERIC, {
+      data: process.env.NODE_ENV === 'production' ? undefined : { resetToken },
+    });
+  }
+
+  async adminChangePassword(dto: {
+    email: string;
+    resetToken: string;
+    newPassword: string;
+    confirmPassword: string;
+  }) {
+    const { email, resetToken, newPassword, confirmPassword } = dto;
+    if (newPassword !== confirmPassword) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.PASSWORD_MISMATCH);
+    }
+
+    const emailEncoded = encodeEmail(email);
+    const user = await this.prisma.user.findUnique({
+      where: { email: emailEncoded },
+      select: {
+        id: true,
+        role: true,
+        resetToken: true,
+        resetTokenExpires: true,
+      },
+    });
+    if (!user || user.role !== 'admin') {
+      throw new UnauthorizedException(ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS);
+    }
+    if (
+      !user.resetToken ||
+      user.resetToken !== resetToken ||
+      !user.resetTokenExpires ||
+      user.resetTokenExpires < new Date()
+    ) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.TOKEN_INVALID);
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashed,
+        token: null,
+        loggedOutAt: new Date(),
+        resetToken: null,
+        resetTokenExpires: null,
+      } as Prisma.UserUpdateInput,
+    });
+    return successResponse(SUCCESS_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS);
+  }
+
+  async adminLogout(jti: string, userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true },
+    });
+    if (!user || user.role !== 'admin') {
+      throw new UnauthorizedException(ERROR_MESSAGES.GENERAL.UNAUTHORIZED);
+    }
+    return this.logout(jti, userId);
   }
 
   /** Forgot password: send verification email with link to set new password (same process as signup). */
