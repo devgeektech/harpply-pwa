@@ -97,16 +97,18 @@ export function LoginPage({
             {passwordError && <p className="text-sm text-red-500">{passwordError}</p>}
           </div>
 
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={onGoForgotPassword}
+              className="cursor-pointer text-sm font-medium text-[#F3D35D] hover:underline"
+            >
+              Forgot Password?
+            </button>
+          </div>
+
           <Button className={PRIMARY_BTN_CLASS} disabled={auth.loading} onClick={handleLogin}>
             {auth.loading ? "Signing in..." : "Sign in"}
-          </Button>
-
-          <Button
-            variant="outline"
-            className="cursor-pointer w-full h-[50px] rounded-[10px] border border-[#C39936] text-[#F3D35D] bg-transparent hover:bg-white/10"
-            onClick={onGoForgotPassword}
-          >
-            Forgot Password
           </Button>
         </div>
       </CardContent>

@@ -25,6 +25,7 @@ export const ERROR_MESSAGES = {
     TOKEN_MISSING: 'Authentication token is required.',
     REFRESH_TOKEN_INVALID: 'The refresh token is invalid or has expired.',
     INVALID_OR_EXPIRED_OTP: 'Invalid or expired OTP.',
+    INVALID_CURRENT_PASSWORD: 'Invalid current password.',
   },
 
   VALIDATION: {

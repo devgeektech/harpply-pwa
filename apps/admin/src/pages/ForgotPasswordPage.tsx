@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button, Card, CardContent, Input, Label } from "@repo/ui";
+import { AlertCircle } from "lucide-react";
 import { adminForgotPassword } from "../lib/api";
 import { isValidEmail } from "../lib/validation";
 import { CARD_CLASS, INPUT_CLASS, PRIMARY_BTN_CLASS } from "../constants/ui";
@@ -7,19 +8,19 @@ import { CARD_CLASS, INPUT_CLASS, PRIMARY_BTN_CLASS } from "../constants/ui";
 export function ForgotPasswordPage({
   initialEmail,
   onBackToLogin,
+  onSuccess,
 }: {
   initialEmail: string;
   onBackToLogin: () => void;
+  onSuccess: (email: string) => void;
 }) {
   const [email, setEmail] = useState(initialEmail);
   const [loading, setLoading] = useState(false);
-  const [apiMessage, setApiMessage] = useState("");
   const [apiError, setApiError] = useState("");
   const [emailError, setEmailError] = useState("");
 
   const handleGenerate = async () => {
     setApiError("");
-    setApiMessage("");
     setEmailError("");
 
     const trimmed = email.trim();
@@ -35,7 +36,7 @@ export function ForgotPasswordPage({
     setLoading(true);
     try {
       await adminForgotPassword(trimmed);
-      setApiMessage("If an admin account exists, password reset steps were issued.");
+      onSuccess(trimmed);
     } catch (e) {
       setApiError(e instanceof Error ? e.message : "Failed to process forgot password.");
     } finally {
@@ -46,23 +47,24 @@ export function ForgotPasswordPage({
   return (
     <Card className={CARD_CLASS}>
       <CardContent className="p-8 text-white">
-        <h1 className="text-[28px] font-serif mb-1">Admin Forgot Password</h1>
-        <p className="text-white/70 mb-6">Generate a reset token for admin password change.</p>
+        <h1 className="text-[24px] font-serif font-normal text-white mb-2 w-full text-left">
+          Forgot password
+        </h1>
+        <p className="text-base text-gray-300 mb-6">
+          Enter your email and we’ll send a link to set a new password (same as
+          when you signed up).
+        </p>
 
-        {apiMessage && (
-          <div className="mb-4 rounded-lg border border-emerald-300/30 bg-emerald-500/15 px-3 py-2 text-sm text-emerald-100">
-            {apiMessage}
-          </div>
-        )}
         {apiError && (
-          <div className="mb-4 rounded-lg border border-red-300/30 bg-red-500/15 px-3 py-2 text-sm text-red-100">
-            {apiError}
+          <div className="w-full flex items-start gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm mb-4">
+            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+            <span>{apiError}</span>
           </div>
         )}
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label className="text-white">Email</Label>
+            <Label className="text-gray-300">Email</Label>
             <Input
               type="email"
               value={email}
@@ -78,16 +80,19 @@ export function ForgotPasswordPage({
           </div>
 
           <Button className={PRIMARY_BTN_CLASS} disabled={loading} onClick={handleGenerate}>
-            {loading ? "Submitting..." : "Generate Reset Token"}
+            {loading ? "Sending..." : "Send reset link"}
           </Button>
 
-          <Button
-            variant="outline"
-            className="cursor-pointer w-full h-[50px] rounded-[10px] border border-[#C39936] text-[#F3D35D] bg-transparent hover:bg-white/10"
-            onClick={onBackToLogin}
-          >
-            Back to Login
-          </Button>
+          <p className="text-center text-sm text-white w-full">
+            Remember your password?{" "}
+            <button
+              type="button"
+              onClick={onBackToLogin}
+              className="cursor-pointer text-yellow-400 underline"
+            >
+              Sign in
+            </button>
+          </p>
         </div>
       </CardContent>
     </Card>

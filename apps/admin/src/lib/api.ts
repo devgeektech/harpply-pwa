@@ -75,7 +75,12 @@ export async function adminLogout(accessToken: string): Promise<void> {
   const res = await fetch(`${apiBaseUrl}/auth/admin/logout`, {
     method: "POST",
     credentials: "include",
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    // API has a global guard requiring a non-empty JSON object body.
+    body: JSON.stringify({ logout: true }),
   });
   if (res.status === 401) return;
   if (!res.ok) {

@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { useAdminRouter } from "./lib/router";
 import { AdminHeader } from "./components/admin-header";
 import { AdminLogoutModal } from "./components/admin-logout-modal";
 import { AdminSidebar } from "./components/admin-sidebar";
 import { LoginPage } from "./pages/LoginPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
+import { ForgotPasswordVerifyPage } from "./pages/ForgotPasswordVerifyPage";
 import { ChangePasswordPage } from "./pages/ChangePasswordPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { UsersPage } from "./pages/UsersPage";
@@ -16,6 +18,7 @@ function App() {
   const email = useAdminAuthStore((s) => s.email);
   const hydrate = useAdminAuthStore((s) => s.hydrate);
   const logout = useAdminAuthStore((s) => s.logout);
+  const [forgotVerifyEmail, setForgotVerifyEmail] = useState("");
   const [shellMessage, setShellMessage] = useState("");
   const [shellError, setShellError] = useState("");
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
@@ -61,6 +64,7 @@ function App() {
     try {
       await logout();
       setLogoutModalOpen(false);
+      toast.success("Logged out successfully.");
       push("/login");
     } catch (e) {
       setLogoutModalOpen(false);
@@ -132,6 +136,15 @@ function App() {
           {path === "/forgot-password" ? (
             <ForgotPasswordPage
               initialEmail={email}
+              onBackToLogin={() => push("/login")}
+              onSuccess={(email) => {
+                setForgotVerifyEmail(email);
+                push("/forgot-password-verify");
+              }}
+            />
+          ) : path === "/forgot-password-verify" ? (
+            <ForgotPasswordVerifyPage
+              email={forgotVerifyEmail}
               onBackToLogin={() => push("/login")}
             />
           ) : (

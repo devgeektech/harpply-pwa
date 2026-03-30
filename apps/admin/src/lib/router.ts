@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 export type AdminRoute =
   | "/login"
   | "/forgot-password"
+  | "/forgot-password-verify"
   | "/change-password"
   | "/dashboard"
   | "/users";
@@ -15,6 +16,7 @@ function normalize(path: string): AdminRoute {
   const allowed: AdminRoute[] = [
     "/login",
     "/forgot-password",
+    "/forgot-password-verify",
     "/change-password",
     "/dashboard",
     "/users",
