@@ -11,6 +11,12 @@ import { getGoogleLoginRedirectUrl } from "@/lib/api/auth";
 function googleBannerMessage(reasonRaw: string | null): string {
   const reason = (reasonRaw ?? "").trim();
   if (!reason) return "Google sign-in failed. Please try again.";
+  if (reason === "EMAIL_LOGIN_ONLY") {
+    return "This email is registered with email/password. Please sign in using email and password.";
+  }
+  if (reason === "SOCIAL_LOGIN_ONLY") {
+    return "This email is registered with Google. Please sign in using Google.";
+  }
   const cancelledReasons = new Set([
     "access_denied",
     "user_denied",

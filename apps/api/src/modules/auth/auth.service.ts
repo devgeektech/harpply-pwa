@@ -76,10 +76,14 @@ export class AuthService implements OnModuleInit {
     const emailEncoded = encodeEmail(dto.email);
     const existingUser = await this.prisma.user.findUnique({
       where: { email: emailEncoded },
-      select: { email: true, password: true, emailVerified: true },
+      select: { email: true, password: true, emailVerified: true, googleId: true },
     });
     const emailVerificationToken = randomUUID();
     if (existingUser) {
+      // Prevent switching from Google sign-in to email/password sign-up.
+      if (existingUser.googleId) {
+        throw new ConflictException(ERROR_MESSAGES.AUTH.SOCIAL_LOGIN_ONLY);
+      }
       if (existingUser.emailVerified && existingUser.password == null) {
         return successResponse(
           SUCCESS_MESSAGES.AUTH.COMPLETE_SIGNUP_SET_PASSWORD,
@@ -181,11 +185,17 @@ export class AuthService implements OnModuleInit {
         createdAt: true,
         onboardingCompleted: true,
         emailVerified: true,
+        googleId: true,
       },
     });
 
     if (!user || user.password != null) {
       throw new BadRequestException(ERROR_MESSAGES.AUTH.SIGNUP_NOT_PENDING);
+    }
+
+    // Prevent switching from Google sign-in to email/password sign-up.
+    if (user.googleId) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.SOCIAL_LOGIN_ONLY);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -229,6 +239,7 @@ export class AuthService implements OnModuleInit {
         email: true,
         role: true,
         password: true,
+        googleId: true,
         createdAt: true,
         onboardingCompleted: true,
         emailVerified: true,
@@ -240,6 +251,12 @@ export class AuthService implements OnModuleInit {
     }
 
     if (user.password == null) {
+      // If they signed up using social login, block email/password sign-in.
+      if (user.googleId) {
+        // Important: avoid 401 so frontend can show our message instead of generic "Unauthorized".
+        throw new BadRequestException(ERROR_MESSAGES.AUTH.SOCIAL_LOGIN_ONLY);
+      }
+      // If they are an email sign-up pending account, ask them to complete via set-password.
       throw new UnauthorizedException(ERROR_MESSAGES.AUTH.COMPLETE_SIGNUP);
     }
 
@@ -293,6 +310,7 @@ export class AuthService implements OnModuleInit {
         id: true,
         email: true,
         password: true,
+        googleId: true,
         createdAt: true,
         onboardingCompleted: true,
         emailVerified: true,
@@ -320,6 +338,23 @@ export class AuthService implements OnModuleInit {
           emailVerified: true,
           fullName: true,
         },
+      });
+    }
+
+    // Prevent switching from email/password to Google sign-in.
+    if (user.password != null && user.googleId == null) {
+      throw new BadRequestException({
+        message: ERROR_MESSAGES.AUTH.EMAIL_LOGIN_ONLY,
+        code: "EMAIL_LOGIN_ONLY",
+      });
+    }
+
+    // If this user existed but without a googleId (e.g. started with email-only signup),
+    // attach the googleId so we consistently block email/password usage later.
+    if (user.googleId == null) {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { googleId: uid, emailVerified: true },
       });
     }
 
@@ -531,7 +566,7 @@ export class AuthService implements OnModuleInit {
     const emailEncoded = encodeEmail(dto.email);
     const user = await this.prisma.user.findUnique({
       where: { email: emailEncoded },
-      select: { id: true, password: true },
+      select: { id: true, password: true, googleId: true },
     });
 
     if (!user) {
@@ -541,6 +576,13 @@ export class AuthService implements OnModuleInit {
     }
 
     if (user.password == null) {
+      // Only email/password accounts can use this flow.
+      if (user.googleId) {
+        // Use 400 (not 401) so the UI can show a friendly message.
+        throw new BadRequestException(
+          ERROR_MESSAGES.AUTH.SOCIAL_LOGIN_ONLY,
+        );
+      }
       return successResponse(SUCCESS_MESSAGES.AUTH.FORGOT_PASSWORD_GENERIC, {
         data: { email: dto.email },
       });

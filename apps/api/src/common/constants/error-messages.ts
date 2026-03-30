@@ -11,6 +11,10 @@ export const ERROR_MESSAGES = {
     SIGNUP_NOT_PENDING:
       'No pending signup for this email, or password was already set.',
     COMPLETE_SIGNUP: 'Please complete your signup by setting your password.',
+    SOCIAL_LOGIN_ONLY:
+      'This email is registered with Google. Please sign in using Google.',
+    EMAIL_LOGIN_ONLY:
+      'This email is registered with email/password. Please sign in using email and password.',
     INVALID_CREDENTIALS: 'Invalid email or password.',
     INVALID_ROLE:
       'Invalid role selected. Please choose Admin, Employer, or Individual.',
