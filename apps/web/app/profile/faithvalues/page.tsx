@@ -15,6 +15,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { fetchProfile, updateFaithValuesProfile } from "@/lib/api/profile";
+import { SUCCESS_MESSAGES } from "@/lib/messages/success-messages";
 
 export default function FaithValuesPage() {
   const {
@@ -76,7 +77,7 @@ export default function FaithValuesPage() {
         myFaithValues: myValues,
         partnerValues,
       });
-      toast.success("Faith values updated.");
+      toast.success(SUCCESS_MESSAGES.PROFILE.FAITH_UPDATED);
       router.push("/profile/lifestyle");
     } catch (err) {
       const message =

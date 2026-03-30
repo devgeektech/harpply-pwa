@@ -67,7 +67,6 @@ export class AuthService implements OnModuleInit {
     } catch (e) {
       // If the DB migration hasn't been applied yet (e.g. role column missing),
       // don't crash the whole server on boot. Admin can be created after migrate.
-      // eslint-disable-next-line no-console
       console.warn('[admin bootstrap] skipped:', (e as Error)?.message ?? e);
     }
   }
@@ -237,7 +236,7 @@ export class AuthService implements OnModuleInit {
     });
 
     if (!user) {
-      throw new UnauthorizedException(ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS);
+      throw new UnauthorizedException(ERROR_MESSAGES.AUTH.USER_NOT_FOUND);
     }
 
     if (user.password == null) {

@@ -28,6 +28,7 @@ import AttendanceCard from "@/components/common/attendance-card"
 import Link from "next/link"
 import { ChevronLeft } from "lucide-react"
 import { fetchProfile, updateFaithLifestyleProfile } from "@/lib/api/profile"
+import { SUCCESS_MESSAGES } from "@/lib/messages"
 
 /** Icons per index matching `CHURCH_ATTENDANCE_OPTIONS` order. */
 const CHURCH_ATTENDANCE_ICONS = [
@@ -163,7 +164,7 @@ export default function FaithLifestylePage() {
         churchInvolvement,
         churchAttendance: attendance || undefined,
       })
-      toast.success("Faith & lifestyle updated successfully.")
+      toast.success(SUCCESS_MESSAGES.PROFILE.FAITH_LIFESTYLE_UPDATED)
       router.push("/profile/faithvalues")
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to update faith & lifestyle. Please try again."

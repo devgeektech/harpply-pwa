@@ -19,7 +19,8 @@ export const ERROR_MESSAGES = {
     TOKEN_INVALID: 'The token is invalid or has expired.',
     TOKEN_MISSING: 'Authentication token is required.',
     REFRESH_TOKEN_INVALID: 'The refresh token is invalid or has expired.',
-    INVALID_OR_EXPIRED_OTP: 'Invalid or expired OTP.'
+    INVALID_OR_EXPIRED_OTP: 'Invalid or expired OTP.',
+    FAILED_TO_DELETE_ACCOUNT : 'Failed to delete account.'
   },
 
   VALIDATION: {
@@ -67,4 +68,9 @@ export const ERROR_MESSAGES = {
     NOT_FOUND: 'Job posting not found.',
     ALREADY_APPLIED: 'You have already applied for this job.',
   },
+
+  PROFILE: {
+    LIFESTYLE_LOAD_FAILED : 'Could not load lifestyle preferences.'
+  }
+
 } as const;

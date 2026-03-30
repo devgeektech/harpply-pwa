@@ -24,6 +24,8 @@ import { clearOnboardingResume } from "@/lib/onboarding-resume";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
+import { SUCCESS_MESSAGES } from "@/lib/messages/success-messages";
 const ACCENT = "#C39936";
 
 
@@ -102,6 +104,7 @@ export default function ReviewProfilePage() {
         await completeOnboarding(token);
         clearOnboardingResume(token);
         window.localStorage.setItem(AUTH_STORAGE_KEYS.ONBOARDING_COMPLETED, "true");
+        toast.success(SUCCESS_MESSAGES.ONBOARDING.ONBOARDING_COMPLETED);
       }
       router.push("/profile/identity");
     } catch {

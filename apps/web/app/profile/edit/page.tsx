@@ -26,6 +26,7 @@ import {
   type PlaceSuggestion,
 } from "@/lib/utils";
 import { useState, useEffect, useRef } from "react";
+import { SUCCESS_MESSAGES } from "@/lib/messages/success-messages";
 
 const CARD_BG = "#1A0A26";
 const GOLD_GRADIENT =
@@ -207,7 +208,7 @@ export default function EditProfilePage() {
         gender: normalizedGender.toLowerCase(),
         bio: trimmedBio,
       });
-      toast.success("Profile updated successfully.");
+      toast.success(SUCCESS_MESSAGES.PROFILE.PROFILE_UPDATED);
       router.push("/profile/faithlifestyle");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to update profile. Please try again.";

@@ -25,6 +25,8 @@ import {
 } from "@/lib/constants";
 import { fetchProfile, updateLifestyleProfile } from "@/lib/api/profile";
 import { useProfileStore } from "@/store/profileStore";
+import { SUCCESS_MESSAGES } from "@/lib/messages/success-messages";
+import { ERROR_MESSAGES } from "@/lib/messages/error-messages";
 
 function smokingFromApi(raw: string | null | undefined): SmokingOption {
   if (!raw?.trim()) return SMOKING_OPTIONS[0];
@@ -86,7 +88,7 @@ export default function LifestylePage() {
         applyFromProfile(res.data);
       })
       .catch(() => {
-        toast.error("Could not load lifestyle preferences.");
+        toast.error(ERROR_MESSAGES.PROFILE.LIFESTYLE_LOAD_FAILED);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -127,7 +129,7 @@ export default function LifestylePage() {
       });
       const refreshed = await fetchProfile();
       if (refreshed?.data) hydrateFromApi(refreshed.data);
-      toast.success("Lifestyle updated.");
+      toast.success(SUCCESS_MESSAGES.PROFILE.LIFESTYLE_UPDATED);
       router.push("/profile/identity");
     } catch (err) {
       const message =

@@ -14,6 +14,8 @@ import { toast } from "sonner";
 import { AUTH_STORAGE_KEYS, logout } from "@/lib/api/auth";
 import { deleteMyAccount, fetchProfile } from "@/lib/api/profile";
 import { clearClientAuthSession } from "@/lib/api/session-expired";
+import { SUCCESS_MESSAGES } from "@/lib/messages/success-messages"
+import { ERROR_MESSAGES } from "@/lib/messages/error-messages"
 
 const suggestionsData = [
   "Dashboard",
@@ -72,6 +74,7 @@ export default function Header() {
           : null;
       if (token) {
         await logout(token).catch(() => undefined);
+        toast.success(SUCCESS_MESSAGES.AUTH.LOGOUT_SUCCESS);
       }
     } finally {
       clearClientAuthSession();
@@ -86,10 +89,11 @@ export default function Header() {
     setConfirmLoading(true);
     try {
       await deleteMyAccount();
+      toast.success(SUCCESS_MESSAGES.AUTH.ACCOUNT_DELETED);
       clearClientAuthSession();
       router.replace("/");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to delete account.");
+      toast.error(e instanceof Error ? e.message : ERROR_MESSAGES.AUTH.FAILED_TO_DELETE_ACCOUNT);
     } finally {
       setConfirmLoading(false);
       setModalOpen(false);

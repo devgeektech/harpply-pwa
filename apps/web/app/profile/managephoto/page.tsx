@@ -358,8 +358,13 @@ export default function ManagePhotoPage() {
         }}
         message={uploadError ?? undefined}
         onRetry={() => {
-          const file = lastSelectedFileRef.current
-          if (file) void handleUploadFile(file)
+          setUploadDialogOpen(false)
+          setUploadError(null)
+          lastSelectedFileRef.current = null
+          // Defer until after the dialog closes so the native file picker can open reliably.
+          window.setTimeout(() => {
+            openFilePicker()
+          }, 0)
         }}
         onCancel={() => {
           setUploadDialogOpen(false)
