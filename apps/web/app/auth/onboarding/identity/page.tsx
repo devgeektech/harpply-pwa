@@ -68,7 +68,7 @@ export default function Identity() {
           </div>
           {/* Progress */}
           <div className="mb-6 w-full">
-            <p className="text-sm text-gray-300 mb-2">Step 1 of 7</p>
+            <p className="text-sm text-gray-300 mb-2">Step 1 of 8</p>
             <Progress value={20} />
           </div>
 

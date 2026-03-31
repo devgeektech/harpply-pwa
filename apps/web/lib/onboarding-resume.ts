@@ -13,6 +13,7 @@ export const ONBOARDING_STEP_PATHS = [
   "/auth/onboarding/faith",
   "/auth/onboarding/attributes",
   "/auth/onboarding/partner-attributes",
+  "/auth/onboarding/everyday-life",
   "/auth/onboarding/profile",
 ] as const;
 

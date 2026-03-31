@@ -27,7 +27,7 @@ export default function PartnerAttributesPage() {
         ? window.localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN)
         : null;
     if (!token) {
-      router.push("/auth/onboarding/profile");
+      router.push("/auth/onboarding/everyday-life");
       return;
     }
     setSubmitting(true);
@@ -37,7 +37,7 @@ export default function PartnerAttributesPage() {
       // soft‑fail, still move forward
     } finally {
       setSubmitting(false);
-      router.push("/auth/onboarding/profile");
+      router.push("/auth/onboarding/everyday-life");
     }
   };
 
@@ -53,7 +53,7 @@ export default function PartnerAttributesPage() {
           
           {/* Progress */}
           <div className="mb-6 w-full">
-            <p className="text-xs text-gray-300 mb-2 text-left">Step 6 of 7</p>
+            <p className="text-xs text-gray-300 mb-2 text-left">Step 6 of 8</p>
 
             <Progress value={80} className="h-2" />
           </div>

@@ -89,7 +89,7 @@ export default function FaithLifestylePage() {
           </div>
 
           <div className="w-full">
-            <p className="text-sm text-gray-300 mb-2 text-left">Step 4 of 7</p>
+            <p className="text-sm text-gray-300 mb-2 text-left">Step 4 of 8</p>
             <Progress value={80} className="h-2" />
           </div>
 

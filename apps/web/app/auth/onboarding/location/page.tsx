@@ -99,7 +99,7 @@ export default function Location() {
           </div>
           {/* Progress */}
           <div className="mb-6 w-full text-left">
-            <p className="text-sm text-gray-300 mb-2 text-left">Step 2 of 7</p>
+            <p className="text-sm text-gray-300 mb-2 text-left">Step 2 of 8</p>
             <Progress value={40} />
           </div>
 
@@ -143,7 +143,7 @@ export default function Location() {
             onClick={handleSkip}
             className="cursor-pointer text-base bg-transparent hover:bg-transparent text-white font-semibold hover:opacity-90 transition disabled:opacity-60"
           >
-            Skip for Now
+            Skip for now
           </Button>
         </CardContent>
       </Card>
