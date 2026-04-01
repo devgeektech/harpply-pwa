@@ -20,7 +20,7 @@ catalog:
   react-hook-form: ^7.71.2
   tailwindcss: ^4.1.17
   typescript: ^5.9.3
-  zustand: ^5.0.9
+  zustand: ^5.0.11
 
 catalogs:
   react19:

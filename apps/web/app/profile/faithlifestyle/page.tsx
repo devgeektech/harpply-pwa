@@ -28,6 +28,7 @@ import AttendanceCard from "@/components/common/attendance-card"
 import Link from "next/link"
 import { ChevronLeft } from "lucide-react"
 import { fetchProfile, updateFaithLifestyleProfile } from "@/lib/api/profile"
+import { SUCCESS_MESSAGES } from "@/lib/messages"
 
 /** Icons per index matching `CHURCH_ATTENDANCE_OPTIONS` order. */
 const CHURCH_ATTENDANCE_ICONS = [
@@ -84,6 +85,9 @@ export default function FaithLifestylePage() {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
   const [denominationError, setDenominationError] = useState("")
+  const [yearsError, setYearsError] = useState("")
+  const [involvementError, setInvolvementError] = useState("")
+  const [attendanceError, setAttendanceError] = useState("")
 
   useEffect(() => {
     if (!loaded) {
@@ -116,11 +120,42 @@ export default function FaithLifestylePage() {
 
   const handleSave = async () => {
     if (saving) return
+    let hasError = false
     if (!denomination?.trim()) {
       setDenominationError("Denomination is required.")
-      return
+      hasError = true
+    } else {
+      setDenominationError("")
     }
-    setDenominationError("")
+
+    if (!yearsInFaith?.trim()) {
+      setYearsError("Years in faith is required.")
+      hasError = true
+    } else {
+      const n = Number(yearsInFaith)
+      if (!Number.isFinite(n) || n < 0 || n > 120) {
+        setYearsError("Enter a valid number (0–120).")
+        hasError = true
+      } else {
+        setYearsError("")
+      }
+    }
+
+    if (!churchInvolvement?.trim()) {
+      setInvolvementError("Church involvement is required.")
+      hasError = true
+    } else {
+      setInvolvementError("")
+    }
+
+    if (!attendance?.trim()) {
+      setAttendanceError("Church attendance is required.")
+      hasError = true
+    } else {
+      setAttendanceError("")
+    }
+
+    if (hasError) return
     setSaving(true)
     try {
       await updateFaithLifestyleProfile({
@@ -129,7 +164,7 @@ export default function FaithLifestylePage() {
         churchInvolvement,
         churchAttendance: attendance || undefined,
       })
-      toast.success("Faith & lifestyle updated successfully.")
+      toast.success(SUCCESS_MESSAGES.PROFILE.FAITH_LIFESTYLE_UPDATED)
       router.push("/profile/faithvalues")
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to update faith & lifestyle. Please try again."
@@ -196,10 +231,14 @@ export default function FaithLifestylePage() {
             min={0}
             max={120}
             value={yearsInFaith}
-            onChange={(e) => setYearsInFaith(e.target.value)}
+            onChange={(e) => {
+              setYearsInFaith(e.target.value)
+              if (yearsError) setYearsError("")
+            }}
             placeholder="e.g. 5"
             className="w-full h-[52px] rounded-[8px] border-0 bg-[#FBFAF9] text-[#1A1A1A] text-sm placeholder:text-[#1A1A1A]/40 focus-visible:ring-2 focus-visible:ring-amber-500/40"
           />
+          {yearsError && <p className="mt-1 text-sm text-red-300">{yearsError}</p>}
         </div>
 
         {/* Church involvement */}
@@ -208,7 +247,10 @@ export default function FaithLifestylePage() {
 
           <Select
             value={churchInvolvement || ""}
-            onValueChange={setChurchInvolvement}
+            onValueChange={(v) => {
+              setChurchInvolvement(v)
+              if (involvementError) setInvolvementError("")
+            }}
           >
             <SelectTrigger className="w-full bg-[#FBFAF9] !h-[52px] rounded-[8px] text-[#1A1A1A] text-sm">
               <SelectValue placeholder="Select your role" />
@@ -222,6 +264,9 @@ export default function FaithLifestylePage() {
               ))}
             </SelectContent>
           </Select>
+          {involvementError && (
+            <p className="mt-1 text-sm text-red-300">{involvementError}</p>
+          )}
         </div>
 
         {/* Attendance */}
@@ -242,10 +287,16 @@ export default function FaithLifestylePage() {
                 label={option}
                 icon={CHURCH_ATTENDANCE_ICONS[index]}
                 active={attendance === option}
-                onClick={() => setAttendance(option)}
+                onClick={() => {
+                  setAttendance(option)
+                  if (attendanceError) setAttendanceError("")
+                }}
               />
             ))}
           </div>
+          {attendanceError && (
+            <p className="mt-2 text-sm text-red-300">{attendanceError}</p>
+          )}
 
         </div>
 

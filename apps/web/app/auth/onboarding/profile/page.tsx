@@ -20,9 +20,12 @@ import { ChevronLeft, MapPin, Pencil } from "lucide-react";
 import Image from "next/image";
 import { AUTH_STORAGE_KEYS } from "@/lib/constants";
 import { completeOnboarding } from "@/lib/api/auth";
+import { clearOnboardingResume } from "@/lib/onboarding-resume";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
+import { SUCCESS_MESSAGES } from "@/lib/messages/success-messages";
 const ACCENT = "#C39936";
 
 
@@ -99,7 +102,9 @@ export default function ReviewProfilePage() {
     try {
       if (token) {
         await completeOnboarding(token);
+        clearOnboardingResume(token);
         window.localStorage.setItem(AUTH_STORAGE_KEYS.ONBOARDING_COMPLETED, "true");
+        toast.success(SUCCESS_MESSAGES.ONBOARDING.ONBOARDING_COMPLETED);
       }
       router.push("/profile/identity");
     } catch {
@@ -114,7 +119,7 @@ export default function ReviewProfilePage() {
       <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
         <CardContent className="flex flex-col md:gap-6 gap-3 sm:p-10 px-3">
           <div className="text-left text-white w-full ">
-            <Link href="/auth/onboarding/partner-attributes">
+            <Link href="/auth/onboarding/everyday-life">
               <ChevronLeft size={24} />
             </Link>
           </div>

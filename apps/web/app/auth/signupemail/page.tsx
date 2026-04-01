@@ -11,6 +11,12 @@ import { getGoogleLoginRedirectUrl } from "@/lib/api/auth";
 function googleBannerMessage(reasonRaw: string | null): string {
   const reason = (reasonRaw ?? "").trim();
   if (!reason) return "Google sign-in failed. Please try again.";
+  if (reason === "EMAIL_LOGIN_ONLY") {
+    return "This email is registered with email/password. Please sign in using email and password.";
+  }
+  if (reason === "SOCIAL_LOGIN_ONLY") {
+    return "This email is registered with Google. Please sign in using Google.";
+  }
   const cancelledReasons = new Set([
     "access_denied",
     "user_denied",
@@ -129,11 +135,21 @@ function SignupEmailInner() {
           <p className="md:text-base text-sm text-white/60 leading-relaxed">
             By tapping Create Account or Sign In, you agree to our Terms. Learn
             how we process your data in our{" "}
-            <Link href={"/"} className="underline cursor-pointer">
+            <Link
+              href="/privacy-policy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline cursor-pointer"
+            >
               Privacy Policy
-            </Link>{" "}
-            and{" "}
-            <Link href={"/"} className="underline cursor-pointer">
+            </Link>
+            {" "}and{" "}
+            <Link
+              href="/terms-and-conditions"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline cursor-pointer"
+            >
               Terms and Conditions
             </Link>
             .

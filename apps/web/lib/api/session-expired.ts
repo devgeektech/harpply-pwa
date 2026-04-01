@@ -1,4 +1,5 @@
 import { AUTH_STORAGE_KEYS } from "@/lib/constants";
+import { clearOnboardingResume } from "@/lib/onboarding-resume";
 import { toast } from "sonner";
 
 export const SESSION_EXPIRED_MESSAGE = "Session expired, login again";
@@ -16,6 +17,8 @@ export class SessionExpiredError extends Error {
 export function clearClientAuthSession(): void {
   if (typeof window === "undefined") return;
   try {
+    const token = window.localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN);
+    clearOnboardingResume(token);
     window.localStorage.removeItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN);
     window.localStorage.removeItem(AUTH_STORAGE_KEYS.ONBOARDING_COMPLETED);
   } catch {

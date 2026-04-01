@@ -1,6 +1,7 @@
 "use client";
 
 import { AUTH_STORAGE_KEYS } from "@/lib/api/auth";
+import { getResumeOnboardingPath } from "@/lib/onboarding-resume";
 import { useRegistrationStore } from "@/store/useRegistrationStore";
 import { Button, Card, CardContent } from "@repo/ui";
 import { ChevronLeft } from "lucide-react";
@@ -19,7 +20,11 @@ export default function RegistrationSuccess() {
         ? window.localStorage.getItem(AUTH_STORAGE_KEYS.ONBOARDING_COMPLETED) === "true"
         : false;
     if (!onboardingCompleted) {
-      router.push("/auth/onboarding/identity");
+      const token =
+        typeof window !== "undefined"
+          ? window.localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN)
+          : null;
+      router.push(token ? getResumeOnboardingPath(token) : "/auth/onboarding/identity");
       return;
     }
     router.push("/profile/identity");

@@ -52,7 +52,7 @@ export default function AttributesPage() {
           </div>
           {/* Progress */}
           <div className="mb-6 w-full">
-            <p className="text-xs text-gray-300 mb-2 text-left">Step 5 of 7</p>
+            <p className="text-xs text-gray-300 mb-2 text-left">Step 5 of 8</p>
 
             <Progress value={80} className="h-2" />
           </div>

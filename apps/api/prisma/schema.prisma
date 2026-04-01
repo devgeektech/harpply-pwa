@@ -14,6 +14,7 @@ model User {
   password  String?  // null until user completes set-password step
   createdAt DateTime @default(now())
   googleId  String?
+  role      UserRole @default(user)
 
   // Auth
   token              String?     // current session token (jti); cleared on logout
@@ -52,6 +53,13 @@ model User {
   dietaryPreference    String?
 
   onboardingCompleted  Boolean @default(false)
+
+  @@schema("auth")
+}
+
+enum UserRole {
+  admin
+  user
 
   @@schema("auth")
 }

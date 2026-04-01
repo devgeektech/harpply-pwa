@@ -140,6 +140,7 @@ function SigninForm() {
                 <Input
                   placeholder="Email"
                   value={email}
+                  type="email"
                   onChange={(e) => {
                     setEmail(e.target.value);
                     if (emailError) setEmailError(null);

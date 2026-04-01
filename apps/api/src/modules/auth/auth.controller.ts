@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 /* eslint-disable @typescript-eslint/require-await */
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -32,6 +33,10 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ResendVerificationDto } from './dto/resend-verification.dto';
+import { AdminSignInDto } from './dto/admin-sign-in.dto';
+import { AdminForgotPasswordDto } from './dto/admin-forgot-password.dto';
+import { AdminChangePasswordDto } from './dto/admin-change-password.dto';
+import { AdminChangePasswordAuthDto } from './dto/admin-change-password-auth.dto';
 import { IdentityDto } from './dto/identity.dto';
 import { LocationDto } from './dto/location.dto';
 import { StoryDto } from './dto/story.dto';
@@ -112,13 +117,8 @@ export class AuthController {
     ).replace(/\/$/, '');
     
     const q = new URLSearchParams({ error: 'google_signin_failed' });
-    const nodeEnv =
-      this.config.get<string>('NODE_ENV') ??
-      process.env.NODE_ENV ??
-      'development';
-    if (nodeEnv !== 'production') {
-      q.set('reason', reason);
-    }
+    // Include `reason` so the frontend can show a friendly message.
+    q.set('reason', reason);
     return `${base}/auth/signupemail?${q.toString()}`;
   }
 
@@ -329,9 +329,16 @@ export class AuthController {
         'Google callback: googleLoginWithPayload failed',
         (e as Error)?.stack ?? (e as Error)?.message,
       );
+      const err = e as any;
+      const reason =
+        (typeof err?.response?.code === 'string' ? err.response.code : undefined) ??
+        (typeof err?.response?.message === 'string'
+          ? err.response.message
+          : undefined) ??
+        'login_with_payload_failed';
       return res.redirect(
         302,
-        this.googleSignInErrorRedirect('login_with_payload_failed'),
+        this.googleSignInErrorRedirect(String(reason)),
       );
     }
   }
@@ -397,6 +404,62 @@ export class AuthController {
     @Res({ passthrough: true }) res: Express.Response,
   ) {
     const result = await this.authService.logout(jti, userId);
+    res.clearCookie(ACCESS_TOKEN_COOKIE, { path: '/' });
+    return result;
+  }
+
+  @Post('admin/login')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Admin login' })
+  async adminLogin(
+    @Body() dto: AdminSignInDto,
+    @Res({ passthrough: true }) res: Express.Response,
+  ) {
+    const result = await this.authService.adminLogin(dto.email, dto.password);
+    const token = result?.data?.accessToken;
+    if (token) {
+      res.cookie(ACCESS_TOKEN_COOKIE, token, accessTokenCookieOptions);
+    }
+    return result;
+  }
+
+  @Post('admin/forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Admin forgot password (issues reset token)' })
+  async adminForgotPassword(@Body() dto: AdminForgotPasswordDto) {
+    return this.authService.adminForgotPassword(dto.email);
+  }
+
+  @Post('admin/change-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Admin change password using reset token' })
+  async adminChangePassword(@Body() dto: AdminChangePasswordDto) {
+    return this.authService.adminChangePassword(dto);
+  }
+
+  @Post('admin/change-password-auth')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Admin change password (authenticated)' })
+  async adminChangePasswordAuth(
+    @CurrentUserId() userId: string,
+    @Body() dto: AdminChangePasswordAuthDto,
+  ) {
+    return this.authService.adminChangePasswordAuth(userId, dto);
+  }
+
+  @Post('admin/logout')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Admin logout' })
+  async adminLogout(
+    @CurrentUser('jti') jti: string,
+    @CurrentUserId() userId: string,
+    @Res({ passthrough: true }) res: Express.Response,
+  ) {
+    const result = await this.authService.adminLogout(jti, userId);
     res.clearCookie(ACCESS_TOKEN_COOKIE, { path: '/' });
     return result;
   }

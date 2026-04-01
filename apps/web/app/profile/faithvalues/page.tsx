@@ -15,6 +15,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { fetchProfile, updateFaithValuesProfile } from "@/lib/api/profile";
+import { SUCCESS_MESSAGES } from "@/lib/messages/success-messages";
 
 export default function FaithValuesPage() {
   const {
@@ -28,6 +29,8 @@ export default function FaithValuesPage() {
   const hydrateFromApi = useProfileStore((s) => s.hydrateFromApi);
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const [myValuesError, setMyValuesError] = useState("");
+  const [partnerValuesError, setPartnerValuesError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -54,13 +57,27 @@ export default function FaithValuesPage() {
 
   const handleNext = async () => {
     if (saving) return;
+    let hasError = false;
+    if (!myValues?.length) {
+      setMyValuesError("Please select at least one value.");
+      hasError = true;
+    } else {
+      setMyValuesError("");
+    }
+    if (!partnerValues?.length) {
+      setPartnerValuesError("Please select at least one value.");
+      hasError = true;
+    } else {
+      setPartnerValuesError("");
+    }
+    if (hasError) return;
     setSaving(true);
     try {
       await updateFaithValuesProfile({
         myFaithValues: myValues,
         partnerValues,
       });
-      toast.success("Faith values updated.");
+      toast.success(SUCCESS_MESSAGES.PROFILE.FAITH_UPDATED);
       router.push("/profile/lifestyle");
     } catch (err) {
       const message =
@@ -99,10 +116,16 @@ export default function FaithValuesPage() {
                 key={item.value}
                 label={item.title}
                 active={myValues.includes(item.value)}
-                onClick={() => toggleMyValue(item.value)}
+                onClick={() => {
+                  toggleMyValue(item.value);
+                  if (myValuesError) setMyValuesError("");
+                }}
               />
             ))}
           </div>
+          {myValuesError && (
+            <p className="mt-2 text-sm text-red-300">{myValuesError}</p>
+          )}
         </div>
 
         {/* Partner Values */}
@@ -115,10 +138,16 @@ export default function FaithValuesPage() {
                 key={item.value}
                 label={item.title}
                 active={partnerValues.includes(item.value)}
-                onClick={() => togglePartnerValue(item.value)}
+                onClick={() => {
+                  togglePartnerValue(item.value);
+                  if (partnerValuesError) setPartnerValuesError("");
+                }}
               />
             ))}
           </div>
+          {partnerValuesError && (
+            <p className="mt-2 text-sm text-red-300">{partnerValuesError}</p>
+          )}
         </div>
 
         {/* Next Button */}
