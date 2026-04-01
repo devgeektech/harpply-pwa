@@ -1,8 +1,9 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { IdentityDto } from './dto/identity.dto';
 import type { Prisma } from '@prisma/client';
@@ -13,10 +14,15 @@ import { successResponse } from '../../common/response/api-response';
 import { SUCCESS_MESSAGES } from 'src/common/constants/success-messages';
 import { ERROR_MESSAGES } from 'src/common/constants/error-messages';
 import { AttributeDto } from './dto/attribute.dto';
+import {
+  EVERYDAY_LIFE_ALLOWED_ID_SET,
+  EVERYDAY_LIFE_MULTI_MAX3_IDS,
+} from './constants/everyday-life-questions';
+import { EverydayLifeProfileDto } from './dto/everyday-life-profile.dto';
 
 @Injectable()
 export class OnboardingService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async saveIdentity(userId: string, dto: IdentityDto) {
     await this.prisma.user.update({
@@ -88,6 +94,68 @@ export class OnboardingService {
     return successResponse(SUCCESS_MESSAGES.ONBOARDING.PARTNER_ATTRIBUTES);
   }
 
+  private normalizeEverydayLifeAnswers(
+    raw: Record<string, unknown>,
+  ): Record<string, string[]> {
+    const out: Record<string, string[]> = {};
+    for (const key of Object.keys(raw)) {
+      if (!EVERYDAY_LIFE_ALLOWED_ID_SET.has(key)) {
+        throw new BadRequestException(
+          ERROR_MESSAGES.VALIDATION.EVERYDAY_LIFE_INVALID,
+        );
+      }
+      const val = raw[key];
+      if (!Array.isArray(val)) {
+        throw new BadRequestException(
+          ERROR_MESSAGES.VALIDATION.EVERYDAY_LIFE_INVALID,
+        );
+      }
+      const strings: string[] = [];
+      for (const item of val) {
+        if (typeof item !== 'string') {
+          throw new BadRequestException(
+            ERROR_MESSAGES.VALIDATION.EVERYDAY_LIFE_INVALID,
+          );
+        }
+        const trimmed = item.trim();
+        if (trimmed.length > 120) {
+          throw new BadRequestException(
+            ERROR_MESSAGES.VALIDATION.EVERYDAY_LIFE_INVALID,
+          );
+        }
+        strings.push(trimmed);
+      }
+      const max = EVERYDAY_LIFE_MULTI_MAX3_IDS.has(key) ? 3 : 1;
+      if (strings.length > max) {
+        throw new BadRequestException(
+          ERROR_MESSAGES.VALIDATION.EVERYDAY_LIFE_INVALID,
+        );
+      }
+      const seen = new Set<string>();
+      const deduped = strings.filter((s) => {
+        if (seen.has(s)) return false;
+        seen.add(s);
+        return true;
+      });
+      out[key] = deduped;
+    }
+    return out;
+  }
+
+  async saveEverydayLife(userId: string, body: EverydayLifeProfileDto) {
+    const normalized = this.normalizeEverydayLifeAnswers(
+      body as Record<string, unknown>,
+    );
+    console.log("normalized >>>>>>>>>>> ", normalized);
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: normalized as Prisma.UserUpdateInput,
+    });
+
+    return successResponse(SUCCESS_MESSAGES.ONBOARDING.EVERYDAY_LIFE);
+  }
+
   async completeOnboarding(userId: string) {
     await this.prisma.user.update({
       where: { id: userId },
@@ -115,6 +183,24 @@ export class OnboardingService {
     smokingPreference: true,
     alcoholPreference: true,
     dietaryPreference: true,
+
+    relationshipHistory: true,
+    haveChildren: true,
+    wantChildren: true,
+    openToPartnerWithChildren: true,
+    freeTime: true,
+    musicTaste: true,
+    sportsPlayOrFollow: true,
+    fitnessLifestyle: true,
+    recharge: true,
+    communicationStyle: true,
+    favoriteFood: true,
+    travelerType: true,
+    travelStyle: true,
+    perfectNightIn: true,
+    showsOrMovies: true,
+    dayToDay: true,
+
   } as const;
 
   /**

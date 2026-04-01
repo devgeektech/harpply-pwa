@@ -64,6 +64,23 @@ export interface OnboardingData {
   smokingPreference?: string | null;
   alcoholPreference?: string | null;
   dietaryPreference?: string | null;
+
+  relationshipHistory?: string[] | null;
+  haveChildren?: string[] | null;
+  wantChildren?: string[] | null;
+  openToPartnerWithChildren?: string[] | null;
+  freeTime?: string[] | null;
+  musicTaste?: string[] | null;
+  sportsPlayOrFollow?: string[] | null;
+  fitnessLifestyle?: string[] | null;
+  recharge?: string[] | null;
+  communicationStyle?: string[] | null;
+  favoriteFood?: string[] | null;
+  travelerType?: string[] | null;
+  travelStyle?: string[] | null;
+  perfectNightIn?: string[] | null;
+  showsOrMovies?: string[] | null;
+  dayToDay?: string[] | null;
 }
 
 export interface SetPasswordResponse {
@@ -388,6 +405,28 @@ export async function savePartnerValues(
   redirectIfUnauthorizedForAuthApi(res);
   if (!res.ok) {
     const msg = await getErrorMessage(res, "Failed to save partner-attributes.");
+    throw new Error(msg);
+  }
+  const data = await res.json().catch(() => ({}));
+  return data as { message: string };
+}
+
+/** Save or update everyday life profile (question id -> selected option values). */
+export async function saveEverydayLife(
+  answers: Record<string, string[]>,
+  accessToken: string
+): Promise<{ message: string }> {
+  const res = await fetch(`${getAuthBaseUrl()}/auth/onboarding/everyday-life`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(answers),
+  });
+  redirectIfUnauthorizedForAuthApi(res);
+  if (!res.ok) {
+    const msg = await getErrorMessage(res, "Failed to save everyday life profile.");
     throw new Error(msg);
   }
   const data = await res.json().catch(() => ({}));

@@ -1,6 +1,9 @@
 import { AUTH_STORAGE_KEYS, saveFaithLifestyle, type OnboardingData } from "@/lib/api/auth";
 import { redirectIfUnauthorizedForAuthApi } from "@/lib/api/session-expired";
 import { useFaithAttributesStore } from "@/store/faithAttributesStore";
+import {
+  useEverydayLifeStore,
+} from "@/store/everydayLifeStore";
 import { create } from "zustand";
 
 interface OnboardingState {
@@ -215,4 +218,22 @@ export function hydrateOnboardingStores(data: OnboardingData) {
 
   useFaithAttributesStore.getState().setMyFaithValues(data.myFaithValues ?? []);
   useFaithAttributesStore.getState().setPartnerValues(data.partnerValues ?? []);
+
+  useEverydayLifeStore.getState().setRelationshipHistory(data.relationshipHistory ?? []);
+  useEverydayLifeStore.getState().setHaveChildren(data.haveChildren ?? []);
+  useEverydayLifeStore.getState().setWantChildren(data.wantChildren ?? []);
+  useEverydayLifeStore.getState().setOpenToPartnerWithChildren(data.openToPartnerWithChildren ?? []);
+  useEverydayLifeStore.getState().setFreeTime(data.freeTime ?? []);
+  useEverydayLifeStore.getState().setMusicTaste(data.musicTaste ?? []);
+  useEverydayLifeStore.getState().setSportsPlayOrFollow(data.sportsPlayOrFollow ?? []);
+  useEverydayLifeStore.getState().setFitnessLifestyle(data.fitnessLifestyle ?? []);
+  useEverydayLifeStore.getState().setRecharge(data.recharge ?? []);
+  useEverydayLifeStore.getState().setCommunicationStyle(data.communicationStyle ?? []);
+  useEverydayLifeStore.getState().setFavoriteFood(data.favoriteFood ?? []);
+  useEverydayLifeStore.getState().setTravelerType(data.travelerType ?? []);
+  useEverydayLifeStore.getState().setTravelStyle(data.travelStyle ?? []);
+  useEverydayLifeStore.getState().setPerfectNightIn(data.perfectNightIn ?? []);
+  useEverydayLifeStore.getState().setShowsOrMovies(data.showsOrMovies ?? []);
+  useEverydayLifeStore.getState().setDayToDay(data.dayToDay ?? []);
+
 }

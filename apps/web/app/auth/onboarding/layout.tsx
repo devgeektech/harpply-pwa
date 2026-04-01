@@ -11,6 +11,7 @@ import {
   useFaithStore,
 } from "@/store/onboardingStore";
 import { useFaithAttributesStore } from "@/store/faithAttributesStore";
+import { useEverydayLifeStore } from "@/store/everydayLifeStore";
 
 /**
  * When onboarding stores are empty (e.g. after refresh) but user has a token,
@@ -52,6 +53,23 @@ function useHydrateOnboardingOnLoad() {
 
     useFaithAttributesStore.getState().setMyFaithValues([]);
     useFaithAttributesStore.getState().setPartnerValues([]);
+
+    useEverydayLifeStore.getState().setRelationshipHistory([]);
+    useEverydayLifeStore.getState().setHaveChildren([]);
+    useEverydayLifeStore.getState().setWantChildren([]);
+    useEverydayLifeStore.getState().setOpenToPartnerWithChildren([]);
+    useEverydayLifeStore.getState().setFreeTime([]);
+    useEverydayLifeStore.getState().setMusicTaste([]);
+    useEverydayLifeStore.getState().setSportsPlayOrFollow([]);
+    useEverydayLifeStore.getState().setFitnessLifestyle([]);
+    useEverydayLifeStore.getState().setRecharge([]);
+    useEverydayLifeStore.getState().setCommunicationStyle([]);
+    useEverydayLifeStore.getState().setFavoriteFood([]);
+    useEverydayLifeStore.getState().setTravelerType([]);
+    useEverydayLifeStore.getState().setTravelStyle([]);
+    useEverydayLifeStore.getState().setPerfectNightIn([]);
+    useEverydayLifeStore.getState().setShowsOrMovies([]);
+    useEverydayLifeStore.getState().setDayToDay([]);
 
     getOnboardingData(token)
       .then((res) => {
