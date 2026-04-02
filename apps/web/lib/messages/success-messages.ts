@@ -30,6 +30,7 @@ export const SUCCESS_MESSAGES = {
     PROFILE_UPDATED: 'Basic profile updated.',
     FAITH_LIFESTYLE_UPDATED: 'Faith & lifestyle updated.',
     LIFESTYLE_UPDATED: 'Lifestyle updated.',
+    EVERYDAY_LIFE_UPDATED: 'Everyday life data updated.',
     FAITH_UPDATED: 'Faith values updated.',
     PHOTO_SAVED: 'Photo saved successfully.',
     PHOTO_DELETED: 'Photo deleted successfully.',

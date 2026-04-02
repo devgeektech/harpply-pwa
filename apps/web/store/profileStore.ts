@@ -20,6 +20,22 @@ interface ProfileState {
   smokingPreference: string;
   alcoholPreference: string;
   dietaryPreference: string;
+  relationshipHistory: string[];
+  haveChildren: string[];
+  wantChildren: string[];
+  openToPartnerWithChildren: string[];
+  freeTime: string[];
+  musicTaste: string[];
+  sportsPlayOrFollow: string[];
+  fitnessLifestyle: string[];
+  recharge: string[];
+  communicationStyle: string[];
+  favoriteFood: string[];
+  travelerType: string[];
+  travelStyle: string[];
+  perfectNightIn: string[];
+  showsOrMovies: string[];
+  dayToDay: string[];
 
   setBio: (bio: string) => void;
   setName: (name: string) => void;
@@ -45,6 +61,22 @@ export const useProfileStore = create<ProfileState>((set) => ({
   smokingPreference: "",
   alcoholPreference: "",
   dietaryPreference: "",
+  relationshipHistory: [],
+  haveChildren: [],
+  wantChildren: [],
+  openToPartnerWithChildren: [],
+  freeTime: [],
+  musicTaste: [],
+  sportsPlayOrFollow: [],
+  fitnessLifestyle: [],
+  recharge: [],
+  communicationStyle: [],
+  favoriteFood: [],
+  travelerType: [],
+  travelStyle: [],
+  perfectNightIn: [],
+  showsOrMovies: [],
+  dayToDay: [],
 
   setBio: (bio) => set({ bio }),
   setName: (name) => set({ name }),
@@ -71,6 +103,22 @@ export const useProfileStore = create<ProfileState>((set) => ({
       smokingPreference: data.smokingPreference ?? "",
       alcoholPreference: data.alcoholPreference ?? "",
       dietaryPreference: data.dietaryPreference ?? "",
+      relationshipHistory: data.relationshipHistory ?? [],
+      haveChildren: data.haveChildren ?? [],
+      wantChildren: data.wantChildren ?? [],
+      openToPartnerWithChildren: data.openToPartnerWithChildren ?? [],
+      freeTime: data.freeTime ?? [],
+      musicTaste: data.musicTaste ?? [],
+      sportsPlayOrFollow: data.sportsPlayOrFollow ?? [],
+      fitnessLifestyle: data.fitnessLifestyle ?? [],
+      recharge: data.recharge ?? [],
+      communicationStyle: data.communicationStyle ?? [],
+      favoriteFood: data.favoriteFood ?? [],
+      travelerType: data.travelerType ?? [],
+      travelStyle: data.travelStyle ?? [],
+      perfectNightIn: data.perfectNightIn ?? [],
+      showsOrMovies: data.showsOrMovies ?? [],
+      dayToDay: data.dayToDay ?? [],
       loaded: true,
     }),
 }));

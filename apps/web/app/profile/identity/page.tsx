@@ -22,6 +22,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import { fetchProfile, fetchProfilePhotos } from "@/lib/api/profile";
+import { getEverydayLifeReviewItems } from "@/data/everydayLifeQuestions";
 
 import "swiper/css";
 import "swiper/css/pagination";
@@ -94,6 +95,22 @@ export default function ProfileIdentityPage() {
     smokingPreference,
     alcoholPreference,
     dietaryPreference,
+    relationshipHistory,
+    haveChildren,
+    wantChildren,
+    openToPartnerWithChildren,
+    freeTime,
+    musicTaste,
+    sportsPlayOrFollow,
+    fitnessLifestyle,
+    recharge,
+    communicationStyle,
+    favoriteFood,
+    travelerType,
+    travelStyle,
+    perfectNightIn,
+    showsOrMovies,
+    dayToDay,
     hydrateFromApi,
     loaded,
   } = useProfileStore();
@@ -187,6 +204,46 @@ export default function ProfileIdentityPage() {
       },
     ],
     [smokingPreference, alcoholPreference, dietaryPreference]
+  );
+
+  const everydayLifeItems = useMemo(
+    () =>
+      getEverydayLifeReviewItems({
+        relationshipHistory,
+        haveChildren,
+        wantChildren,
+        openToPartnerWithChildren,
+        freeTime,
+        musicTaste,
+        sportsPlayOrFollow,
+        fitnessLifestyle,
+        recharge,
+        communicationStyle,
+        favoriteFood,
+        travelerType,
+        travelStyle,
+        perfectNightIn,
+        showsOrMovies,
+        dayToDay,
+      }),
+    [
+      relationshipHistory,
+      haveChildren,
+      wantChildren,
+      openToPartnerWithChildren,
+      freeTime,
+      musicTaste,
+      sportsPlayOrFollow,
+      fitnessLifestyle,
+      recharge,
+      communicationStyle,
+      favoriteFood,
+      travelerType,
+      travelStyle,
+      perfectNightIn,
+      showsOrMovies,
+      dayToDay,
+    ]
   );
 
   const formatValue = (val: any) => {
@@ -397,7 +454,7 @@ export default function ProfileIdentityPage() {
                       {/* Lifestyle Habits with pills */}
                       <li className="flex sm:items-center items-start gap-3">
                         <span className="mt-0.5 shadow-[0px_0px_4px_0px_#0000001A] rounded-[12px] bg-white min-w-[60px] min-h-[60px] flex items-center justify-center">
-                          <Popcorn className="size-5 shrink-0  text-[#C39936]" />
+                          <Lifestyle />
                         </span>
                         <div className="min-w-0 flex-1">
                           <p className="text-base font-medium mb-2 text-[#1A1a1a]">
@@ -416,6 +473,27 @@ export default function ProfileIdentityPage() {
                           </div>
                         </div>
                       </li>
+
+                      {everydayLifeItems.length > 0 && (
+                        <li className="flex items-start gap-3">
+                          <span className="mt-0.5 shadow-[0px_0px_4px_0px_#0000001A] rounded-[12px] bg-white min-w-[60px] min-h-[60px] flex items-center justify-center">
+                            <Lifestyle />
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-base font-medium mb-2 text-[#1A1a1a]">
+                              Everyday Life
+                            </p>
+                            <div className="space-y-2">
+                              {everydayLifeItems.map((item) => (
+                                <div key={item.prompt} className="text-sm text-[#1A1A1A]">
+                                  <span className="font-medium">{item.prompt}: </span>
+                                  <span>{item.answerText}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </li>
+                      )}
                     </ul>
                   </CardContent>
                 </Card>

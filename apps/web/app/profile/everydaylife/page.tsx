@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -9,11 +9,18 @@ import {
   EVERYDAY_QUESTIONS,
   getEverydayQuestionMaxSelections,
 } from "@/data/everydayLifeQuestions";
-import { AUTH_STORAGE_KEYS, saveEverydayLife } from "@/lib/api/auth";
+import {
+  AUTH_STORAGE_KEYS,
+  getOnboardingData,
+  saveEverydayLife,
+} from "@/lib/api/auth";
 import {
   setQuestionAnswers,
   useEverydayAnswersRecord,
 } from "@/store/everydayLifeStore";
+import { hydrateOnboardingStores } from "@/store/onboardingStore";
+import { toast } from "sonner";
+import { SUCCESS_MESSAGES } from "@/lib/messages/success-messages";
 
 function toggleOption(
   current: string[],
@@ -39,6 +46,32 @@ export default function EverydayLifePage() {
   const router = useRouter();
   const answers = useEverydayAnswersRecord();
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const hydrateEverydayLifeFromDb = async () => {
+      const token =
+        typeof window !== "undefined"
+          ? window.localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN)
+          : null;
+      if (!token) return;
+
+      try {
+        const res = await getOnboardingData(token);
+        if (!cancelled && res?.data) {
+          hydrateOnboardingStores(res.data);
+        }
+      } catch {
+        // Silent fail to avoid blocking profile edit flow.
+      }
+    };
+
+    void hydrateEverydayLifeFromDb();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const questionCount = useMemo(
     () => EVERYDAY_QUESTIONS.reduce((count, section) => count + section.questions.length, 0),
@@ -81,6 +114,7 @@ export default function EverydayLifePage() {
       // soft-fail, still move forward
     } finally {
       setSubmitting(false);
+      toast.success(SUCCESS_MESSAGES.PROFILE.EVERYDAY_LIFE_UPDATED);
       router.push("/profile/lifestyle");
     }
   };
