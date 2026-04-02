@@ -5,393 +5,31 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button, Card, CardContent, Progress } from "@repo/ui";
+import {
+  EVERYDAY_QUESTIONS,
+  getEverydayQuestionMaxSelections,
+} from "@/data/everydayLifeQuestions";
+import { AUTH_STORAGE_KEYS, saveEverydayLife } from "@/lib/api/auth";
+import {
+  setQuestionAnswers,
+  useEverydayAnswersRecord,
+} from "@/store/everydayLifeStore";
 
-const MAX_PER_QUESTION = 3;
-
-type EverydayQuestion = {
-  id: string;
-  prompt: string;
-  options: readonly string[];
-};
-
-type EverydaySection = {
-  id: string;
-  title: string;
-  emoji: string;
-  questions: readonly EverydayQuestion[];
-};
-
-const SECTIONS: readonly EverydaySection[] = [
-  {
-    id: "relationship-history",
-    title: "Relationship History",
-    emoji: "💍",
-    questions: [
-      {
-        id: "relationshipHistory",
-        prompt: "What is your relationship history?",
-        options: ["Never married", "Divorced", "Widowed", "Prefer not to say"],
-      },
-    ],
-  },
-  {
-    id: "children",
-    title: "Children",
-    emoji: "👶",
-    questions: [
-      {
-        id: "haveChildren",
-        prompt: "Do you have children?",
-        options: ["Yes", "No"],
-      },
-      {
-        id: "wantChildren",
-        prompt: "Do you want children?",
-        options: ["Yes", "Yes — open to adoption", "Maybe", "Not right now", "No"],
-      },
-      {
-        id: "openToPartnerWithChildren",
-        prompt: "Open to dating someone with children?",
-        options: ["Yes", "Maybe", "Need to discuss it", "No"],
-      },
-    ],
-  },
-  {
-    id: "hobbies",
-    title: "Hobbies",
-    emoji: "🎨",
-    questions: [
-      {
-        id: "freeTime",
-        prompt: "What do you do in your free time?",
-        options: [
-          "Reading",
-          "Writing",
-          "Cooking",
-          "Baking",
-          "Gardening",
-          "Photography",
-          "Painting",
-          "Drawing",
-          "Crafting",
-          "DIY projects",
-          "Woodworking",
-          "Playing an instrument",
-          "Singing",
-          "Volunteering",
-          "Mentoring",
-          "Board games",
-          "Puzzles",
-          "Fishing",
-          "Hunting",
-          "Hiking",
-          "Traveling",
-          "Shopping",
-          "Attending local events",
-          "Going to the gym",
-          "Running",
-          "Cycling",
-          "Swimming",
-          "Dancing",
-          "Watching sports",
-          "Playing sports",
-          "Going to concerts",
-          "Trying new restaurants",
-          "Road trips",
-          "Spending time with family",
-          "Thrifting",
-          "Journaling",
-          "Content creation",
-          "Gaming",
-          "Other",
-        ],
-      },
-    ],
-  },
-  {
-    id: "music",
-    title: "Music",
-    emoji: "🎵",
-    questions: [
-      {
-        id: "musicTaste",
-        prompt: "What kind of music do you love?",
-        options: [
-          "Contemporary Christian",
-          "Gospel",
-          "Hymns",
-          "Worship and praise",
-          "R&B",
-          "Soul",
-          "Country",
-          "Hip-Hop",
-          "Classical",
-          "Jazz",
-          "Blues",
-          "Pop",
-          "Rock",
-          "Indie",
-          "Alternative",
-          "Latin",
-          "Reggae",
-          "Folk",
-          "Bluegrass",
-          "Instrumental",
-          "Soundtracks",
-          "Oldies and Motown",
-          "Electronic",
-          "Other",
-        ],
-      },
-    ],
-  },
-  {
-    id: "sports",
-    title: "Sports",
-    emoji: "🏀",
-    questions: [
-      {
-        id: "sportsPlayOrFollow",
-        prompt: "What sports do you play or follow?",
-        options: [
-          "Football",
-          "Basketball",
-          "Baseball",
-          "Softball",
-          "Soccer",
-          "Tennis",
-          "Golf",
-          "Hockey",
-          "MMA",
-          "Boxing",
-          "Kickboxing",
-          "Wrestling",
-          "Motorsports",
-          "Olympics",
-          "College sports",
-          "Track and field",
-          "Gymnastics",
-          "Figure skating",
-          "Surfing",
-          "Skateboarding",
-          "Snowboarding",
-          "Skiing",
-          "Lacrosse",
-          "Rugby",
-          "Cricket",
-          "Volleyball",
-          "Pickleball",
-          "Swimming",
-          "Cycling",
-          "Running",
-          "Bowling",
-          "Billiards",
-          "Backyard games",
-          "Rock climbing",
-          "Martial arts",
-          "CrossFit",
-          "Rowing",
-          "Badminton",
-          "Ping pong",
-          "Disc golf",
-          "Flag football",
-          "Sand volleyball",
-          "Bodybuilding",
-          "Esports",
-          "Not really into sports",
-          "Other",
-        ],
-      },
-      {
-        id: "fitnessLifestyle",
-        prompt: "What is your fitness lifestyle?",
-        options: [
-          "Gym regularly",
-          "Running",
-          "Hiking",
-          "Cycling",
-          "Swimming",
-          "Home workouts",
-          "Team sports",
-          "Outdoor adventures",
-          "Stretching",
-          "Still building a routine",
-          "Other",
-        ],
-      },
-    ],
-  },
-  {
-    id: "personality",
-    title: "Personality",
-    emoji: "🧠",
-    questions: [
-      {
-        id: "recharge",
-        prompt: "How do you recharge?",
-        options: [
-          "Alone time",
-          "Friends or family",
-          "Nature",
-          "Worship and prayer",
-          "Napping",
-          "Long drive",
-          "Reading",
-          "A good project",
-          "Exercise",
-          "Cooking",
-          "Other",
-        ],
-      },
-      {
-        id: "communicationStyle",
-        prompt: "What is your communication style?",
-        options: [
-          "Direct",
-          "Thoughtful",
-          "Expressive",
-          "Humorous",
-          "Good listener",
-          "Depends on the moment",
-        ],
-      },
-    ],
-  },
-  {
-    id: "food-drinks",
-    title: "Food and Drinks",
-    emoji: "🍽️",
-    questions: [
-      {
-        id: "favoriteFood",
-        prompt: "What are your favorite types of food?",
-        options: [
-          "Soul food",
-          "Southern cooking",
-          "American",
-          "Italian",
-          "Mexican",
-          "Caribbean",
-          "African",
-          "Asian",
-          "Mediterranean",
-          "Middle Eastern",
-          "Seafood",
-          "Barbecue",
-          "Comfort food",
-          "Breakfast all day",
-          "Healthy eating",
-          "Plant-based",
-          "Other",
-        ],
-      },
-    ],
-  },
-  {
-    id: "travel",
-    title: "Travel",
-    emoji: "✈️",
-    questions: [
-      {
-        id: "travelerType",
-        prompt: "What kind of traveler are you?",
-        options: [
-          "Beach",
-          "Mountains",
-          "City exploration",
-          "Road trips",
-          "International",
-          "Cruises",
-          "Historical sites",
-          "Food travel",
-          "Mission trips",
-          "Family visits",
-          "Staycations",
-          "Other",
-        ],
-      },
-      {
-        id: "travelStyle",
-        prompt: "How do you travel best?",
-        options: [
-          "Fully planned",
-          "Spontaneous",
-          "Slow and deep",
-          "Flexible balance",
-          "Whatever is affordable",
-        ],
-      },
-    ],
-  },
-  {
-    id: "staying-in",
-    title: "Staying In",
-    emoji: "🏠",
-    questions: [
-      {
-        id: "perfectNightIn",
-        prompt: "What does a perfect night in look like?",
-        options: [
-          "Home-cooked meal",
-          "Movie or series",
-          "Reading",
-          "Board games",
-          "Good conversation",
-          "Worship music",
-          "A creative project",
-          "Gaming",
-          "Baking",
-          "Just resting",
-          "Other",
-        ],
-      },
-      {
-        id: "showsOrMovies",
-        prompt: "What kind of shows or movies do you enjoy?",
-        options: [
-          "Faith-based films",
-          "Documentaries",
-          "Family films",
-          "Comedies",
-          "Dramas",
-          "Musicals",
-          "Action and adventure",
-          "Historical",
-          "Animated",
-          "Sports docs",
-          "True crime",
-          "Nature and wildlife",
-          "Other",
-        ],
-      },
-    ],
-  },
-  {
-    id: "lifestyle",
-    title: "Lifestyle",
-    emoji: "🌿",
-    questions: [
-      {
-        id: "dayToDay",
-        prompt: "How would you describe your day-to-day?",
-        options: [
-          "Busy and driven",
-          "Balanced",
-          "Laid back",
-          "Routine-oriented",
-          "In transition",
-          "Building and focused",
-        ],
-      },
-    ],
-  },
-];
-
-function toggleOption(current: string[], option: string): string[] {
+function toggleOption(
+  current: string[],
+  option: string,
+  max: 1 | 3
+): string[] {
+  if (max === 1) {
+    if (current.length === 1 && current[0] === option) {
+      return [];
+    }
+    return [option];
+  }
   if (current.includes(option)) {
     return current.filter((value) => value !== option);
   }
-  if (current.length >= MAX_PER_QUESTION) {
+  if (current.length >= max) {
     return current;
   }
   return [...current, option];
@@ -399,10 +37,11 @@ function toggleOption(current: string[], option: string): string[] {
 
 export default function EverydayLifePage() {
   const router = useRouter();
-  const [answers, setAnswers] = useState<Record<string, string[]>>({});
+  const answers = useEverydayAnswersRecord();
+  const [submitting, setSubmitting] = useState(false);
 
   const questionCount = useMemo(
-    () => SECTIONS.reduce((count, section) => count + section.questions.length, 0),
+    () => EVERYDAY_QUESTIONS.reduce((count, section) => count + section.questions.length, 0),
     []
   );
 
@@ -419,13 +58,32 @@ export default function EverydayLifePage() {
   );
 
   const onToggleAnswer = (questionId: string, option: string) => {
-    setAnswers((prev) => {
-      const current = prev[questionId] ?? [];
-      return {
-        ...prev,
-        [questionId]: toggleOption(current, option),
-      };
-    });
+    const max = getEverydayQuestionMaxSelections(questionId);
+    const current = answers[questionId] ?? [];
+    const next = toggleOption(current, option, max);
+    setQuestionAnswers(questionId, next);
+  };
+
+  const handleContinue = async () => {
+    if (submitting) return;
+    const token =
+      typeof window !== "undefined"
+        ? window.localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN)
+        : null;
+    if (!token) {
+      router.push("/auth/onboarding/profile");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      console.log("answers >>>>>>>>>> ", answers);
+      await saveEverydayLife(answers, token);
+    } catch {
+      // soft-fail, still move forward
+    } finally {
+      setSubmitting(false);
+      router.push("/auth/onboarding/profile");
+    }
   };
 
   return (
@@ -452,7 +110,7 @@ export default function EverydayLifePage() {
             <div
               className="space-y-4 max-h-[55vh] overflow-y-auto pr-1 scroll-smooth [scrollbar-width:thin] [scrollbar-color:#C8A851_#1A1A1A22] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-[#1A1A1A22] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[linear-gradient(180deg,#964400_0%,#F3D35D_50%,#8C4202_100%)] [&::-webkit-scrollbar-thumb:hover]:bg-[linear-gradient(180deg,#8C4202_0%,#F3D35D_50%,#964400_100%)]"
             >
-              {SECTIONS.map((section) => (
+              {EVERYDAY_QUESTIONS.map((section) => (
                 <section
                   key={section.id}
                   className="rounded-xl border border-black/10 bg-white p-3 sm:p-4"
@@ -467,28 +125,35 @@ export default function EverydayLifePage() {
                   <div className="space-y-4">
                     {section.questions.map((question) => {
                       const selected = answers[question.id] ?? [];
-                      const limitReached = selected.length >= MAX_PER_QUESTION;
+                      const max = getEverydayQuestionMaxSelections(question.id);
+                      const limitReached = max === 3 && selected.length >= max;
                       return (
                         <div key={question.id}>
-                          <p className="text-sm sm:text-base font-medium text-[#1A1A1A] mb-2">
+                          <p className="text-sm sm:text-base font-medium text-[#1A1A1A] mb-1">
                             {question.prompt}
+                          </p>
+                          <p className="text-xs text-[#1A1A1A]/70 mb-2">
+                            {max === 3
+                              ? "Choose up to 3"
+                              : "Choose one"}
                           </p>
                           <div className="flex flex-wrap gap-2">
                             {question.options.map((option) => {
-                              const isActive = selected.includes(option);
-                              const isDisabled = !isActive && limitReached;
+                              const isActive = selected.includes(option.value);
+                              const isDisabled =
+                                max === 3 && !isActive && limitReached;
                               return (
                                 <button
-                                  key={option}
+                                  key={option.value}
                                   type="button"
-                                  onClick={() => onToggleAnswer(question.id, option)}
+                                  onClick={() => onToggleAnswer(question.id, option.value)}
                                   disabled={isDisabled}
                                   className={`rounded-full border px-3 py-1.5 text-xs sm:text-sm transition ${isActive
                                       ? "border-[#C8A851] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold"
                                       : "border-black/15 bg-white text-[#1A1A1A]"
                                     } ${isDisabled ? "opacity-45 cursor-not-allowed" : "cursor-pointer hover:border-[#C8A851]"}`}
                                 >
-                                  {option}
+                                  {option.label}
                                 </button>
                               );
                             })}
@@ -503,10 +168,11 @@ export default function EverydayLifePage() {
 
           <Button
             type="button"
-            onClick={() => router.push("/auth/onboarding/profile")}
-            className="cursor-pointer mt-1 w-full h-[52px] text-base text-[#913C01] font-semibold bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] hover:opacity-90"
+            disabled={submitting}
+            onClick={handleContinue}
+            className="cursor-pointer mt-1 w-full h-[52px] text-base text-[#913C01] font-semibold bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] hover:opacity-90 disabled:opacity-60"
           >
-            Continue
+            {submitting ? "Saving..." : "Continue"}
           </Button>
           <Button
             type="button"

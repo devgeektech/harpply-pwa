@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /** Must match web `everydayLifeQuestions` question `id` fields. */
 export const EVERYDAY_LIFE_QUESTION_IDS = [
   'relationshipHistory',

@@ -1,19 +1,7 @@
 import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 
-export function normalizeEverydayLifeProfileFromApi(
-  raw: unknown
-): Record<string, string[]> {
-  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
-  const out: Record<string, string[]> = {};
-  for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
-    if (!Array.isArray(v)) continue;
-    const arr = v.filter((x): x is string => typeof x === "string");
-    if (arr.length) out[k] = arr;
-  }
-  return out;
-}
-
-interface EverydayLifeState {
+export interface EverydayLifeState {
   relationshipHistory: string[];
   haveChildren: string[];
   wantChildren: string[];
@@ -47,10 +35,89 @@ interface EverydayLifeState {
   setPerfectNightIn: (values: string[]) => void;
   setShowsOrMovies: (values: string[]) => void;
   setDayToDay: (values: string[]) => void;
-
 }
 
-export const useEverydayLifeStore = create<EverydayLifeState>((set, get) => ({
+/** Snapshot of all everyday-life answers as a single record (for API + UI iteration). */
+export function selectEverydayAnswersRecord(
+  s: EverydayLifeState
+): Record<string, string[]> {
+  return {
+    relationshipHistory: s.relationshipHistory,
+    haveChildren: s.haveChildren,
+    wantChildren: s.wantChildren,
+    openToPartnerWithChildren: s.openToPartnerWithChildren,
+    freeTime: s.freeTime,
+    musicTaste: s.musicTaste,
+    sportsPlayOrFollow: s.sportsPlayOrFollow,
+    fitnessLifestyle: s.fitnessLifestyle,
+    recharge: s.recharge,
+    communicationStyle: s.communicationStyle,
+    favoriteFood: s.favoriteFood,
+    travelerType: s.travelerType,
+    travelStyle: s.travelStyle,
+    perfectNightIn: s.perfectNightIn,
+    showsOrMovies: s.showsOrMovies,
+    dayToDay: s.dayToDay,
+  };
+}
+
+export function setQuestionAnswers(questionId: string, values: string[]): void {
+  const s = useEverydayLifeStore.getState();
+  switch (questionId) {
+    case "relationshipHistory":
+      s.setRelationshipHistory(values);
+      break;
+    case "haveChildren":
+      s.setHaveChildren(values);
+      break;
+    case "wantChildren":
+      s.setWantChildren(values);
+      break;
+    case "openToPartnerWithChildren":
+      s.setOpenToPartnerWithChildren(values);
+      break;
+    case "freeTime":
+      s.setFreeTime(values);
+      break;
+    case "musicTaste":
+      s.setMusicTaste(values);
+      break;
+    case "sportsPlayOrFollow":
+      s.setSportsPlayOrFollow(values);
+      break;
+    case "fitnessLifestyle":
+      s.setFitnessLifestyle(values);
+      break;
+    case "recharge":
+      s.setRecharge(values);
+      break;
+    case "communicationStyle":
+      s.setCommunicationStyle(values);
+      break;
+    case "favoriteFood":
+      s.setFavoriteFood(values);
+      break;
+    case "travelerType":
+      s.setTravelerType(values);
+      break;
+    case "travelStyle":
+      s.setTravelStyle(values);
+      break;
+    case "perfectNightIn":
+      s.setPerfectNightIn(values);
+      break;
+    case "showsOrMovies":
+      s.setShowsOrMovies(values);
+      break;
+    case "dayToDay":
+      s.setDayToDay(values);
+      break;
+    default:
+      break;
+  }
+}
+
+export const useEverydayLifeStore = create<EverydayLifeState>((set) => ({
   relationshipHistory: [],
   haveChildren: [],
   wantChildren: [],
@@ -85,5 +152,11 @@ export const useEverydayLifeStore = create<EverydayLifeState>((set, get) => ({
   setPerfectNightIn: (values) => set({ perfectNightIn: values }),
   setShowsOrMovies: (values) => set({ showsOrMovies: values }),
   setDayToDay: (values) => set({ dayToDay: values }),
-
 }));
+
+/** Subscribe to all everyday-life answers as one record (shallow compare). */
+export function useEverydayAnswersRecord(): Record<string, string[]> {
+  return useEverydayLifeStore(
+    useShallow((s) => selectEverydayAnswersRecord(s))
+  );
+}
