@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Cropper from "react-easy-crop";
 import { Dialog, DialogContent, Button } from "@repo/ui";
 import { X } from "lucide-react";
-
-const SESSION_ID = "e2971a";
 
 function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
@@ -41,7 +39,7 @@ export default function ImageCropDialog({
   step?: number;
 }) {
   const [imgUrl, setImgUrl] = useState<string | null>(null);
-  const [zoom, setZoom] = useState(minZoom + 0.2);
+  const [zoom, setZoom] = useState(minZoom);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [rotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<{
@@ -50,13 +48,12 @@ export default function ImageCropDialog({
     width: number;
     height: number;
   } | null>(null);
-  const cropAreaLogOnceRef = useRef(0);
 
   useEffect(() => {
     if (!open || !file) {
       setImgUrl(null);
       setCroppedAreaPixels(null);
-      setZoom(minZoom + 0.2);
+      setZoom(minZoom);
       setCrop({ x: 0, y: 0 });
       return;
     }
@@ -157,7 +154,7 @@ export default function ImageCropDialog({
                 rotation={rotation}
                 aspect={1}
                 cropShape="rect"
-                objectFit="cover"
+                objectFit="contain"
                 minZoom={minZoom}
                 maxZoom={maxZoom}
                 zoomSpeed={0.5}
@@ -172,37 +169,10 @@ export default function ImageCropDialog({
                     width: croppedPixels.width,
                     height: croppedPixels.height,
                   });
-
-                  if (cropAreaLogOnceRef.current < 1 && croppedPixels?.width > 0) {
-                    cropAreaLogOnceRef.current += 1;
-                    fetch(
-                      "http://127.0.0.1:7600/ingest/39d59a03-facd-48e2-88e7-4c851c5c0979",
-                      {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                          "X-Debug-Session-Id": SESSION_ID,
-                        },
-                        body: JSON.stringify({
-                          sessionId: SESSION_ID,
-                          runId: "pre-fix",
-                          hypothesisId: "H1",
-                          location:
-                            "image-crop-dialog.tsx:onCropComplete",
-                          message: "croppedAreaPixels computed",
-                          data: {
-                            croppedAreaPixels: croppedPixels,
-                            zoom,
-                          },
-                          timestamp: Date.now(),
-                        }),
-                      }
-                    ).catch(() => {});
-                  }
                 }}
                 style={{
                   containerStyle: { width: "100%", height: "100%" },
-                  mediaStyle: { width: "100%", height: "100%", objectFit: "cover" },
+                  mediaStyle: { width: "100%", height: "100%", objectFit: "contain" },
                   cropAreaStyle: {
                     border: "2px solid rgba(195, 153, 54, 0.85)",
                   },
