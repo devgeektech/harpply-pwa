@@ -1,5 +1,6 @@
 "use client";
 
+import { getEverydayLifeReviewItems } from "@/data/everydayLifeQuestions";
 import { formatFaithValuesForDisplay } from "@/data/myFaithValues";
 import { fetchProfilePhotos } from "@/lib/api/profile";
 import { useFaithAttributesStore } from "@/store/faithAttributesStore";
@@ -22,10 +23,11 @@ import { AUTH_STORAGE_KEYS } from "@/lib/constants";
 import { completeOnboarding } from "@/lib/api/auth";
 import { clearOnboardingResume } from "@/lib/onboarding-resume";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { SUCCESS_MESSAGES } from "@/lib/messages/success-messages";
+import { useEverydayAnswersRecord } from "@/store/everydayLifeStore";
 const ACCENT = "#C39936";
 
 
@@ -69,6 +71,12 @@ export default function ReviewProfilePage() {
 
   const myFaithDisplay = formatFaithValuesForDisplay(myFaithValues);
   const partnerDisplay = formatFaithValuesForDisplay(partnerValues);
+  const everydayAnswers = useEverydayAnswersRecord();
+  const everydayReviewItems = useMemo(
+    () => getEverydayLifeReviewItems(everydayAnswers),
+    [everydayAnswers]
+  );
+  const showEverydayLifestyle = everydayReviewItems.length > 0;
   const s3PublicUrl = process.env.NEXT_PUBLIC_AWS_S3_URL ?? "";
   const firstPhoto = profilePhotos[0] ?? "";
   const hasAtLeastOnePhoto = profilePhotos.length > 0;
@@ -106,7 +114,7 @@ export default function ReviewProfilePage() {
         window.localStorage.setItem(AUTH_STORAGE_KEYS.ONBOARDING_COMPLETED, "true");
         toast.success(SUCCESS_MESSAGES.ONBOARDING.ONBOARDING_COMPLETED);
       }
-      router.push("/profile/identity");
+      router.push("/auth/onboarding/success");
     } catch {
       setSubmitting(false);
     } finally {
@@ -218,10 +226,22 @@ export default function ReviewProfilePage() {
             <InfoRow label="Partner Values" value={partnerDisplay || "—"} />
 
             <div className="pt-2 text-sm text-white">Lifestyle Habits</div>
-
             <InfoRow label="Smoking" value={displayOrDash(smokingSelection)} />
             <InfoRow label="Alcohol" value={displayOrDash(alcoholSelection)} />
             <InfoRow label="Dietary Preferences" value={displayOrDash(dietaryPreference)} />
+
+            {showEverydayLifestyle ? (
+              <>
+                <div className="pt-2 text-sm text-white">Everyday Lifestyle</div>
+                {everydayReviewItems.map((row, index) => (
+                  <EverydayLifestyleRow
+                    key={`${row.prompt}-${index}`}
+                    prompt={row.prompt}
+                    answerText={row.answerText}
+                  />
+                ))}
+              </>
+            ) : null}
           </div>
 
           {/* Secure box */}
@@ -261,6 +281,21 @@ function InfoRow({ label, value, className }: { label: string; value: string; cl
     <div className="flex h-[56px] justify-between items-center bg-white text-black rounded-lg px-4 py-3 text-sm">
       <span>{label}</span>
       <span className="text-[#C39936] font-medium">{value}</span>
+    </div>
+  );
+}
+
+function EverydayLifestyleRow({
+  prompt,
+  answerText,
+}: {
+  prompt: string;
+  answerText: string;
+}) {
+  return (
+     <div className="flex h-[56px] justify-between items-center bg-white text-black rounded-lg px-4 py-3 text-sm">
+      <span>{prompt}</span>
+      <span className="text-[#C39936] font-medium">{answerText}</span>
     </div>
   );
 }

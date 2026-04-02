@@ -428,3 +428,22 @@ export const EVERYDAY_QUESTIONS: readonly EverydaySection[] = [
     ],
   },
 ];
+
+/** Review rows: only questions with at least one saved value; values shown as option labels. */
+export function getEverydayLifeReviewItems(
+  answers: Record<string, string[]>
+): { prompt: string; answerText: string }[] {
+  const items: { prompt: string; answerText: string }[] = [];
+  for (const section of EVERYDAY_QUESTIONS) {
+    for (const q of section.questions) {
+      const vals = answers[q.id];
+      if (!vals?.length) continue;
+      const labels = vals.map((v) => {
+        const opt = q.options.find((o) => o.value === v);
+        return opt?.label ?? v;
+      });
+      items.push({ prompt: q.prompt, answerText: labels.join(", ") });
+    }
+  }
+  return items;
+}
