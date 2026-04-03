@@ -142,7 +142,7 @@ export default function EverydayLifePage() {
       />
       <div className="relative flex min-h-screen items-start justify-center px-3 py-5 sm:items-center sm:px-4 sm:py-6">
         <Card className="w-full max-w-[620px] border-0 bg-transparent py-0 md:border md:border-white/12 md:bg-[url('/images/bg_auth_center.png')] md:bg-cover md:bg-center md:bg-no-repeat md:shadow-2xl md:shadow-black/30 md:backdrop-blur-xl">
-          <CardContent className="flex flex-col gap-4 px-3 sm:gap-6 sm:p-10">
+          <CardContent className="flex w-full min-w-0 flex-col gap-4 px-3 sm:gap-6 sm:p-10">
             <div className="flex w-full items-center gap-3 text-left text-white">
               <Link
                 href="/profile/faithvalues"
@@ -162,9 +162,7 @@ export default function EverydayLifePage() {
               </p>
             </div>
 
-            <div
-              className="max-h-[52vh] space-y-4 overflow-y-auto pr-1 scroll-smooth sm:max-h-[55vh] [scrollbar-width:thin] [scrollbar-color:#C8A851_#1A1A1A22] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-[#1A1A1A22] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[linear-gradient(180deg,#964400_0%,#F3D35D_50%,#8C4202_100%)] [&::-webkit-scrollbar-thumb:hover]:bg-[linear-gradient(180deg,#8C4202_0%,#F3D35D_50%,#964400_100%)]"
-            >
+            <div className="w-full min-w-0 space-y-4">
               {EVERYDAY_QUESTIONS.map((section) => {
                 const isOpen = openSectionId === section.id;
                 const headerId = `everyday-edit-section-${section.id}`;
@@ -172,7 +170,7 @@ export default function EverydayLifePage() {
                 return (
                   <section
                     key={section.id}
-                    className="overflow-hidden rounded-2xl border border-[#C8A851]/22 bg-white shadow-[0_16px_40px_rgba(0,0,0,0.18)] ring-1 ring-black/[0.04]"
+                    className="w-full min-w-0 overflow-hidden rounded-2xl border border-[#C8A851]/22 bg-white shadow-[0_16px_40px_rgba(0,0,0,0.18)] ring-1 ring-black/[0.04]"
                   >
                     <button
                       type="button"
