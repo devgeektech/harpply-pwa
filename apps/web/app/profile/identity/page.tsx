@@ -5,11 +5,13 @@ import { useProfileStore } from "@/store/profileStore";
 import { useIdentityStore } from "@/store/identityStore";
 import { Button, Card, CardContent, cn } from "@repo/ui";
 import {
+  ChevronDown,
   ChevronLeft,
-  MapPin,
-  Pencil,
+  ChevronUp,
   Cross,
   Heart,
+  MapPin,
+  Pencil,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,7 +20,10 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import { fetchProfile, fetchProfilePhotos } from "@/lib/api/profile";
-import { getEverydayLifeReviewItems } from "@/data/everydayLifeQuestions";
+import {
+  getEverydayLifeReviewItems,
+  getEverydayQuestionLucideIcon,
+} from "@/data/everydayLifeQuestions";
 import { faithValueLabelForStored } from "@/data/myFaithValues";
 
 import "swiper/css";
@@ -32,10 +37,6 @@ import Partnervalues from "@/icons/partnervalues";
 import Lifestyle from "@/icons/lifestyle";
 
 const ACCENT = "#C39936";
-const BULLET_INACTIVE = "#3d3a4a";
-const BG_DARK = "#130F26";
-const TEXT_PRIMARY = "#1F1D2B";
-const TEXT_MUTED = "#6E6C7E";
 
 function buildPhotoSrc(s3PublicUrl: string, key: string): string {
   const safeKey = key?.toString?.().trim() ?? "";
@@ -59,6 +60,11 @@ function ShimmerBox({ className }: { className: string }) {
       />
     </div>
   );
+}
+
+function EverydayAccordionIcon({ questionId }: { questionId: string }) {
+  const Icon = getEverydayQuestionLucideIcon(questionId);
+  return <Icon className="size-[18px] shrink-0" strokeWidth={2} aria-hidden />;
 }
 
 export default function ProfileIdentityPage() {
@@ -100,6 +106,8 @@ export default function ProfileIdentityPage() {
   const s3PublicUrl = process.env.NEXT_PUBLIC_AWS_S3_URL ?? "";
   const [photosLoaded, setPhotosLoaded] = useState(false);
   const [profileTab, setProfileTab] = useState<"faith" | "everyday">("faith");
+  /** Which Everyday Life accordion row is open; `-1` = all collapsed. Default `0` = first open. */
+  const [everydayOpenIndex, setEverydayOpenIndex] = useState(0);
 
   useEffect(() => {
     setPhotosLoaded(false);
@@ -277,6 +285,19 @@ export default function ProfileIdentityPage() {
       dayToDay,
     ]
   );
+
+  useEffect(() => {
+    const n = everydayLifeItems.length;
+    setEverydayOpenIndex((i) => {
+      if (n === 0) return 0;
+      if (i >= n) return 0;
+      return i;
+    });
+  }, [everydayLifeItems.length]);
+
+  const toggleEverydayAccordion = useCallback((idx: number) => {
+    setEverydayOpenIndex((prev) => (prev === idx ? -1 : idx));
+  }, []);
 
   return (
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex items-center justify-center px-4">
@@ -515,19 +536,10 @@ export default function ProfileIdentityPage() {
                 <Card
                   className={cn(
                     "rounded-t-none rounded-b-2xl py-0 border-0 shadow-xl overflow-hidden -mt-px",
-                    profileTab === "faith"
-                      ? "border border-[#C8A851]/20 bg-gradient-to-b from-[#1a0f2e] via-[#150828] to-[#0f061c] shadow-[0_12px_40px_rgba(0,0,0,0.5)]"
-                      : "bg-[#FBFAF9]"
+                    "border border-[#C8A851]/20 bg-gradient-to-b from-[#1a0f2e] via-[#150828] to-[#0f061c] shadow-[0_12px_40px_rgba(0,0,0,0.5)]"
                   )}
                 >
-                  <CardContent
-                    className={cn(
-                      "text-left",
-                      profileTab === "faith"
-                        ? "px-2.5 pt-3 pb-4 sm:px-4 sm:pt-4 sm:pb-5 md:px-5"
-                        : "sm:p-5 p-[12px] pt-5 pb-5"
-                    )}
-                  >
+                  <CardContent className="text-left px-2.5 pt-3 pb-4 sm:px-4 sm:pt-4 sm:pb-5 md:px-5">
                     {profileTab === "faith" ? (
                       <div
                         id="panel-faith"
@@ -613,7 +625,7 @@ export default function ProfileIdentityPage() {
                                     className="inline-flex items-center rounded-full border border-[#C8A851]/35 bg-[linear-gradient(180deg,rgba(243,211,93,0.18)_0%,rgba(120,52,8,0.35)_100%)] px-3 py-1.5 text-xs font-semibold text-[#fff5d6] shadow-sm sm:px-3.5 sm:py-2 sm:text-xs"
                                   >
                                     {label}
-                                  </span>
+                                  </span> 
                                 ))}
                               </div>
                             ) : (
@@ -694,19 +706,82 @@ export default function ProfileIdentityPage() {
                         id="panel-everyday"
                         role="tabpanel"
                         aria-labelledby="tab-everyday"
-                        className="space-y-2.5 sm:space-y-3"
                       >
                         {everydayLifeItems.length > 0 ? (
-                          <ul className="space-y-2.5 sm:space-y-3">
-                            {everydayLifeItems.map((item) => (
-                              <li key={item.prompt} className="text-[13px] sm:text-sm text-[#1A1A1A]">
-                                <p className="font-medium text-[#1A1a1a] leading-snug">{item.prompt}</p>
-                                <p className="mt-0.5 text-[#1A1A1A]/90 leading-relaxed">{item.answerText}</p>
-                              </li>
-                            ))}
-                          </ul>
+                          <div
+                            className="overflow-hidden rounded-t-2xl rounded-b-xl border border-[#C8A851]/22 bg-gradient-to-b from-[#1e1438]/98 via-[#150a28]/98 to-[#0c0518]/98 shadow-[inset_0_1px_0_rgba(200,168,81,0.12)]"
+                            role="presentation"
+                          >
+                            {everydayLifeItems.map((item, idx) => {
+                              const isOpen = everydayOpenIndex === idx;
+                              const panelId = `everyday-acc-panel-${idx}`;
+                              const headerId = `everyday-acc-header-${idx}`;
+                              return (
+                                <div
+                                  key={`${idx}-${item.questionId}`}
+                                  className={cn(
+                                    idx < everydayLifeItems.length - 1 &&
+                                      "border-b border-[#C8A851]/12"
+                                  )}
+                                >
+                                  <button
+                                    type="button"
+                                    id={headerId}
+                                    className={cn(
+                                      "flex w-full items-start gap-3 px-3 text-left transition-colors hover:bg-white/[0.04] sm:gap-3.5 sm:px-4",
+                                      isOpen ? "pb-2 pt-3.5 sm:pt-4" : "py-3.5 sm:py-4"
+                                    )}
+                                    onClick={() => toggleEverydayAccordion(idx)}
+                                    aria-expanded={isOpen}
+                                    aria-controls={panelId}
+                                  >
+                                    <span
+                                      className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#C8A851]/35 bg-[linear-gradient(145deg,rgba(200,168,81,0.16)_0%,rgba(35,22,58,0.92)_55%,rgba(18,10,38,0.96)_100%)] text-[#d4a84b] shadow-[inset_0_1px_0_rgba(255,255,255,0.07)] sm:h-11 sm:w-11"
+                                      aria-hidden
+                                    >
+                                      <EverydayAccordionIcon questionId={item.questionId} />
+                                    </span>
+                                    <span className="flex min-w-0 flex-1 items-start justify-between gap-2">
+                                      <span className="min-w-0 flex-1 pr-1 text-[13px] font-normal leading-[1.45] text-[#c8bddc] sm:text-sm">
+                                        {item.prompt}
+                                      </span>
+                                      {isOpen ? (
+                                        <ChevronUp
+                                          className="mt-0.5 size-[18px] shrink-0 text-[#C8A851]/90"
+                                          strokeWidth={2}
+                                          aria-hidden
+                                        />
+                                      ) : (
+                                        <ChevronDown
+                                          className="mt-0.5 size-[18px] shrink-0 text-[#a89bc4]/90"
+                                          strokeWidth={2}
+                                          aria-hidden
+                                        />
+                                      )}
+                                    </span>
+                                  </button>
+                                  {isOpen && (
+                                    <div
+                                      id={panelId}
+                                      role="region"
+                                      aria-labelledby={headerId}
+                                      className="flex gap-3 px-3 pb-4 pt-0 sm:gap-3.5 sm:px-4 sm:pb-5"
+                                    >
+                                      <span
+                                        className="w-10 shrink-0 sm:w-11"
+                                        aria-hidden
+                                      />
+                                      <p className="min-w-0 flex-1 pt-0.5 text-[15px] font-bold leading-[1.5] tracking-tight text-white sm:text-base break-words">
+                                        {item.answerText}
+                                      </p>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
                         ) : (
-                          <p className="text-center text-xs sm:text-sm text-[#6E6C7E] py-5 sm:py-6 px-2 leading-relaxed">
+                          <p className="rounded-xl border border-[#C8A851]/20 bg-gradient-to-b from-[#1e1438]/90 to-[#0f061c] px-4 py-6 text-center text-sm leading-relaxed text-[#c4b5dc]/90">
                             No everyday life answers yet. You can add them when you edit your profile.
                           </p>
                         )}

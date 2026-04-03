@@ -1,3 +1,24 @@
+import type { LucideIcon } from "lucide-react";
+import {
+  Activity,
+  Baby,
+  CalendarDays,
+  CircleHelp,
+  Compass,
+  Film,
+  Heart,
+  Home,
+  MessageCircle,
+  Music,
+  Palette,
+  Plane,
+  Sparkles,
+  Trophy,
+  UtensilsCrossed,
+  UsersRound,
+  Zap,
+} from "lucide-react";
+
 /** Option shown in UI (`label`); `value` is what you persist (DB/API). */
 export type EverydayOption = {
   value: string;
@@ -429,11 +450,42 @@ export const EVERYDAY_QUESTIONS: readonly EverydaySection[] = [
   },
 ];
 
+/** Lucide icon per `EverydayQuestion.id` — reuse on profile, onboarding, etc. */
+export const EVERYDAY_QUESTION_ICONS: Partial<Record<string, LucideIcon>> = {
+  relationshipHistory: Heart,
+  haveChildren: Baby,
+  wantChildren: Sparkles,
+  openToPartnerWithChildren: UsersRound,
+  freeTime: Palette,
+  musicTaste: Music,
+  sportsPlayOrFollow: Trophy,
+  fitnessLifestyle: Activity,
+  recharge: Zap,
+  communicationStyle: MessageCircle,
+  favoriteFood: UtensilsCrossed,
+  travelerType: Plane,
+  travelStyle: Compass,
+  perfectNightIn: Home,
+  showsOrMovies: Film,
+  dayToDay: CalendarDays,
+};
+
+export function getEverydayQuestionLucideIcon(questionId: string): LucideIcon {
+  return EVERYDAY_QUESTION_ICONS[questionId] ?? CircleHelp;
+}
+
+export type EverydayLifeReviewItem = {
+  prompt: string;
+  answerText: string;
+  /** Stable id for icons / analytics (matches `EverydayQuestion.id`). */
+  questionId: string;
+};
+
 /** Review rows: only questions with at least one saved value; values shown as option labels. */
 export function getEverydayLifeReviewItems(
   answers: Record<string, string[]>
-): { prompt: string; answerText: string }[] {
-  const items: { prompt: string; answerText: string }[] = [];
+): EverydayLifeReviewItem[] {
+  const items: EverydayLifeReviewItem[] = [];
   for (const section of EVERYDAY_QUESTIONS) {
     for (const q of section.questions) {
       const vals = answers[q.id];
@@ -442,7 +494,11 @@ export function getEverydayLifeReviewItems(
         const opt = q.options.find((o) => o.value === v);
         return opt?.label ?? v;
       });
-      items.push({ prompt: q.prompt, answerText: labels.join(", ") });
+      items.push({
+        prompt: q.prompt,
+        answerText: labels.join(", "),
+        questionId: q.id,
+      });
     }
   }
   return items;
