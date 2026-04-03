@@ -2,18 +2,28 @@ import type { LucideIcon } from "lucide-react";
 import {
   Activity,
   Baby,
+  Brain,
   CalendarDays,
+  ChefHat,
   CircleHelp,
   Compass,
+  Disc3,
+  Dumbbell,
   Film,
   Heart,
+  HeartHandshake,
   Home,
+  MapPinned,
   MessageCircle,
   Music,
+  Paintbrush,
   Palette,
   Plane,
+  Sofa,
   Sparkles,
+  Sun,
   Trophy,
+  Users,
   UtensilsCrossed,
   UsersRound,
   Zap,
@@ -449,6 +459,28 @@ export const EVERYDAY_QUESTIONS: readonly EverydaySection[] = [
     ],
   },
 ];
+
+/**
+ * Accordion / section header icon per `EverydaySection.id`.
+ * Intentionally different from the first question in each section so the main
+ * row does not duplicate the nested question icons.
+ */
+export const EVERYDAY_SECTION_ICONS: Partial<Record<string, LucideIcon>> = {
+  "relationship-history": HeartHandshake,
+  children: Users,
+  hobbies: Paintbrush,
+  music: Disc3,
+  sports: Dumbbell,
+  personality: Brain,
+  "food-drinks": ChefHat,
+  travel: MapPinned,
+  "staying-in": Sofa,
+  lifestyle: Sun,
+};
+
+export function getEverydaySectionLucideIcon(sectionId: string): LucideIcon {
+  return EVERYDAY_SECTION_ICONS[sectionId] ?? CircleHelp;
+}
 
 /** Lucide icon per `EverydayQuestion.id` — reuse on profile, onboarding, etc. */
 export const EVERYDAY_QUESTION_ICONS: Partial<Record<string, LucideIcon>> = {

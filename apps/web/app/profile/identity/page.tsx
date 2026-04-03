@@ -149,35 +149,6 @@ export default function ProfileIdentityPage() {
     [setActiveSlideIndex]
   );
 
-  /* Previously: vertical list with large icons (faith + lifestyle). Replaced by grid + chip cards below.
-  const faithLifestyle = useMemo(
-    () => [
-      { icon: "church" as const, title: "Church Involvement", value: church || "N/A" },
-      {
-        icon: "scroll" as const,
-        title: "Years in Faith",
-        value: yearsInFaith != null ? `${yearsInFaith} years` : "N/A",
-      },
-      {
-        icon: "attendance" as const,
-        title: "Church Attendance Frequency",
-        value: churchAttendance || "N/A",
-      },
-      { icon: "hands" as const, title: "My Faith Values", value: myFaithValues || "N/A" },
-      { icon: "heart" as const, title: "Partner Values", value: partnerValues || "N/A" },
-      { icon: "denomination" as const, title: "Denomination", value: denomination || "N/A" },
-    ],
-    [
-      church,
-      yearsInFaith,
-      churchAttendance,
-      myFaithValues,
-      partnerValues,
-      denomination,
-    ]
-  );
-  */
-
   const lifestyleHabitChips = useMemo(() => {
     const cap = (s: string) =>
       s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
