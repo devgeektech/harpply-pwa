@@ -21,8 +21,8 @@ export default function AttendanceCard({
       rounded-xl p-6 border transition
       ${
         active
-          ? "border-[#C39936] bg-[#C3993614] text-[#C39936]"
-          : "border-transparent bg-gray-200 text-black"
+          ? "border-[#C39936] bg-[linear-gradient(180deg,rgba(243,211,93,0.18)_0%,rgba(120,52,8,0.35)_100%)] text-[#C39936]"
+          : "border-[#C8A851]/18 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] text-white"
       }
       `}
     >

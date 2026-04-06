@@ -85,7 +85,7 @@ export default function BiblicalPreferencesPage() {
             All answers are right. This is just about you.
           </p>
 
-          <div className="w-full rounded-xl bg-white/90 p-2">
+          <div className="w-full rounded-xl bg-gradient-to-b from-[#1a0f2e] via-[#150828] to-[#0f061c] shadow-[0_12px_40px_rgba(0,0,0,0.5)] p-0 border border-[#C8A851]/12">
             <Accordion
               type="single"
               collapsible
@@ -102,12 +102,12 @@ export default function BiblicalPreferencesPage() {
                   <AccordionItem
                     key={q.id}
                     value={q.id}
-                    className="border-b border-black/10 last:border-b-0"
+                    className="border-b border-black/10 last:border-b-0 border-b border-[#C8A851]/12"
                   >
                     <AccordionTrigger className="px-3 py-3 hover:no-underline">
                       <div className="flex w-full flex-col gap-1">
                         <div className="flex w-full items-center justify-between gap-3">
-                          <span className="text-[#1A1A1A] text-base font-medium">
+                          <span className="text-[#ffffff] text-base font-medium">
                             {idx + 1}. {q.title}
                           </span>
                           {!!selected && (
@@ -117,12 +117,12 @@ export default function BiblicalPreferencesPage() {
                           )}
                         </div>
                         {!isUnlocked && (
-                          <span className="text-xs text-[#1A1A1A]/60">
+                          <span className="text-xs text-[#ffffff]/60">
                             Answer the previous question to enable selection.
                           </span>
                         )}
                         {!!selected && (
-                          <span className="text-sm text-[#1A1A1A]/70 line-clamp-1">
+                          <span className="text-sm text-[#ffffff]/70 line-clamp-1">
                             {selected}
                           </span>
                         )}
@@ -140,8 +140,8 @@ export default function BiblicalPreferencesPage() {
                               onClick={() => selectAnswer(idx, opt)}
                               disabled={!isUnlocked}
                               className={`cursor-pointer relative w-full text-base font-normal flex items-center justify-between gap-3 px-4 py-4 rounded-xl transition border ${active
-                                  ? "border-[#C8A851] border-[2px] bg-white text-black"
-                                  : "border-white/10 border-[2px] bg-white text-black"
+                                  ? "border-[#C8A851] border-[1px] bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] text-white"
+                                  : "border-white/10 border-[1px] bg-white/[0.04] shadow-[inset_0_1px_0_rgba(200,168,81,0.12)] text-white"
                                 } ${!isUnlocked ? "opacity-50 cursor-not-allowed" : ""}`}
                             >
                               <input
@@ -152,10 +152,10 @@ export default function BiblicalPreferencesPage() {
                                 readOnly
                                 aria-hidden
                               />
-                              <span className="text-[#3B3B3B] text-left">{opt}</span>
+                              <span className="text-white/80 text-left">{opt}</span>
 
                               <div
-                                className={`flex items-center justify-center w-5 h-5 rounded-full border ${active
+                                className={`flex items-center justify-center min-w-[20px] min-h-[20px] rounded-full border ${active
                                     ? "bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] border-[#C8A851]"
                                     : "border-gray-400"
                                   }`}

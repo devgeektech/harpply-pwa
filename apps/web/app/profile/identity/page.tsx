@@ -410,13 +410,19 @@ export default function ProfileIdentityPage() {
               {/* Name, age, location - light text on dark background */}
               <div className="pb-4 w-full text-center">
                 <div className="flex items-center justify-center gap-2">
-                  <h1 className="text-[32px] font-serif flex items-center gap-2 font-normal tracking-tight text-white">
-                    {name} <Image src="/images/tick.png" alt="tick" width={26} height={26} />
+                  <h1 className="text-[32px] font-serif flex items-start gap-2 font-normal break-all tracking-tight text-white">
+                    {name} <Image
+                            src="/images/tick.png"
+                            alt="tick"
+                            width={26}
+                            height={26}
+                            className="mt-[10px] w-[26px] h-[26px] min-w-[26px] min-h-[26px]"
+                          />
                   </h1>
                 </div>
                 <p className="text-base font-normal mt-0.5 text-[#C39936]">{age} • {gender}</p>
-                <div className="flex items-center justify-center gap-1.5 mt-1">
-                  <MapPin className="size-4 shrink-0 text-[#C39936]" style={{ color: ACCENT }} />
+                <div className="flex items-start justify-center gap-1.5 mt-1">
+                  <MapPin className="size-4 mt-1 shrink-0 text-[#C39936]" style={{ color: ACCENT }} />
                   <span className="text-base font-normal uppercase tracking-wider text-[#C39936]">
                     {location ? location.toUpperCase() : "N/A"}
                   </span>
@@ -460,7 +466,7 @@ export default function ProfileIdentityPage() {
                         strokeWidth={2.5}
                         aria-hidden
                       />
-                      <span className="hidden min-[360px]:inline">Faith &amp; Lifestyle</span>
+                      <span className="hidden min-[360px]:inline text-sm">Faith &amp; Lifestyle</span>
                       <span className="min-[360px]:hidden">Faith</span>
                     </span>
                     {profileTab === "faith" && (
@@ -492,7 +498,7 @@ export default function ProfileIdentityPage() {
                         fill="none"
                         aria-hidden
                       />
-                      <span className="hidden min-[360px]:inline">Everyday Life</span>
+                      <span className="hidden min-[360px]:inline text-sm">Everyday Life</span>
                       <span className="min-[360px]:hidden">Everyday</span>
                     </span>
                     {profileTab === "everyday" && (
@@ -580,11 +586,11 @@ export default function ProfileIdentityPage() {
 
                         <div className="space-y-2.5 sm:space-y-3 md:space-y-3.5 pt-0.5">
                           <div className="rounded-xl border border-[#C8A851]/18 bg-[linear-gradient(165deg,rgba(200,168,81,0.08)_0%,rgba(40,28,62,0.75)_50%,rgba(22,14,40,0.9)_100%)] p-3 sm:p-3.5 md:p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-                            <div className="mb-2 sm:mb-2.5 flex items-start gap-2 sm:gap-2.5">
+                            <div className="mb-2 sm:mb-2.5 flex items-center gap-2 sm:gap-2.5">
                               <span className="flex h-8 w-8 shrink-0 items-center justify-center text-[#C39936] sm:h-9 sm:w-9 [&_svg]:max-h-6 [&_svg]:max-w-6 sm:[&_svg]:max-h-7 sm:[&_svg]:max-w-7">
                                 <Faithvalues />
                               </span>
-                              <p className="min-w-0 flex-1 pt-0.5 text-[10px] leading-snug text-[#c4b5dc]/90 sm:text-[11px] md:text-base">
+                              <p className="min-w-0 flex-1 pt-0.5 text-sm leading-snug text-[#c4b5dc]/90 md:text-base">
                                 My faith values
                               </p>
                             </div>
@@ -607,11 +613,11 @@ export default function ProfileIdentityPage() {
                           </div>
 
                           <div className="rounded-xl border border-[#9b7bc9]/22 bg-[linear-gradient(165deg,rgba(155,123,201,0.12)_0%,rgba(45,30,72,0.78)_55%,rgba(20,12,38,0.92)_100%)] p-3 sm:p-3.5 md:p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-                            <div className="mb-2 sm:mb-2.5 flex items-start gap-2 sm:gap-2.5">
+                            <div className="mb-2 sm:mb-2.5 flex items-center gap-2 sm:gap-2.5">
                               <span className="flex h-8 w-8 shrink-0 items-center justify-center text-[#C39936] sm:h-9 sm:w-9 [&_svg]:max-h-6 [&_svg]:max-w-6 sm:[&_svg]:max-h-7 sm:[&_svg]:max-w-7">
                                 <Partnervalues />
                               </span>
-                              <p className="min-w-0 flex-1 pt-0.5 text-[10px] leading-snug text-[#c4b5dc]/90 sm:text-[11px] md:text-base">
+                              <p className="min-w-0 flex-1 pt-0.5 text-sm leading-snug text-[#c4b5dc]/90 md:text-base">
                                 Partner values I seek
                               </p>
                             </div>
@@ -634,11 +640,11 @@ export default function ProfileIdentityPage() {
                           </div>
 
                           <div className="rounded-xl border border-[#C8A851]/16 bg-[linear-gradient(165deg,rgba(96,180,160,0.08)_0%,rgba(35,28,58,0.8)_45%,rgba(18,12,36,0.92)_100%)] p-3 sm:p-3.5 md:p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-                            <div className="mb-2 sm:mb-2.5 flex items-start gap-2 sm:gap-2.5">
+                            <div className="mb-2 sm:mb-2.5 flex items-center gap-2 sm:gap-2.5">
                               <span className="flex h-8 w-8 shrink-0 items-center justify-center text-[#C39936] sm:h-9 sm:w-9 [&_svg]:max-h-6 [&_svg]:max-w-6 sm:[&_svg]:max-h-7 sm:[&_svg]:max-w-7">
                                 <Lifestyle />
                               </span>
-                              <p className="min-w-0 flex-1 pt-0.5 text-[10px] leading-snug text-[#c4b5dc]/90 sm:text-[11px] md:text-base">
+                              <p className="min-w-0 flex-1 pt-0.5 text-sm leading-snug text-[#c4b5dc]/90 md:text-base">
                                 Lifestyle habits
                               </p>
                             </div>
@@ -699,7 +705,7 @@ export default function ProfileIdentityPage() {
                                     type="button"
                                     id={headerId}
                                     className={cn(
-                                      "flex w-full items-start gap-3 px-3 text-left transition-colors hover:bg-white/[0.04] sm:gap-3.5 sm:px-4",
+                                      "flex w-full items-center gap-3 px-3 text-left transition-colors hover:bg-white/[0.04] sm:gap-3.5 sm:px-4",
                                       isOpen ? "pb-2 pt-3.5 sm:pt-4" : "py-3.5 sm:py-4"
                                     )}
                                     onClick={() => toggleEverydayAccordion(idx)}
@@ -736,7 +742,7 @@ export default function ProfileIdentityPage() {
                                       id={panelId}
                                       role="region"
                                       aria-labelledby={headerId}
-                                      className="flex gap-3 px-3 pb-4 pt-0 sm:gap-3.5 sm:px-4 sm:pb-5"
+                                      className="flex gap-3 px-3 pb-3 pt-2 sm:gap-3.5 sm:px-4"
                                     >
                                       <span
                                         className="w-10 shrink-0 sm:w-11"

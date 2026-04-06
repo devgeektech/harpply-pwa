@@ -260,10 +260,10 @@ export default function EverydayLifePage() {
                                           }
                                           disabled={isDisabled}
                                           className={cn(
-                                            "rounded-full border px-3 py-2 text-left text-xs transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C8A851]/80 sm:px-3.5 sm:text-sm",
+                                            "rounded-[8px] border px-3 py-2 text-left text-xs transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C8A851]/80 sm:px-3.5 sm:text-xs",
                                             isActive
                                               ? "border-[#C8A851] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] font-semibold text-[#5c2e04] shadow-sm"
-                                              : "border-[#C8A851]/25 bg-white/[0.06] text-[#e8e0f4] hover:border-[#C8A851]/45 hover:bg-white/[0.1]",
+                                              : "border-[#a78bda]/40 bg-[linear-gradient(180deg,rgba(167,139,218,0.22)_0%,rgba(55,35,95,0.65)_100%)] font-semibold text-white/80 hover:border-[#C8A851]/45 hover:bg-white/[0.1]",
                                             isDisabled &&
                                             "cursor-not-allowed opacity-45"
                                           )}

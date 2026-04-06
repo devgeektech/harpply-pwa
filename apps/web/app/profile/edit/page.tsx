@@ -293,7 +293,13 @@ export default function EditProfilePage() {
                   if (nameError) setNameError("");
                 }}
                 placeholder="Full Name"
-                className="h-[52px] rounded-[8px]  border-white/15 bg-white text-black placeholder:text-black/40 focus-visible:ring-2 focus-visible:ring-amber-500/40"
+                className="
+                h-[52px] rounded-[8px] 
+                border border-[#C8A851]/18
+                bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)]
+                text-white placeholder:text-white/40
+                focus-visible:border-[#C8A851]/60
+                focus-visible:ring-0 focus-visible:ring-transparent"
               />
               {nameError && <p className="mt-1 text-sm text-red-300">{nameError}</p>}
             </div>
@@ -323,7 +329,13 @@ export default function EditProfilePage() {
                   }
                 }}
                 placeholder="Age"
-                className="h-[52px] rounded-[8px]  border-white/15 bg-white text-black placeholder:text-black/40 focus-visible:ring-2 focus-visible:ring-amber-500/40"
+                className="
+                h-[52px] rounded-[8px] 
+                border border-[#C8A851]/18
+                bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)]
+                text-white placeholder:text-white/40
+                focus-visible:border-[#C8A851]/60
+                focus-visible:ring-0 focus-visible:ring-transparent"
               />
               {ageError && <p className="mt-1 text-sm text-red-300">{ageError}</p>}
             </div>
@@ -333,7 +345,9 @@ export default function EditProfilePage() {
               </label>
               <div
                 ref={locationContainerRef}
-                className="relative flex h-[52px] items-center gap-2 rounded-xl border px-3 bg-white"
+                className="
+                relative flex h-[52px] items-center gap-2 rounded-xl border border-[#C8A851]/18 px-3 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] focus-within:border-[#C8A851]/60
+                focus-within:ring-0 transition-all duration-200"
               >
                 <MapPin className="size-4 shrink-0 text-[#C39936]" />
                 <Input
@@ -346,7 +360,7 @@ export default function EditProfilePage() {
                     if (locationSuggestions.length > 0) setShowLocationSuggestions(true);
                   }}
                   placeholder="City, State"
-                  className="h-[52px] rounded-[8px]  border-white/15 bg-white text-black placeholder:text-black/40 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="h-[52px] rounded-[8px]  border-none bg-transparent text-white placeholder:text-white/40 focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
                 {showLocationSuggestions && (
                   <div className="absolute left-0 top-full z-50 mt-1 w-full max-h-56 overflow-auto rounded-lg border border-white/20 bg-white shadow-lg">
@@ -378,7 +392,7 @@ export default function EditProfilePage() {
               Gender
             </label>
             <div
-              className="flex rounded-xl p-1 bg-white"
+              className="flex rounded-xl p-1 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)]"
               style={{
                 // backgroundColor: INPUT_BG,
                 border: `1px solid ${BORDER_SUBTLE}`,
@@ -392,7 +406,7 @@ export default function EditProfilePage() {
                     setGender(g);
                     if (genderError) setGenderError("");
                   }}
-                  className="cursor-pointer flex-1 py-2.5 text-sm font-medium rounded-lg transition-all"
+                  className="cursor-pointer flex-1 py-2.5 text-sm focus:outline-none focus-visible:outline-none focus-visible:border-[#C8A851]/60 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:border-[#C8A851]/60 font-medium rounded-lg transition-all"
                   style={
                     gender === g
                       ? {
@@ -401,7 +415,7 @@ export default function EditProfilePage() {
                         border: "1px solid #C39936",
                         boxShadow: "0 2px 8px rgba(197, 139, 0, 0.35)",
                       }
-                      : { color: "rgba(0,0,0,0.9)" }
+                      : { color: "#ffffff" }
                   }
                 >
                   {g}
@@ -425,7 +439,7 @@ export default function EditProfilePage() {
               placeholder="I'm a believer who finds peace in..."
               maxLength={300}
               rows={4}
-              className="w-full rounded-xl border-0 bg-white text-black placeholder:text-black/40 focus-visible:ring-2 focus-visible:ring-amber-500/40 resize-y min-h-[100px] shadow-none"
+              className="w-full rounded-xl border-[#C8A851]/18 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] text-white placeholder:text-white/40 focus-visible:border-[#C8A851]/60 focus-visible:ring-0 focus-visible:ring-transparent resize-y min-h-[100px] shadow-none"
             />
             {bioError && <p className="mt-1 text-sm text-red-300">{bioError}</p>}
             <p className="mt-1.5 text-right text-sm text-white/80">
