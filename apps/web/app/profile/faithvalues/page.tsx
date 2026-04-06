@@ -130,7 +130,7 @@ export default function FaithValuesPage() {
 
           {/* Partner Values */}
           <div className="mb-6">
-            <h2 className="text-white text-sm mb-3">Partner Values</h2>
+            <h2 className="text-white text-[20px] font-light mb-3">Partner Values</h2>
 
             <div className="flex flex-wrap gap-3 bg-[#FBFAF914] border border-[#E7ECF214] rounded-[8px] px-[10px] py-[18px]">
               {attributeValues.map((item) => (

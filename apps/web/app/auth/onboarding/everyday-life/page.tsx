@@ -47,11 +47,12 @@ function EverydayIconTile(
     props.variant === "section"
       ? getEverydaySectionLucideIcon(props.sectionId)
       : getEverydayQuestionLucideIcon(props.questionId);
+  const iconSize = size === "lg" ? "size-[20px] sm:size-[22px]" : "size-[18px]";
+
   const box =
     size === "lg"
       ? "h-11 w-11 sm:h-12 sm:w-12"
       : "h-10 w-10 sm:h-11 sm:w-11";
-  const iconSize = size === "lg" ? "size-[20px] sm:size-[22px]" : "size-[18px]";
   return (
     <div
       className={cn(

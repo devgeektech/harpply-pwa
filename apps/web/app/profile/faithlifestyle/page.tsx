@@ -206,7 +206,7 @@ export default function FaithLifestylePage() {
               if (denominationError) setDenominationError("")
             }}
           >
-            <SelectTrigger className="w-full bg-[#FBFAF9] !h-[52px] rounded-[8px] text-[#1A1A1A] text-sm">
+            <SelectTrigger className="w-full !text-white border-[#C8A851]/18 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] !h-[52px] rounded-[8px] text-[#1A1A1A] text-sm">
               <SelectValue placeholder="Non-denominational" />
             </SelectTrigger>
 
@@ -236,7 +236,7 @@ export default function FaithLifestylePage() {
               if (yearsError) setYearsError("")
             }}
             placeholder="e.g. 5"
-            className="w-full h-[52px] rounded-[8px] border-0 bg-[#FBFAF9] text-[#1A1A1A] text-sm placeholder:text-[#1A1A1A]/40 focus-visible:ring-2 focus-visible:ring-amber-500/40"
+            className="w-full h-[52px] rounded-[8px] border-[#C8A851]/18 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] text-[#ffffff] text-sm placeholder:text-[#ffffff]/40 focus-visible:border-[#C8A851]/60 focus-visible:ring-0 focus-visible:ring-transparent"
           />
           {yearsError && <p className="mt-1 text-sm text-red-300">{yearsError}</p>}
         </div>
@@ -252,7 +252,7 @@ export default function FaithLifestylePage() {
               if (involvementError) setInvolvementError("")
             }}
           >
-            <SelectTrigger className="w-full bg-[#FBFAF9] !h-[52px] rounded-[8px] text-[#1A1A1A] text-sm">
+            <SelectTrigger className="w-full !text-white border-[#C8A851]/18 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] !h-[52px] rounded-[8px] text-[#1A1A1A] text-sm">
               <SelectValue placeholder="Select your role" />
             </SelectTrigger>
 
