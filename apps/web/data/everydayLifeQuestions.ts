@@ -136,7 +136,7 @@ export const EVERYDAY_QUESTIONS: readonly EverydaySection[] = [
     questions: [
       {
         id: "freeTime",
-        prompt: "What do you do in your free time?",
+        prompt: "What do you enjoy in your free time?",
         options: [
           o("reading", "Reading"),
           o("writing", "Writing"),
@@ -277,7 +277,7 @@ export const EVERYDAY_QUESTIONS: readonly EverydaySection[] = [
       },
       {
         id: "fitnessLifestyle",
-        prompt: "What is your fitness lifestyle?",
+        prompt: "How do you stay active?",
         options: [
           o("gym_regularly", "Gym regularly"),
           o("running", "Running"),

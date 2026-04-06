@@ -54,15 +54,16 @@ function EverydayIconTile(
     props.variant === "section"
       ? getEverydaySectionLucideIcon(props.sectionId)
       : getEverydayQuestionLucideIcon(props.questionId);
+  const iconSize = size === "lg" ? "size-[20px] sm:size-[22px]" : "size-[18px]";
+
   const box =
     size === "lg"
       ? "h-11 w-11 sm:h-12 sm:w-12"
       : "h-10 w-10 sm:h-11 sm:w-11";
-  const iconSize = size === "lg" ? "size-[20px] sm:size-[22px]" : "size-[18px]";
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-center rounded-xl border border-[#C8A851]/40 bg-[linear-gradient(145deg,rgba(200,168,81,0.22)_0%,rgba(255,248,235,0.95)_48%,rgba(250,245,230,0.98)_100%)] text-[#7a5210] shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]",
+        "flex shrink-0 items-center justify-center rounded-xl border border-[#C8A851]/35 bg-[linear-gradient(145deg,rgba(200,168,81,0.16)_0%,rgba(35,22,58,0.92)_55%,rgba(18,10,38,0.96)_100%)] text-[#d4a84b] shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]",
         box
       )}
     >
@@ -135,18 +136,13 @@ export default function EverydayLifePage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[url('/images/bg_blue.jpg')] bg-cover bg-center bg-no-repeat">
-      <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#1a0f2e]/88 via-[#150828]/82 to-[#0a0518]/92"
-        aria-hidden
-      />
-      <div className="relative flex min-h-screen items-start justify-center px-3 py-5 sm:items-center sm:px-4 sm:py-6">
-        <Card className="w-full max-w-[620px] border-0 bg-transparent py-0 md:border md:border-white/12 md:bg-[url('/images/bg_auth_center.png')] md:bg-cover md:bg-center md:bg-no-repeat md:shadow-2xl md:shadow-black/30 md:backdrop-blur-xl">
-          <CardContent className="flex w-full min-w-0 flex-col gap-4 px-3 sm:gap-6 sm:p-10">
-            <div className="flex w-full items-center gap-3 text-left text-white">
+    <div className="flex min-h-screen items-start justify-center bg-[url('/images/bg_blue.jpg')] bg-cover bg-center bg-no-repeat px-4 py-6 sm:items-center sm:py-8">
+      <Card className="w-full min-w-0 max-w-[620px] rounded-2xl border-0 bg-transparent bg-cover bg-center bg-no-repeat py-0 md:border md:border-white/10 md:bg-[url('/images/bg_auth_center.png')] md:shadow-2xl md:shadow-[0px_4px_4px_0px_#00000014] md:backdrop-blur-xl">
+        <CardContent className="flex w-full min-w-0 flex-col gap-4 px-3 text-left sm:gap-6 sm:p-10">
+            <div className="flex w-full items-center gap-3 text-white">
               <Link
                 href="/profile/faithvalues"
-                className="flex items-center justify-center size-10 rounded-full text-white/90 hover:bg-white/10 transition-colors"
+                className="flex size-10 items-center justify-center rounded-full text-white/90 transition-colors hover:bg-white/10"
                 aria-label="Back"
               >
                 <ChevronLeft size={22} strokeWidth={2} />
@@ -157,7 +153,7 @@ export default function EverydayLifePage() {
               <h1 className="font-serif text-[26px] font-normal leading-tight tracking-tight text-white sm:text-[28px]">
                 Everyday Life
               </h1>
-              <p className="mt-1.5 text-sm text-white/65">
+              <p className="mt-1.5 text-sm leading-relaxed text-[#c4b5dc]/90">
                 Tell us how you live day to day — pick what fits you best.
               </p>
             </div>
@@ -170,7 +166,7 @@ export default function EverydayLifePage() {
                 return (
                   <section
                     key={section.id}
-                    className="w-full min-w-0 overflow-hidden rounded-2xl border border-[#C8A851]/22 bg-white shadow-[0_16px_40px_rgba(0,0,0,0.18)] ring-1 ring-black/[0.04]"
+                    className="w-full min-w-0 overflow-hidden rounded-2xl border border-[#C8A851]/22 bg-gradient-to-b from-[#1e1438]/98 via-[#150a28]/98 to-[#0c0518]/98 shadow-[inset_0_1px_0_rgba(200,168,81,0.12)]"
                   >
                     <button
                       type="button"
@@ -183,7 +179,7 @@ export default function EverydayLifePage() {
                         )
                       }
                       className={cn(
-                        "flex w-full items-center gap-3 bg-gradient-to-r from-[#fffef9] to-white px-4 py-3.5 text-left transition hover:bg-[#fffaf0] sm:px-5 sm:py-4",
+                        "flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-white/[0.04] sm:px-5 sm:py-4",
                         isOpen && "border-b border-[#C8A851]/12"
                       )}
                     >
@@ -193,21 +189,21 @@ export default function EverydayLifePage() {
                         size="lg"
                       />
                       <div className="min-w-0 flex-1">
-                        <h2 className="text-base font-semibold tracking-tight text-[#1a1525] sm:text-lg">
+                        <h2 className="text-base font-semibold tracking-tight text-[#c8bddc] sm:text-lg">
                           {section.title}
                         </h2>
-                        <p className="mt-0.5 text-xs text-[#5c5668]">
+                        <p className="mt-0.5 text-xs text-[#a89bc4]/85">
                           {section.questions.length}{" "}
                           {section.questions.length === 1
                             ? "question"
                             : "questions"}
                         </p>
                       </div>
-                      <span className="shrink-0 text-[#7a6b8c]">
+                      <span className="shrink-0">
                         {isOpen ? (
-                          <ChevronUp className="size-5" strokeWidth={2} aria-hidden />
+                          <ChevronUp className="size-5 text-[#C8A851]/90" strokeWidth={2} aria-hidden />
                         ) : (
-                          <ChevronDown className="size-5" strokeWidth={2} aria-hidden />
+                          <ChevronDown className="size-5 text-[#a89bc4]/90" strokeWidth={2} aria-hidden />
                         )}
                       </span>
                     </button>
@@ -228,7 +224,7 @@ export default function EverydayLifePage() {
                               key={question.id}
                               className={cn(
                                 "pt-4",
-                                qIdx > 0 && "mt-1 border-t border-[#C8A851]/10"
+                                qIdx > 0 && "mt-1 border-t border-[#C8A851]/12"
                               )}
                             >
                               <div className="flex gap-3">
@@ -237,10 +233,10 @@ export default function EverydayLifePage() {
                                   questionId={question.id}
                                 />
                                 <div className="min-w-0 flex-1 pb-1">
-                                  <p className="text-sm font-semibold leading-snug text-[#1a1525] sm:text-[15px]">
+                                  <p className="text-sm font-medium leading-snug text-[#c8bddc] sm:text-[15px]">
                                     {question.prompt}
                                   </p>
-                                  <p className="text-xs text-[#1A1A1A]/70 mb-2">
+                                  <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-[#a89bc4]/75">
                                     {max === 3
                                       ? "Choose up to 3"
                                       : "Choose one"}
@@ -267,7 +263,7 @@ export default function EverydayLifePage() {
                                             "rounded-full border px-3 py-2 text-left text-xs transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C8A851]/80 sm:px-3.5 sm:text-sm",
                                             isActive
                                               ? "border-[#C8A851] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] font-semibold text-[#5c2e04] shadow-sm"
-                                              : "border-[#d8d3e0] bg-white text-[#1a1525] hover:border-[#C8A851]/70 hover:bg-[#fffef9]",
+                                              : "border-[#C8A851]/25 bg-white/[0.06] text-[#e8e0f4] hover:border-[#C8A851]/45 hover:bg-white/[0.1]",
                                             isDisabled &&
                                             "cursor-not-allowed opacity-45"
                                           )}
@@ -289,14 +285,16 @@ export default function EverydayLifePage() {
               })}
             </div>
 
-            <Button
-              type="button"
-              disabled={submitting}
-              onClick={handleContinue}
-              className="cursor-pointer mt-1 w-full h-[52px] text-base text-[#913C01] font-semibold bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] hover:opacity-90 disabled:opacity-60"
-            >
-              {submitting ? "Saving..." : "Save & next"}
-            </Button>
+            <div className="w-full bg-gradient-to-t from-[#130F26] to-transparent pt-4">
+              <Button
+                type="button"
+                disabled={submitting}
+                onClick={handleContinue}
+                className="h-[52px] w-full cursor-pointer rounded-[12px] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-base font-semibold text-[#913C01] hover:opacity-90 disabled:opacity-60 md:rounded-[8px]"
+              >
+                {submitting ? "Saving..." : "Save & next"}
+              </Button>
+            </div>
 
             <Button
               type="button"
@@ -307,7 +305,6 @@ export default function EverydayLifePage() {
             </Button>
           </CardContent>
         </Card>
-      </div>
     </div>
   );
 }
