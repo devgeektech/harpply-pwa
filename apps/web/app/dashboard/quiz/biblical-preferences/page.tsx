@@ -137,7 +137,7 @@ export default function BiblicalPreferencesPage() {
     <div className="min-h-screen flex sm:items-center items-start justify-center px-3 sm:px-4 pb-[50px] md:py-[50px] sm:py-4 w-full">
       <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
 
-        <CardContent className="flex items-center flex-col gap-2 p-3 sm:p-10 sm:px-6 text-left">
+        <CardContent className="flex items-center flex-col gap-2 p-0 sm:p-10 sm:px-6 text-left">
           <div className="text-left text-white w-full">
             <Link href="/dashboard/quiz/introduction">
               <ChevronLeft size={24} />
