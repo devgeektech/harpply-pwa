@@ -50,7 +50,7 @@ function EverydayIconTile(
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-center rounded-xl border border-[#C8A851]/40 bg-[linear-gradient(145deg,rgba(200,168,81,0.22)_0%,rgba(255,248,235,0.95)_48%,rgba(250,245,230,0.98)_100%)] text-[#7a5210] shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]",
+        "flex shrink-0 items-center justify-center rounded-md bg-[linear-gradient(145deg,rgba(200,168,81,0.22)_0%,rgba(255,248,235,0.95)_48%,rgba(250,245,230,0.98)_100%)] text-[#7a5210] shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]",
         box,
       )}
     >
@@ -120,7 +120,7 @@ export default function EverydayLifePage() {
             Tell us how you live day to day — pick what fits you best.
           </p>
 
-          <div className="w-full min-w-0 space-y-4">
+          <div className="w-full min-w-0 space-y-2">
             {EVERYDAY_QUESTIONS.map((section) => {
               const isOpen = openSectionId === section.id;
               const headerId = `onboarding-everyday-section-${section.id}`;
