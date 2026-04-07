@@ -69,6 +69,8 @@ model User {
   perfectNightIn        Json?     // array of strings
   showsOrMovies         Json?     // array of strings
   dayToDay              Json?     // array of strings
+  
+  biblicalPreferences   Json?     // map: question id -> selected option string
 
   onboardingCompleted  Boolean @default(false)
 

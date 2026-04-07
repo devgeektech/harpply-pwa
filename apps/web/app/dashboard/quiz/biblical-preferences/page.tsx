@@ -15,6 +15,7 @@ import {
   Progress,
 } from "@repo/ui";
 import { BIBICAL_PREFERENCE_QUESTIONS } from "@/data/biblicalPreferenceQuestions";
+import { AUTH_STORAGE_KEYS, saveBiblicalPreferences } from "@/lib/api/auth";
 
 
 export default function BiblicalPreferencesPage() {
@@ -50,8 +51,26 @@ export default function BiblicalPreferencesPage() {
   const handleSubmit = async () => {
     try {
       setLoading(true);
+      const token =
+        typeof window !== "undefined"
+          ? window.localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN)
+          : null;
 
-      router.push("/dashboard/quiz/review"); // next step
+      if (!token) {
+        throw new Error("Missing access token");
+      }
+
+      const preferences = BIBICAL_PREFERENCE_QUESTIONS.reduce<Record<string, string>>(
+        (acc, question) => {
+          const selected = answers[question.id];
+          if (selected) acc[question.id] = selected;
+          return acc;
+        },
+        {}
+      );
+
+      await saveBiblicalPreferences(preferences, token);
+      router.push("/dashboard/quiz/review");
     } catch (err) {
       console.error(err);
     } finally {

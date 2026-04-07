@@ -19,6 +19,8 @@ import {
   EVERYDAY_LIFE_MULTI_MAX3_IDS,
 } from './constants/everyday-life-questions';
 import { EverydayLifeProfileDto } from './dto/everyday-life-profile.dto';
+import { BiblicalPreferencesDto } from './dto/biblical-preferences.dto';
+import { BIBLICAL_PREFERENCE_ALLOWED_ID_SET } from './constants/biblical-preferences-questions';
 
 @Injectable()
 export class OnboardingService {
@@ -156,6 +158,42 @@ export class OnboardingService {
     return successResponse(SUCCESS_MESSAGES.ONBOARDING.EVERYDAY_LIFE);
   }
 
+  private normalizeBiblicalPreferences(
+    raw: Record<string, unknown>,
+  ): Record<string, string> {
+    const out: Record<string, string> = {};
+    for (const key of Object.keys(raw)) {
+      if (!BIBLICAL_PREFERENCE_ALLOWED_ID_SET.has(key)) {
+        throw new BadRequestException(ERROR_MESSAGES.VALIDATION.INVALID);
+      }
+      const value = raw[key];
+      if (typeof value !== 'string') {
+        throw new BadRequestException(ERROR_MESSAGES.VALIDATION.INVALID);
+      }
+      const trimmed = value.trim();
+      if (!trimmed || trimmed.length > 300) {
+        throw new BadRequestException(ERROR_MESSAGES.VALIDATION.INVALID);
+      }
+      out[key] = trimmed;
+    }
+    return out;
+  }
+
+  async saveBiblicalPreferences(userId: string, dto: BiblicalPreferencesDto) {
+    const normalized = this.normalizeBiblicalPreferences(
+      dto.preferences as Record<string, unknown>,
+    );
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        biblicalPreferences: normalized as Prisma.InputJsonValue,
+      } as Prisma.UserUpdateInput,
+    });
+
+    return successResponse('Biblical preferences saved successfully.');
+  }
+
   async completeOnboarding(userId: string) {
     await this.prisma.user.update({
       where: { id: userId },
@@ -200,6 +238,7 @@ export class OnboardingService {
     perfectNightIn: true,
     showsOrMovies: true,
     dayToDay: true,
+    biblicalPreferences: true,
 
   } as const;
 

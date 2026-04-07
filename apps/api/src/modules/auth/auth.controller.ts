@@ -57,6 +57,7 @@ import { ConfigService } from '@nestjs/config';
 import { successResponse } from '../../common/response/api-response';
 import { AttributeDto } from './dto/attribute.dto';
 import type  { EverydayLifeProfileDto } from './dto/everyday-life-profile.dto';
+import { BiblicalPreferencesDto } from './dto/biblical-preferences.dto';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -625,6 +626,20 @@ export class AuthController {
     @Body() body: EverydayLifeProfileDto,
   ) {
     return this.onboardingService.saveEverydayLife(userId, body);
+  }
+
+  @Post('onboarding/biblical-preferences')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary:
+      'Save biblical preferences quiz answers – auth by token, update user by decoded sub',
+  })
+  async saveBiblicalPreferences(
+    @CurrentUserId() userId: string,
+    @Body() dto: BiblicalPreferencesDto,
+  ) {
+    return this.onboardingService.saveBiblicalPreferences(userId, dto);
   }
 
   @Get('onboarding/review')
