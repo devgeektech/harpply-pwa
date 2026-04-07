@@ -102,7 +102,8 @@ export default function ProfileIdentityPage() {
     hydrateFromApi,
     loaded,
   } = useProfileStore();
-  const { profileImages, setActiveSlideIndex, setProfileImages } = useIdentityStore();
+  const { profileImages, setActiveSlideIndex, setProfileImages } =
+    useIdentityStore();
   const s3PublicUrl = process.env.NEXT_PUBLIC_AWS_S3_URL ?? "";
   const [photosLoaded, setPhotosLoaded] = useState(false);
   const [profileTab, setProfileTab] = useState<"faith" | "everyday">("faith");
@@ -118,7 +119,7 @@ export default function ProfileIdentityPage() {
             hydrateFromApi(res.data);
           }
         })
-        .catch(() => { });
+        .catch(() => {});
     }
 
     fetchProfilePhotos()
@@ -129,7 +130,7 @@ export default function ProfileIdentityPage() {
           .filter(Boolean);
         setProfileImages(images);
       })
-      .catch(() => { })
+      .catch(() => {})
       .finally(() => setPhotosLoaded(true));
   }, [loaded, hydrateFromApi, setProfileImages, s3PublicUrl]);
 
@@ -139,14 +140,14 @@ export default function ProfileIdentityPage() {
     (swiper: SwiperType) => {
       setActiveSlideIndex(swiper.activeIndex);
     },
-    [setActiveSlideIndex]
+    [setActiveSlideIndex],
   );
 
   const onSlideChange = useCallback(
     (swiper: SwiperType) => {
       setActiveSlideIndex(swiper.activeIndex);
     },
-    [setActiveSlideIndex]
+    [setActiveSlideIndex],
   );
 
   const lifestyleHabitChips = useMemo(() => {
@@ -199,15 +200,13 @@ export default function ProfileIdentityPage() {
   }, [smokingPreference, alcoholPreference, dietaryPreference]);
 
   const myFaithChipLabels = useMemo(
-    () =>
-      (myFaithValues ?? []).map((t) => faithValueLabelForStored(t)),
-    [myFaithValues]
+    () => (myFaithValues ?? []).map((t) => faithValueLabelForStored(t)),
+    [myFaithValues],
   );
 
   const partnerFaithChipLabels = useMemo(
-    () =>
-      (partnerValues ?? []).map((t) => faithValueLabelForStored(t)),
-    [partnerValues]
+    () => (partnerValues ?? []).map((t) => faithValueLabelForStored(t)),
+    [partnerValues],
   );
 
   const yearsInFaithLabel = useMemo(() => {
@@ -254,7 +253,7 @@ export default function ProfileIdentityPage() {
       perfectNightIn,
       showsOrMovies,
       dayToDay,
-    ]
+    ],
   );
 
   useEffect(() => {
@@ -411,18 +410,24 @@ export default function ProfileIdentityPage() {
               <div className="pb-4 w-full text-center">
                 <div className="flex items-center justify-center gap-2">
                   <h1 className="text-[32px] font-serif flex items-start gap-2 font-normal break-all tracking-tight text-white">
-                    {name} <Image
-                            src="/images/tick.png"
-                            alt="tick"
-                            width={26}
-                            height={26}
-                            className="mt-[10px] w-[26px] h-[26px] min-w-[26px] min-h-[26px]"
-                          />
+                    {name}{" "}
+                    <Image
+                      src="/images/tick.png"
+                      alt="tick"
+                      width={26}
+                      height={26}
+                      className="mt-[10px] w-[26px] h-[26px] min-w-[26px] min-h-[26px]"
+                    />
                   </h1>
                 </div>
-                <p className="text-base font-normal mt-0.5 text-[#C39936]">{age} • {gender}</p>
+                <p className="text-base font-normal mt-0.5 text-[#C39936]">
+                  {age} • {gender}
+                </p>
                 <div className="flex items-start justify-center gap-1.5 mt-1">
-                  <MapPin className="size-4 mt-1 shrink-0 text-[#C39936]" style={{ color: ACCENT }} />
+                  <MapPin
+                    className="size-4 mt-1 shrink-0 text-[#C39936]"
+                    style={{ color: ACCENT }}
+                  />
                   <span className="text-base font-normal uppercase tracking-wider text-[#C39936]">
                     {location ? location.toUpperCase() : "N/A"}
                   </span>
@@ -443,7 +448,11 @@ export default function ProfileIdentityPage() {
               </div>
 
               {/* Profile detail tabs (below About Me) */}
-              <div className="w-full" role="tablist" aria-label="Profile sections">
+              <div
+                className="w-full"
+                role="tablist"
+                aria-label="Profile sections"
+              >
                 <div className="grid grid-cols-2 gap-1.5 sm:gap-2 w-full">
                   <button
                     type="button"
@@ -457,7 +466,7 @@ export default function ProfileIdentityPage() {
                       "bg-white/[0.07] backdrop-blur-sm border border-white/[0.06]",
                       profileTab === "faith"
                         ? "text-[#C8A851]"
-                        : "text-white/45 hover:text-white/60"
+                        : "text-white/45 hover:text-white/60",
                     )}
                   >
                     <span className="flex items-center justify-center gap-1 sm:gap-2 text-[11px] sm:text-xs md:text-sm font-medium text-center leading-tight">
@@ -466,7 +475,9 @@ export default function ProfileIdentityPage() {
                         strokeWidth={2.5}
                         aria-hidden
                       />
-                      <span className="hidden min-[360px]:inline text-sm">Faith &amp; Lifestyle</span>
+                      <span className="hidden min-[360px]:inline text-sm">
+                        Faith &amp; Lifestyle
+                      </span>
                       <span className="min-[360px]:hidden">Faith</span>
                     </span>
                     {profileTab === "faith" && (
@@ -488,7 +499,7 @@ export default function ProfileIdentityPage() {
                       "bg-white/[0.07] backdrop-blur-sm border border-white/[0.06]",
                       profileTab === "everyday"
                         ? "text-[#C8A851]"
-                        : "text-white/45 hover:text-white/60"
+                        : "text-white/45 hover:text-white/60",
                     )}
                   >
                     <span className="flex items-center justify-center gap-1 sm:gap-2 text-[11px] sm:text-xs md:text-sm font-medium text-center leading-tight">
@@ -498,7 +509,9 @@ export default function ProfileIdentityPage() {
                         fill="none"
                         aria-hidden
                       />
-                      <span className="hidden min-[360px]:inline text-sm">Everyday Life</span>
+                      <span className="hidden min-[360px]:inline text-sm">
+                        Everyday Life
+                      </span>
                       <span className="min-[360px]:hidden">Everyday</span>
                     </span>
                     {profileTab === "everyday" && (
@@ -513,7 +526,7 @@ export default function ProfileIdentityPage() {
                 <Card
                   className={cn(
                     "rounded-t-none rounded-b-2xl py-0 border-0 shadow-xl overflow-hidden -mt-px",
-                    "border border-[#C8A851]/20 bg-gradient-to-b from-[#1a0f2e] via-[#150828] to-[#0f061c] shadow-[0_12px_40px_rgba(0,0,0,0.5)]"
+                    "border border-[#C8A851]/20 bg-gradient-to-b from-[#1a0f2e] via-[#150828] to-[#0f061c] shadow-[0_12px_40px_rgba(0,0,0,0.5)]",
                   )}
                 >
                   <CardContent className="text-left px-2.5 pt-3 pb-4 sm:px-4 sm:pt-4 sm:pb-5 md:px-5">
@@ -549,7 +562,9 @@ export default function ProfileIdentityPage() {
                             {
                               key: "attendance",
                               label: "Attendance",
-                              value: churchAttendance?.trim() ? churchAttendance : "—",
+                              value: churchAttendance?.trim()
+                                ? churchAttendance
+                                : "—",
                               icon: (
                                 <span className="flex h-8 w-8 shrink-0 items-center justify-center sm:h-9 sm:w-9 [&_svg]:max-h-[26px] [&_svg]:max-w-[26px] sm:[&_svg]:max-h-7 sm:[&_svg]:max-w-7">
                                   <Chruchweekly />
@@ -602,7 +617,7 @@ export default function ProfileIdentityPage() {
                                     className="inline-flex items-center rounded-full border border-[#C8A851]/35 bg-[linear-gradient(180deg,rgba(243,211,93,0.18)_0%,rgba(120,52,8,0.35)_100%)] px-3 py-1.5 text-xs font-semibold text-[#fff5d6] shadow-sm sm:px-3.5 sm:py-2 sm:text-xs"
                                   >
                                     {label}
-                                  </span> 
+                                  </span>
                                 ))}
                               </div>
                             ) : (
@@ -655,7 +670,7 @@ export default function ProfileIdentityPage() {
                                     key={c.key}
                                     className={cn(
                                       "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium sm:gap-2 sm:px-3.5 sm:py-2 sm:text-xs",
-                                      c.chipClass
+                                      c.chipClass,
                                     )}
                                   >
                                     <Image
@@ -671,7 +686,8 @@ export default function ProfileIdentityPage() {
                               </div>
                             ) : (
                               <p className="pl-9 text-xs text-white/35 sm:pl-10 sm:text-sm">
-                                —
+                                {" "}
+                                —{" "}
                               </p>
                             )}
                           </div>
@@ -698,7 +714,7 @@ export default function ProfileIdentityPage() {
                                   key={`${idx}-${item.questionId}`}
                                   className={cn(
                                     idx < everydayLifeItems.length - 1 &&
-                                      "border-b border-[#C8A851]/12"
+                                      "border-b border-[#C8A851]/12",
                                   )}
                                 >
                                   <button
@@ -706,7 +722,9 @@ export default function ProfileIdentityPage() {
                                     id={headerId}
                                     className={cn(
                                       "flex w-full items-center gap-3 px-3 text-left transition-colors hover:bg-white/[0.04] sm:gap-3.5 sm:px-4",
-                                      isOpen ? "pb-2 pt-3.5 sm:pt-4" : "py-3.5 sm:py-4"
+                                      isOpen
+                                        ? "pb-2 pt-3.5 sm:pt-4"
+                                        : "py-3.5 sm:py-4",
                                     )}
                                     onClick={() => toggleEverydayAccordion(idx)}
                                     aria-expanded={isOpen}
@@ -716,7 +734,9 @@ export default function ProfileIdentityPage() {
                                       className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#C8A851]/35 bg-[linear-gradient(145deg,rgba(200,168,81,0.16)_0%,rgba(35,22,58,0.92)_55%,rgba(18,10,38,0.96)_100%)] text-[#d4a84b] shadow-[inset_0_1px_0_rgba(255,255,255,0.07)] sm:h-11 sm:w-11"
                                       aria-hidden
                                     >
-                                      <EverydayAccordionIcon questionId={item.questionId} />
+                                      <EverydayAccordionIcon
+                                        questionId={item.questionId}
+                                      />
                                     </span>
                                     <span className="flex min-w-0 flex-1 items-start justify-between gap-2">
                                       <span className="min-w-0 flex-1 pr-1 text-[13px] font-normal leading-[1.45] text-[#c8bddc] sm:text-sm">
@@ -759,7 +779,8 @@ export default function ProfileIdentityPage() {
                           </div>
                         ) : (
                           <p className="rounded-xl border border-[#C8A851]/20 bg-gradient-to-b from-[#1e1438]/90 to-[#0f061c] px-4 py-6 text-center text-sm leading-relaxed text-[#c4b5dc]/90">
-                            No everyday life answers yet. You can add them when you edit your profile.
+                            No everyday life answers yet. You can add them when
+                            you edit your profile.
                           </p>
                         )}
                       </div>
@@ -776,7 +797,9 @@ export default function ProfileIdentityPage() {
                 >
                   <Link href="/profile/edit">
                     <Pencil className="size-5" />
-                    <span className="text-base font-medium text-[#913C01]">Edit Profile</span>
+                    <span className="text-base font-medium text-[#913C01]">
+                      Edit Profile
+                    </span>
                   </Link>
                 </Button>
               </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, Check } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -15,12 +15,19 @@ import {
   Progress,
 } from "@repo/ui";
 import { BIBICAL_PREFERENCE_QUESTIONS } from "@/data/biblicalPreferenceQuestions";
+import {
+  AUTH_STORAGE_KEYS,
+  getOnboardingData,
+  saveBiblicalPreferences,
+  type OnboardingData,
+} from "@/lib/api/auth";
 
 
 export default function BiblicalPreferencesPage() {
   const router = useRouter();
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [hydrating, setHydrating] = useState(true);
 
   const unlockedIndex = useMemo(() => {
     const idx = BIBICAL_PREFERENCE_QUESTIONS.findIndex((q) => !answers[q.id]);
@@ -32,6 +39,54 @@ export default function BiblicalPreferencesPage() {
   }, [answers]);
 
   const [openItem, setOpenItem] = useState<string>(BIBICAL_PREFERENCE_QUESTIONS[0].id);
+
+  useEffect(() => {
+    let cancelled = false;
+    const hydrateSavedAnswers = async () => {
+      const token =
+        typeof window !== "undefined"
+          ? window.localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN)
+          : null;
+      if (!token) {
+        if (!cancelled) setHydrating(false);
+        return;
+      }
+      try {
+        const res = await getOnboardingData(token);
+        if (cancelled) return;
+        const raw = (res?.data as OnboardingData | undefined)?.biblicalPreferences;
+        if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+          setHydrating(false);
+          return;
+        }
+
+        const normalized: Record<string, string> = {};
+        for (const question of BIBICAL_PREFERENCE_QUESTIONS) {
+          const selected = (raw as Record<string, unknown>)[question.id];
+          if (
+            typeof selected === "string" &&
+            question.options.includes(selected)
+          ) {
+            normalized[question.id] = selected;
+          }
+        }
+
+        setAnswers(normalized);
+        const firstUnanswered = BIBICAL_PREFERENCE_QUESTIONS.find(
+          (q) => !normalized[q.id]
+        );
+        setOpenItem(firstUnanswered?.id ?? BIBICAL_PREFERENCE_QUESTIONS[0].id);
+      } catch {
+        // silent fail; page can still be used with empty local state
+      } finally {
+        if (!cancelled) setHydrating(false);
+      }
+    };
+    void hydrateSavedAnswers();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const progressValue = Math.round((answeredCount / BIBICAL_PREFERENCE_QUESTIONS.length) * 100);
   const canContinue = answeredCount === BIBICAL_PREFERENCE_QUESTIONS.length;
@@ -50,8 +105,26 @@ export default function BiblicalPreferencesPage() {
   const handleSubmit = async () => {
     try {
       setLoading(true);
+      const token =
+        typeof window !== "undefined"
+          ? window.localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN)
+          : null;
 
-      router.push("/dashboard/quiz/review"); // next step
+      if (!token) {
+        throw new Error("Missing access token");
+      }
+
+      const preferences = BIBICAL_PREFERENCE_QUESTIONS.reduce<Record<string, string>>(
+        (acc, question) => {
+          const selected = answers[question.id];
+          if (selected) acc[question.id] = selected;
+          return acc;
+        },
+        {}
+      );
+
+      await saveBiblicalPreferences(preferences, token);
+      router.push("/dashboard/quiz/review");
     } catch (err) {
       console.error(err);
     } finally {
@@ -175,11 +248,11 @@ export default function BiblicalPreferencesPage() {
 
           <Button
             type="button"
-            disabled={!canContinue}
+            disabled={!canContinue || loading || hydrating}
             onClick={handleSubmit}
             className="cursor-pointer mt-4 w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Continue
+            {loading ? "Saving..." : "Continue"}
           </Button>
 
           <p className="text-white max-w-[360px] text-center mx-auto text-sm font-light w-full mt-3">

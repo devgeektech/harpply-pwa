@@ -20,7 +20,7 @@ export function ToggleOption({
       ${
         active
           ? "text-[#913C01] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)]"
-          : "bg-white text-gray-700"
+          : "text-white border border-[#a78bda]/40 bg-[linear-gradient(180deg,rgba(167,139,218,0.22)_0%,rgba(55,35,95,0.65)_100%)]"
       }
       ${className}`}
     >

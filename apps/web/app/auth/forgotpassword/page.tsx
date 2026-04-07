@@ -82,7 +82,7 @@ export default function ForgotPasswordPage() {
                   setEmail(e.target.value);
                   setEmailError(null);
                 }}
-                className="bg-white border-white/10 h-[52px] border border-[#E7ECF2] rounded-[12px] md:rounded-[8px] text-[#3B3B3B] placeholder:text-[#3B3B3B] focus-visible:ring-0"
+                className="bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] border border-[#C8A851]/40  h-[52px] rounded-[12px] md:rounded-[8px] text-[#ffffff] placeholder:text-white/40 focus-visible:border-[#C8A851]/60 focus-visible:ring-0 focus-visible:ring-transparent"
               />
               {emailError && (
                 <p className="text-sm text-red-400">{emailError}</p>
