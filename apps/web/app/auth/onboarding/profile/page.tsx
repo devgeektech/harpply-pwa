@@ -30,7 +30,6 @@ import { SUCCESS_MESSAGES } from "@/lib/messages/success-messages";
 import { useEverydayAnswersRecord } from "@/store/everydayLifeStore";
 const ACCENT = "#C39936";
 
-
 function displayOrDash(value: string | number | undefined | null): string {
   if (value === undefined || value === null) return "—";
   const s = String(value).trim();
@@ -74,7 +73,7 @@ export default function ReviewProfilePage() {
   const everydayAnswers = useEverydayAnswersRecord();
   const everydayReviewItems = useMemo(
     () => getEverydayLifeReviewItems(everydayAnswers),
-    [everydayAnswers]
+    [everydayAnswers],
   );
   const showEverydayLifestyle = everydayReviewItems.length > 0;
   const s3PublicUrl = process.env.NEXT_PUBLIC_AWS_S3_URL ?? "";
@@ -111,7 +110,10 @@ export default function ReviewProfilePage() {
       if (token) {
         await completeOnboarding(token);
         clearOnboardingResume(token);
-        window.localStorage.setItem(AUTH_STORAGE_KEYS.ONBOARDING_COMPLETED, "true");
+        window.localStorage.setItem(
+          AUTH_STORAGE_KEYS.ONBOARDING_COMPLETED,
+          "true",
+        );
         toast.success(SUCCESS_MESSAGES.ONBOARDING.ONBOARDING_COMPLETED);
       }
       router.push("/auth/onboarding/success");
@@ -147,7 +149,7 @@ export default function ReviewProfilePage() {
           </h2>
 
           {/* Profile Card */}
-          <Card className="bg-white text-black rounded-xl">
+          <Card className="bg-[#FBFAF914] border-[#a78bda]/40 text-black rounded-xl">
             <CardContent className="p-6 text-center space-y-4">
               <div className="relative w-[160px] h-[160px] mx-auto">
                 <Avatar className="w-[130px] h-[130px] mx-auto bg-[#FEFDFB] border-dashed border-2 border-[#252C3680] overflow-hidden">
@@ -177,7 +179,7 @@ export default function ReviewProfilePage() {
                   type="button"
                   onClick={() =>
                     router.push(
-                      `/profile/managephoto?returnTo=${encodeURIComponent("/auth/onboarding/profile")}`
+                      `/profile/managephoto?returnTo=${encodeURIComponent("/auth/onboarding/profile")}`,
                     )
                   }
                   className=" cursor-pointer group rounded-full w-[35px] h-[35px] bg-[#e3e3e3] absolute right-[10px]
@@ -188,16 +190,20 @@ export default function ReviewProfilePage() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <h3 className="font-normal font-serif text-[#1A1A1A] text-[24px]">
+                <h3 className="font-normal font-serif text-white text-[24px]">
                   {displayOrDash(name)}
                 </h3>
                 <p className="text-base font-normal text-[#C39936]">
-                  {[displayOrDash(age), displayOrDash(gender)].filter((v) => v !== "—").join(" • ") ||
-                    "—"}
+                  {[displayOrDash(age), displayOrDash(gender)]
+                    .filter((v) => v !== "—")
+                    .join(" • ") || "—"}
                 </p>
 
                 <div className="flex items-center justify-center gap-1.5 mt-1">
-                  <MapPin className="size-4 shrink-0 text-[#C39936]" style={{ color: ACCENT }} />
+                  <MapPin
+                    className="size-4 shrink-0 text-[#C39936]"
+                    style={{ color: ACCENT }}
+                  />
                   <span className="text-base font-normal tracking-wider text-[#C39936]">
                     {displayOrDash(location)}
                   </span>
@@ -205,11 +211,11 @@ export default function ReviewProfilePage() {
               </div>
 
               {/* Bio */}
-              <div className="text-sm text-gray-600 border-t pt-4 relative">
+              <div className="text-sm text-gray-600 border-t border-[#a78bda]/40 pt-4 relative">
                 <p className="text-[#C8A851] text-sm capitalize text-left mb-3">
                   BIO SNIPPET
                 </p>
-                <p className="text-[#1A1A1A] text-base italic font-light text-left">
+                <p className="text-white/80 text-base italic font-light text-left">
                   {displayOrDash(bio)}
                 </p>
               </div>
@@ -219,20 +225,34 @@ export default function ReviewProfilePage() {
           {/* Info Sections */}
           <div className="mt-2 space-y-3">
             <div className="pt-2 text-sm text-white">Faith & Lifestyle</div>
-            <InfoRow label="Church Involvement" value={displayOrDash(churchInvolvement)} />
-            <InfoRow label="Years in Faith" value={formatYearsInFaith(yearsInFaith)} />
-            <InfoRow label="Church Attendance Frequency" value={displayOrDash(churchAttendance)} />
+            <InfoRow
+              label="Church Involvement"
+              value={displayOrDash(churchInvolvement)}
+            />
+            <InfoRow
+              label="Years in Faith"
+              value={formatYearsInFaith(yearsInFaith)}
+            />
+            <InfoRow
+              label="Church Attendance Frequency"
+              value={displayOrDash(churchAttendance)}
+            />
             <InfoRow label="My Faith Values" value={myFaithDisplay || "—"} />
             <InfoRow label="Partner Values" value={partnerDisplay || "—"} />
 
             <div className="pt-2 text-sm text-white">Lifestyle Habits</div>
             <InfoRow label="Smoking" value={displayOrDash(smokingSelection)} />
             <InfoRow label="Alcohol" value={displayOrDash(alcoholSelection)} />
-            <InfoRow label="Dietary Preferences" value={displayOrDash(dietaryPreference)} />
+            <InfoRow
+              label="Dietary Preferences"
+              value={displayOrDash(dietaryPreference)}
+            />
 
             {showEverydayLifestyle ? (
               <>
-                <div className="pt-2 text-sm text-white">Everyday Lifestyle</div>
+                <div className="pt-2 text-sm text-white">
+                  Everyday Lifestyle
+                </div>
                 {everydayReviewItems.map((row, index) => (
                   <EverydayLifestyleRow
                     key={`${row.prompt}-${index}`}
@@ -246,7 +266,12 @@ export default function ReviewProfilePage() {
 
           {/* Secure box */}
           <div className="mt-6 bg-[#0F172A] p-4 rounded-lg flex gap-3 items-start text-sm">
-            <Image src="/images/secure.png" alt="secure" width={40} height={40} />
+            <Image
+              src="/images/secure.png"
+              alt="secure"
+              width={40}
+              height={40}
+            />
 
             <div>
               <p className="font-medium text-white text-sm">Secure Account</p>
@@ -276,9 +301,17 @@ export default function ReviewProfilePage() {
 }
 /* Row component */
 
-function InfoRow({ label, value, className }: { label: string; value: string; className?: string }) {
+function InfoRow({
+  label,
+  value,
+  className,
+}: {
+  label: string;
+  value: string;
+  className?: string;
+}) {
   return (
-    <div className="flex h-[56px] justify-between items-center bg-white text-black rounded-lg px-4 py-3 text-sm">
+    <div className="flex h-[56px] justify-between items-center border border-[#C8A851]/20 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] text-white rounded-lg px-4 py-3 text-sm">
       <span>{label}</span>
       <span className="text-[#C39936] font-medium">{value}</span>
     </div>
@@ -293,10 +326,9 @@ function EverydayLifestyleRow({
   answerText: string;
 }) {
   return (
-     <div className="flex h-[56px] justify-between items-center bg-white text-black rounded-lg px-4 py-3 text-sm">
+    <div className="flex h-[56px] justify-between items-center border border-[#C8A851]/20 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] text-white rounded-lg px-4 py-3 text-sm">
       <span>{prompt}</span>
       <span className="text-[#C39936] font-medium">{answerText}</span>
     </div>
   );
 }
-

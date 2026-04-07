@@ -17,11 +17,7 @@ import {
   useEverydayAnswersRecord,
 } from "@/store/everydayLifeStore";
 
-function toggleOption(
-  current: string[],
-  option: string,
-  max: 1 | 3
-): string[] {
+function toggleOption(current: string[], option: string, max: 1 | 3): string[] {
   if (max === 1) {
     if (current.length === 1 && current[0] === option) {
       return [];
@@ -40,7 +36,7 @@ function toggleOption(
 function EverydayIconTile(
   props:
     | { variant: "section"; sectionId: string; size?: "md" | "lg" }
-    | { variant: "question"; questionId: string; size?: "md" | "lg" }
+    | { variant: "question"; questionId: string; size?: "md" | "lg" },
 ) {
   const size = props.size ?? "md";
   const Icon =
@@ -50,14 +46,12 @@ function EverydayIconTile(
   const iconSize = size === "lg" ? "size-[20px] sm:size-[22px]" : "size-[18px]";
 
   const box =
-    size === "lg"
-      ? "h-11 w-11 sm:h-12 sm:w-12"
-      : "h-10 w-10 sm:h-11 sm:w-11";
+    size === "lg" ? "h-11 w-11 sm:h-12 sm:w-12" : "h-10 w-10 sm:h-11 sm:w-11";
   return (
     <div
       className={cn(
         "flex shrink-0 items-center justify-center rounded-xl border border-[#C8A851]/40 bg-[linear-gradient(145deg,rgba(200,168,81,0.22)_0%,rgba(255,248,235,0.95)_48%,rgba(250,245,230,0.98)_100%)] text-[#7a5210] shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]",
-        box
+        box,
       )}
     >
       <Icon className={cn("shrink-0", iconSize)} strokeWidth={2} aria-hidden />
@@ -70,7 +64,7 @@ export default function EverydayLifePage() {
   const answers = useEverydayAnswersRecord();
   const [submitting, setSubmitting] = useState(false);
   const [openSectionId, setOpenSectionId] = useState<string | null>(
-    EVERYDAY_QUESTIONS[0]?.id ?? null
+    EVERYDAY_QUESTIONS[0]?.id ?? null,
   );
 
   const onToggleAnswer = (questionId: string, option: string) => {
@@ -103,10 +97,8 @@ export default function EverydayLifePage() {
 
   return (
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex  sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
-
       <Card className="w-full min-w-0 max-w-[620px] rounded-2xl border-0 bg-transparent bg-cover bg-center bg-no-repeat py-0 md:border md:border-white/10 md:bg-[url('/images/bg_auth_center.png')] md:shadow-2xl md:shadow-[0px_4px_4px_0px_#00000014] md:backdrop-blur-xl">
         <CardContent className="flex w-full min-w-0 flex-col gap-3 px-3 sm:p-10">
-
           <div className="text-left text-white w-full ">
             <Link href="/auth/onboarding/partner-attributes">
               <ChevronLeft size={24} />
@@ -136,7 +128,7 @@ export default function EverydayLifePage() {
               return (
                 <section
                   key={section.id}
-                  className="w-full min-w-0 overflow-hidden rounded-2xl border border-[#C8A851]/22 bg-white shadow-[0_16px_40px_rgba(0,0,0,0.18)] ring-1 ring-black/[0.04]"
+                  className="w-full min-w-0 overflow-hidden rounded-2xl border border-[#C8A851]/22 bg-[#FBFAF914] shadow-[0_16px_40px_rgba(0,0,0,0.18)] ring-1 ring-black/[0.04]"
                 >
                   <button
                     type="button"
@@ -145,12 +137,12 @@ export default function EverydayLifePage() {
                     aria-controls={panelId}
                     onClick={() =>
                       setOpenSectionId((prev) =>
-                        prev === section.id ? null : section.id
+                        prev === section.id ? null : section.id,
                       )
                     }
                     className={cn(
-                      "flex w-full items-center gap-3 bg-gradient-to-r from-[#fffef9] to-white px-4 py-3.5 text-left transition hover:bg-[#fffaf0] sm:px-5 sm:py-4",
-                      isOpen && "border-b border-[#C8A851]/12"
+                      "flex w-full items-center gap-3 px-4 py-3.5 text-left transition sm:px-5 sm:py-4",
+                      isOpen && "border-b border-[#C8A851]/12",
                     )}
                   >
                     <EverydayIconTile
@@ -159,10 +151,10 @@ export default function EverydayLifePage() {
                       size="lg"
                     />
                     <div className="min-w-0 flex-1">
-                      <h2 className="text-base font-semibold tracking-tight text-[#1a1525] sm:text-lg">
+                      <h2 className="text-base font-semibold tracking-tight text-white sm:text-lg">
                         {section.title}
                       </h2>
-                      <p className="mt-0.5 text-xs text-[#5c5668]">
+                      <p className="mt-0.5 text-xs text-white/60">
                         {section.questions.length}{" "}
                         {section.questions.length === 1
                           ? "question"
@@ -171,9 +163,17 @@ export default function EverydayLifePage() {
                     </div>
                     <span className="shrink-0 text-[#7a6b8c]">
                       {isOpen ? (
-                        <ChevronUp className="size-5" strokeWidth={2} aria-hidden />
+                        <ChevronUp
+                          className="size-5"
+                          strokeWidth={2}
+                          aria-hidden
+                        />
                       ) : (
-                        <ChevronDown className="size-5" strokeWidth={2} aria-hidden />
+                        <ChevronDown
+                          className="size-5"
+                          strokeWidth={2}
+                          aria-hidden
+                        />
                       )}
                     </span>
                   </button>
@@ -187,14 +187,17 @@ export default function EverydayLifePage() {
                     >
                       {section.questions.map((question, qIdx) => {
                         const selected = answers[question.id] ?? [];
-                        const max = getEverydayQuestionMaxSelections(question.id);
-                        const limitReached = max === 3 && selected.length >= max;
+                        const max = getEverydayQuestionMaxSelections(
+                          question.id,
+                        );
+                        const limitReached =
+                          max === 3 && selected.length >= max;
                         return (
                           <div
                             key={question.id}
                             className={cn(
                               "pt-4",
-                              qIdx > 0 && "mt-1 border-t border-[#C8A851]/10"
+                              qIdx > 0 && "mt-1 border-t border-[#C8A851]/10",
                             )}
                           >
                             <div className="flex gap-3">
@@ -203,18 +206,16 @@ export default function EverydayLifePage() {
                                 questionId={question.id}
                               />
                               <div className="min-w-0 flex-1 pb-1">
-                                <p className="text-sm font-semibold leading-snug text-[#1a1525] sm:text-[15px]">
+                                <p className="text-sm font-semibold leading-snug text-white sm:text-[15px]">
                                   {question.prompt}
                                 </p>
-                                <p className="mb-2 text-xs text-[#1A1A1A]/70">
-                                  {max === 3
-                                    ? "Choose up to 3"
-                                    : "Choose one"}
+                                <p className="mb-2 text-xs text-white/60">
+                                  {max === 3 ? "Choose up to 3" : "Choose one"}
                                 </p>
                                 <div className="mt-2.5 flex flex-wrap gap-2">
                                   {question.options.map((option) => {
                                     const isActive = selected.includes(
-                                      option.value
+                                      option.value,
                                     );
                                     const isDisabled =
                                       max === 3 && !isActive && limitReached;
@@ -225,17 +226,17 @@ export default function EverydayLifePage() {
                                         onClick={() =>
                                           onToggleAnswer(
                                             question.id,
-                                            option.value
+                                            option.value,
                                           )
                                         }
                                         disabled={isDisabled}
                                         className={cn(
-                                          "rounded-full border px-3 py-2 text-left text-xs transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C8A851]/80 sm:px-3.5 sm:text-sm",
+                                          "rounded-full cursor-pointer border px-3 py-2 text-left text-xs transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C8A851]/80 sm:px-3.5 sm:text-sm",
                                           isActive
                                             ? "border-[#C8A851] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] font-semibold text-[#5c2e04] shadow-sm"
-                                            : "border-[#d8d3e0] bg-white text-[#1a1525] hover:border-[#C8A851]/70 hover:bg-[#fffef9]",
+                                            : "border-[#a78bda]/40 bg-[linear-gradient(180deg,rgba(167,139,218,0.22)_0%,rgba(55,35,95,0.65)_100%)] text-white",
                                           isDisabled &&
-                                          "cursor-not-allowed opacity-45"
+                                            "cursor-not-allowed opacity-45",
                                         )}
                                       >
                                         {option.label}

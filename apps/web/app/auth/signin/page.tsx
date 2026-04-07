@@ -18,7 +18,16 @@ function SigninForm() {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { email, password, setEmail, setPassword, login, loading, error, setError } = useAuthStore();
+  const {
+    email,
+    password,
+    setEmail,
+    setPassword,
+    login,
+    loading,
+    error,
+    setError,
+  } = useAuthStore();
 
   const googleError = searchParams.get("error") === "google_signin_failed";
   const googleFailReason = searchParams.get("reason");
@@ -69,7 +78,7 @@ function SigninForm() {
     } catch (err) {
       if (err instanceof AuthError && err.code === "COMPLETE_SIGNUP") {
         router.push(
-          `/auth/createpassword?email=${encodeURIComponent(email.trim() || "")}`
+          `/auth/createpassword?email=${encodeURIComponent(email.trim() || "")}`,
         );
         return;
       }
@@ -78,9 +87,9 @@ function SigninForm() {
   };
 
   return (
-    <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex items-center justify-center px-4">
+    <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex md:items-center justify-center px-4">
       <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
-        <CardContent className="flex items-center flex-col sm:p-10 px-3 text-left">
+        <CardContent className="flex items-center flex-col sm:p-10 px-3 py-[50px] text-left">
           <div className="w-full space-y-6">
             <div className="text-left w-full">
               <button
@@ -102,34 +111,40 @@ function SigninForm() {
                   (googleError
                     ? googleFailReason
                       ? (() => {
-                        const reason = googleFailReason.trim();
-                        const cancelledReasons = new Set([
-                          "access_denied",
-                          "user_denied",
-                          "user_cancelled",
-                          "user_cancelled_by_user",
-                          "user_cancelled_by_user",
-                          "cancelled",
-                          "cancelled_by_user",
-                          "popup_closed",
-                          "popup_closed_by_user",
-                          "request_canceled",
-                          "consent_denied",
-                          "oauth_canceled",
-                          "google_denied",
-                          "google_cancelled",
-                          "google_cancelled_by_user",
-                        ]);
-                        if (cancelledReasons.has(reason)) {
-                          return "Google sign-in was cancelled.";
-                        }
-                        return `Google sign-in failed (${reason}). Please try again.`;
-                      })()
+                          const reason = googleFailReason.trim();
+                          const cancelledReasons = new Set([
+                            "access_denied",
+                            "user_denied",
+                            "user_cancelled",
+                            "user_cancelled_by_user",
+                            "user_cancelled_by_user",
+                            "cancelled",
+                            "cancelled_by_user",
+                            "popup_closed",
+                            "popup_closed_by_user",
+                            "request_canceled",
+                            "consent_denied",
+                            "oauth_canceled",
+                            "google_denied",
+                            "google_cancelled",
+                            "google_cancelled_by_user",
+                          ]);
+                          if (cancelledReasons.has(reason)) {
+                            return "Google sign-in was cancelled.";
+                          }
+                          return `Google sign-in failed (${reason}). Please try again.`;
+                        })()
                       : "Google sign-in failed. Please try again."
                     : null)}
               </p>
             )}
-            <form className="space-y-5 md:my-[50px] w-full" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+            <form
+              className="space-y-5 md:my-[50px] w-full"
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleLogin();
+              }}
+            >
               {error && (
                 <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">
                   {error}
@@ -145,9 +160,11 @@ function SigninForm() {
                     setEmail(e.target.value);
                     if (emailError) setEmailError(null);
                   }}
-                  className="bg-white border-white/10 h-[52px] border border-[#E7ECF2] rounded-[12px] md:rounded-[8px] text-[#3B3B3B] placeholder:text-[#3B3B3B] focus-visible:ring-0"
+                  className="bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] border border-[#C8A851]/40  h-[52px] rounded-[12px] md:rounded-[8px] text-[#ffffff] placeholder:text-white/40 focus-visible:border-[#C8A851]/60 focus-visible:ring-0 focus-visible:ring-transparent"
                 />
-                {emailError && <p className="text-sm text-red-400">{emailError}</p>}
+                {emailError && (
+                  <p className="text-sm text-red-400">{emailError}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -161,7 +178,7 @@ function SigninForm() {
                       setPassword(e.target.value);
                       if (passwordError) setPasswordError(null);
                     }}
-                    className="bg-white h-[52px] rounded-[12px] rounded-[8px] border-white/10 text-[#3B3B3B] placeholder:text-[#3B3B3B] pr-10  focus-visible:ring-0"
+                    className="bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] border border-[#C8A851]/40  h-[52px] rounded-[12px] md:rounded-[8px] text-[#ffffff] placeholder:text-white/40 focus-visible:border-[#C8A851]/60 focus-visible:ring-0 focus-visible:ring-transparent"
                   />
                   <button
                     type="button"
@@ -171,7 +188,9 @@ function SigninForm() {
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
-                {passwordError && <p className="text-sm text-red-400">{passwordError}</p>}
+                {passwordError && (
+                  <p className="text-sm text-red-400">{passwordError}</p>
+                )}
               </div>
 
               <div className="text-right text-sm">
@@ -198,7 +217,7 @@ function SigninForm() {
                 )}
               </Button>
             </form>
-            <p className="bottom_text text-center text-sm text-gray-300">
+            <p className="text-center text-sm text-gray-300">
               Don’t have an account?
               <Link
                 href="/auth/signup"
@@ -219,7 +238,10 @@ export default function Signin() {
     <Suspense
       fallback={
         <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex items-center justify-center px-4">
-          <Loader2 className="h-8 w-8 animate-spin text-white/70" aria-label="Loading" />
+          <Loader2
+            className="h-8 w-8 animate-spin text-white/70"
+            aria-label="Loading"
+          />
         </div>
       }
     >

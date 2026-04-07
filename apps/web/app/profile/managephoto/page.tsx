@@ -334,12 +334,12 @@ export default function ManagePhotoPage() {
             onChange={handleFileInputChange}
           />
 
-          <div className="bg-[#FBFAF9] rounded-[8px] text-[#1A1A1A] p-4 text-[16px]">
+          <div className="bg-[linear-gradient(180deg,rgba(167,139,218,0.22)_0%,rgba(55,35,95,0.65)_100%)] border border-[#a78bda]/40 rounded-[8px] text-[#1A1A1A] p-4 text-[16px]">
             <p className="font-semibold text-[#C39936] mb-1 flex items-center gap-2">
               <Info size={16} /> Photo Guidelines
             </p>
 
-            <p className="text-[#1A1A1A] text-base font-light">
+            <p className="text-white/80 text-base font-light">
               Minimum 3 photos required. Clear faces, no sunglasses, and natural lighting work
               best for meaningful connections.
             </p>

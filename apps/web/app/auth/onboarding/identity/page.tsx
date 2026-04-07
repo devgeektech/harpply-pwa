@@ -7,22 +7,14 @@ import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 export default function Identity() {
-
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
   const [ageError, setAgeError] = useState<string | null>(null);
   const MAX_AGE = 100;
 
-  const {
-    name,
-    age,
-    gender,
-    setName,
-    setAge,
-    setGender,
-    submitIdentity,
-  } = useOnboardingStore();
+  const { name, age, gender, setName, setAge, setGender, submitIdentity } =
+    useOnboardingStore();
 
   const handleSubmit = async () => {
     try {
@@ -88,7 +80,7 @@ export default function Identity() {
               placeholder="Enter your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-2 bg-white border-[#FBFAF9] h-[52px] border border-[#E7ECF2] rounded-[12px] md:rounded-[8px] text-[#3B3B3B] placeholder:text-[#3B3B3B] focus-visible:ring-0"
+              className="bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] border border-[#C8A851]/40  h-[52px] rounded-[12px] md:rounded-[8px] text-[#ffffff] placeholder:text-white/40 focus-visible:border-[#C8A851]/60 focus-visible:ring-0 focus-visible:ring-transparent"
             />
             {nameError && (
               <p className="text-sm text-red-400 mt-2">{nameError}</p>
@@ -115,7 +107,7 @@ export default function Identity() {
                   : 0;
                 setAge(String(clamped));
               }}
-              className="mt-2 bg-white border-[#FBFAF9] h-[52px] border border-[#E7ECF2] rounded-[12px] md:rounded-[8px] text-[#3B3B3B] placeholder:text-[#3B3B3B] focus-visible:ring-0"
+              className="bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] border border-[#C8A851]/40  h-[52px] rounded-[12px] md:rounded-[8px] text-[#ffffff] placeholder:text-white/40 focus-visible:border-[#C8A851]/60 focus-visible:ring-0 focus-visible:ring-transparent"
             />
             {ageError && (
               <p className="text-sm text-red-400 mt-2">{ageError}</p>
@@ -125,17 +117,18 @@ export default function Identity() {
           {/* Gender */}
           <div className="mb-6 w-full">
             <label className="text-white font-normal text-sm">Gender</label>
-            <div className="border border-[#E7ECF214] sm:bg-transparent bg-white sm:rounded-[12px] rounded-[8px] p-2 sm:p-4 w-full mt-3">
+            <div className="border border-[#E7ECF214] bg-transparent sm:rounded-[12px] rounded-[8px] p-2 sm:p-4 w-full mt-3">
               <div className="flex gap-3">
                 {["Male", "Female", "Other"].map((g) => (
                   <button
                     type="button"
                     key={g}
                     onClick={() => setGender(g)}
-                    className={`flex-1 rounded-full sm:rounded-lg py-2 text-base font-medium border transition cursor-pointer ${gender === g
-                      ? "bg-white text-[#C39936] border-[#C39936]"
-                      : "bg-white text-black border-white/20"
-                      }`}
+                    className={`flex-1 rounded-full sm:rounded-lg py-2 text-base font-medium border transition cursor-pointer ${
+                      gender === g
+                        ? "bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] border-[#C39936]"
+                        : "bg-[linear-gradient(180deg,rgba(167,139,218,0.22)_0%,rgba(55,35,95,0.65)_100%)] text-white border-[#a78bda]/40"
+                    }`}
                   >
                     {g}
                   </button>
