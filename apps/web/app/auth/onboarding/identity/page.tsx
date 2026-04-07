@@ -113,7 +113,6 @@ export default function Identity() {
               <p className="text-sm text-red-400 mt-2">{ageError}</p>
             )}
           </div>
-
           {/* Gender */}
           <div className="mb-6 w-full">
             <label className="text-white font-normal text-sm">Gender</label>
