@@ -96,33 +96,33 @@ export default function Review() {
             find the most compatible matches based on your spiritual journey.
           </p>
 
-          <div className="mb-12 rounded-[12px] border border-[#C8A851]/20 bg-white p-4">
-            <h4 className="mb-3 flex items-center gap-2 text-base font-medium text-[#1A1A1A]">
+          <div className="mb-12 rounded-[12px] border border-[#C8A851]/22 bg-gradient-to-b from-[#1e1438]/98 via-[#150a28]/98 to-[#0c0518]/98 p-4 shadow-[inset_0_1px_0_rgba(200,168,81,0.12)]">
+            <h4 className="mb-3 flex items-center gap-2 text-base font-medium text-[#c8bddc]">
               <img src="/images/jesusicon.svg" alt="jesusicon" className="h-[20px] w-[20px]" />
               Saved Biblical Preferences
             </h4>
 
             {fetching ? (
-              <p className="text-sm text-[#1A1A1A]/70">Loading your saved answers...</p>
+              <p className="text-sm text-[#c4b5dc]/85">Loading your saved answers...</p>
             ) : answeredItems.length > 0 ? (
               <ul className="space-y-3">
                 {answeredItems.map((item, idx) => (
                   <li
                     key={item.id}
-                    className="rounded-xl border border-[#E8E0CF] bg-[#FFFDF8] px-3 py-3"
+                    className="rounded-xl border border-[#C8A851]/20 bg-white/[0.04] px-3 py-3"
                   >
-                    <p className="text-[13px] font-medium text-[#5A4B2F]">
+                    <p className="text-[13px] font-medium text-[#c8bddc]">
                       Q{idx + 1}. {item.question}
                     </p>
                     <div className="mt-1.5 flex items-start gap-2">
                       <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#C39936]" />
-                      <p className="text-sm text-[#1A1A1A]">{item.answer}</p>
+                      <p className="text-sm text-[#efe8ff]">{item.answer}</p>
                     </div>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-[#1A1A1A]/70">
+              <p className="text-sm text-[#c4b5dc]/85">
                 No saved answers found yet. Please go back and complete the quiz.
               </p>
             )}
