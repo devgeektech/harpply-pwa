@@ -8,8 +8,6 @@ import { ChevronLeft, Check } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 
-
-
 const options = [
   "Catholic",
   "Baptist",
@@ -60,8 +58,10 @@ export default function Review() {
         <CardContent className="flex flex-col gap-2 sm:p-10 sm:px-6 px-0 text-left">
 
           {/* Back */}
-          <div className="mb-2">
-            <ChevronLeft className="text-white/70 cursor-pointer" />
+          <div className="text-left text-white w-full">
+            <Link href="/dashboard/quiz/biblical-preferences">
+              <ChevronLeft size={24} />
+            </Link>
           </div>
 
           {/* Image */}
@@ -71,13 +71,13 @@ export default function Review() {
               alt="review"
               className="w-full h-[185px] object-cover rounded-[12px]"
             />
-             <span className="text-xs bg-[#C8A851] text-white px-3 py-1 rounded absolute bottom-[17px] left-[21px] z-10">
-            FINAL STEP
-          </span>
+            <span className="text-xs bg-[#C8A851] text-white px-3 py-1 rounded absolute bottom-[17px] left-[21px] z-10">
+              FINAL STEP
+            </span>
           </div>
 
           {/* Final Step */}
-         
+
 
           {/* Description */}
           <p className="text-sm text-white mt-3 mb-6">
@@ -121,7 +121,10 @@ export default function Review() {
           </Button>
 
           {/* Edit */}
-          <button className="text-center text-base font-medium text-[#913C01] mt-3 cursor-pointer">
+          <button 
+           onClick={() => router.push("/dashboard/quiz/biblical-preferences")}
+          className="text-center text-base font-medium text-[#913C01] mt-3 cursor-pointer"
+          >
             Edit Answers
           </button>
 

@@ -12,6 +12,10 @@ export const ERROR_MESSAGES = {
       'No pending signup for this email, or password was already set.',
     COMPLETE_SIGNUP:
       'Please complete your signup by setting your password.',
+    SOCIAL_LOGIN_ONLY:
+      'This email is registered with Google. Please sign in using Google.',
+    EMAIL_LOGIN_ONLY:
+      'This email is registered with email/password. Please sign in using email and password.',
     INVALID_CREDENTIALS: 'Invalid email or password.',
     INVALID_ROLE: 'Invalid role selected. Please choose Admin, Employer, or Individual.',
     ACCOUNT_INACTIVE: 'Your account is currently inactive. Please contact support.',
@@ -19,7 +23,8 @@ export const ERROR_MESSAGES = {
     TOKEN_INVALID: 'The token is invalid or has expired.',
     TOKEN_MISSING: 'Authentication token is required.',
     REFRESH_TOKEN_INVALID: 'The refresh token is invalid or has expired.',
-    INVALID_OR_EXPIRED_OTP: 'Invalid or expired OTP.'
+    INVALID_OR_EXPIRED_OTP: 'Invalid or expired OTP.',
+    FAILED_TO_DELETE_ACCOUNT : 'Failed to delete account.'
   },
 
   VALIDATION: {
@@ -28,7 +33,7 @@ export const ERROR_MESSAGES = {
     PASSWORD_REQUIRED: 'Password is required.',
     PASSWORD_TOO_SHORT: 'Password must be at least 8 characters long.',
     PASSWORD_WEAK:
-      'Password must be at least 8 characters and include uppercase, lowercase, and a number.',
+      'Password must be at least 8 characters and include uppercase, lowercase, special character and a number.',
     PASSWORD_MUST_BE_STRING: 'Password must be a valid string.',
     REQUIRED_FIELD: '{FIELD} is required.',
     FIELD_REQUIRED: 'This field is required and cannot be empty.',
@@ -67,4 +72,9 @@ export const ERROR_MESSAGES = {
     NOT_FOUND: 'Job posting not found.',
     ALREADY_APPLIED: 'You have already applied for this job.',
   },
+
+  PROFILE: {
+    LIFESTYLE_LOAD_FAILED : 'Could not load lifestyle preferences.'
+  }
+
 } as const;

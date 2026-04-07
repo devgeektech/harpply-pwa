@@ -54,7 +54,7 @@ function VerifyEmailContent() {
     setResendLoading(true);
     try {
       const result = await resendVerificationEmail(email.trim());
-      setResendMessage(result?.message ?? "Verification link sent. Please check your email.");
+      setResendMessage(result?.message ?? "Verification link resent. Please check your email.");
       setCooldownLeft(RESEND_COOLDOWN_SEC);
       if (result?.data?.requiresPassword) {
         router.push(`/auth/createpassword?email=${encodeURIComponent(email.trim())}`);

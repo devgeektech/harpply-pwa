@@ -72,7 +72,9 @@ export default function FaithLifestylePage() {
       await submitFaith();
       router.push("/auth/onboarding/attributes");
     } catch (err) {
-      setError(err instanceof Error ? err.message : ERROR_MESSAGES.AUTH.SAVE_FAILED);
+      setError(
+        err instanceof Error ? err.message : ERROR_MESSAGES.AUTH.SAVE_FAILED,
+      );
     } finally {
       setSubmitting(false);
     }
@@ -89,7 +91,7 @@ export default function FaithLifestylePage() {
           </div>
 
           <div className="w-full">
-            <p className="text-sm text-gray-300 mb-2 text-left">Step 4 of 7</p>
+            <p className="text-sm text-gray-300 mb-2 text-left">Step 4 of 8</p>
             <Progress value={80} className="h-2" />
           </div>
 
@@ -98,15 +100,19 @@ export default function FaithLifestylePage() {
               Faith & Lifestyle
             </h2>
             <p className="font-light text-sm leading-[160%] tracking-normal text-white text-left">
-              Tell us more about how you live out your faith and your daily preferences.
+              Tell us more about how you live out your faith and your daily
+              preferences.
             </p>
           </div>
 
           {/* Church Involvement */}
           <div className="space-y-2 flex flex-col w-full text-left">
             <label className="text-sm text-gray-300">Church Involvement</label>
-            <Select value={churchInvolvement || ""} onValueChange={setChurchInvolvement}>
-              <SelectTrigger className="w-full bg-[#FBFAF9] !h-[52px] rounded-[8px] text-[#1A1A1A] text-sm">
+            <Select
+              value={churchInvolvement || ""}
+              onValueChange={setChurchInvolvement}
+            >
+              <SelectTrigger className="w-full border-[#C8A851]/40 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] !h-[52px] rounded-[8px] text-white text-sm focus-visible:border-[#C8A851]/60 focus-visible:ring-0 focus-visible:ring-transparent">
                 <SelectValue placeholder="Select your role" />
               </SelectTrigger>
               <SelectContent>
@@ -123,7 +129,7 @@ export default function FaithLifestylePage() {
           <div className="space-y-2 flex flex-col w-full text-left">
             <label className="text-sm text-gray-300">Years in Faith</label>
             <Input
-              className="w-full bg-[#FBFAF9] !h-[52px] rounded-[8px] text-[#1A1A1A] text-sm"
+              className="w-full border-[#C8A851]/40 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] !h-[52px] rounded-[8px] text-white text-sm focus-visible:border-[#C8A851]/60 focus-visible:ring-0 focus-visible:ring-transparent"
               placeholder="e.g. 5"
               value={yearsInFaith === 0 ? "" : String(yearsInFaith)}
               onChange={handleYearsChange}
@@ -132,7 +138,9 @@ export default function FaithLifestylePage() {
 
           {/* Church Attendance Frequency */}
           <div className="space-y-2 flex flex-col w-full text-left">
-            <label className="text-sm text-gray-300">Church Attendance Frequency</label>
+            <label className="text-sm text-gray-300">
+              Church Attendance Frequency
+            </label>
             <div className="grid grid-cols-2 gap-3">
               {CHURCH_ATTENDANCE_OPTIONS.map((item) => (
                 <ToggleOption
@@ -148,7 +156,9 @@ export default function FaithLifestylePage() {
 
           {/* Lifestyle Basics */}
           <div className="space-y-4 flex flex-col w-full text-left">
-            <h4 className="text-white text-[20px] font-normal">Lifestyle Basics</h4>
+            <h4 className="text-white text-[20px] font-normal">
+              Lifestyle Basics
+            </h4>
 
             <div className="space-y-2">
               <label className="text-sm text-gray-300">Smoking</label>
@@ -184,8 +194,11 @@ export default function FaithLifestylePage() {
           {/* Dietary Preferences */}
           <div className="space-y-2 flex flex-col w-full text-left">
             <label className="text-sm text-gray-300">Dietary Preferences</label>
-            <Select value={dietaryPreference || ""} onValueChange={setDietaryPreference}>
-              <SelectTrigger className="w-full bg-[#FBFAF9] !h-[52px] rounded-[8px] text-[#1A1A1A] text-sm">
+            <Select
+              value={dietaryPreference || ""}
+              onValueChange={setDietaryPreference}
+            >
+              <SelectTrigger className="w-full border-[#C8A851]/40 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] !h-[52px] rounded-[8px] text-white text-sm">
                 <SelectValue placeholder="No specific diet" />
               </SelectTrigger>
               <SelectContent>

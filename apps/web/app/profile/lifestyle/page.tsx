@@ -25,6 +25,8 @@ import {
 } from "@/lib/constants";
 import { fetchProfile, updateLifestyleProfile } from "@/lib/api/profile";
 import { useProfileStore } from "@/store/profileStore";
+import { SUCCESS_MESSAGES } from "@/lib/messages/success-messages";
+import { ERROR_MESSAGES } from "@/lib/messages/error-messages";
 
 function smokingFromApi(raw: string | null | undefined): SmokingOption {
   if (!raw?.trim()) return SMOKING_OPTIONS[0];
@@ -62,6 +64,9 @@ export default function LifestylePage() {
   );
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [smokingError, setSmokingError] = useState("");
+  const [alcoholError, setAlcoholError] = useState("");
+  const [dietError, setDietError] = useState("");
 
   const applyFromProfile = useCallback((data: {
     smokingPreference: string | null;
@@ -83,7 +88,7 @@ export default function LifestylePage() {
         applyFromProfile(res.data);
       })
       .catch(() => {
-        toast.error("Could not load lifestyle preferences.");
+        toast.error(ERROR_MESSAGES.PROFILE.LIFESTYLE_LOAD_FAILED);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -95,6 +100,26 @@ export default function LifestylePage() {
 
   const handleSave = async () => {
     if (saving) return;
+    let hasError = false;
+    if (!smoking?.trim()) {
+      setSmokingError("Smoking preference is required.");
+      hasError = true;
+    } else {
+      setSmokingError("");
+    }
+    if (!alcohol?.trim()) {
+      setAlcoholError("Alcohol preference is required.");
+      hasError = true;
+    } else {
+      setAlcoholError("");
+    }
+    if (!diet?.trim()) {
+      setDietError("Dietary preference is required.");
+      hasError = true;
+    } else {
+      setDietError("");
+    }
+    if (hasError) return;
     setSaving(true);
     try {
       await updateLifestyleProfile({
@@ -104,7 +129,7 @@ export default function LifestylePage() {
       });
       const refreshed = await fetchProfile();
       if (refreshed?.data) hydrateFromApi(refreshed.data);
-      toast.success("Lifestyle updated.");
+      toast.success(SUCCESS_MESSAGES.PROFILE.LIFESTYLE_UPDATED);
       router.push("/profile/identity");
     } catch (err) {
       const message =
@@ -121,7 +146,7 @@ export default function LifestylePage() {
         <CardContent className="flex flex-col md:gap-6 gap-3 sm:p-6 px-3 text-white">
           <div className="flex items-center px-0 pb-2 w-full">
             <Link
-              href="/profile/faithvalues"
+              href="/profile/everydaylife"
               className="flex items-center justify-center size-10 rounded-full text-white/90 hover:bg-white/10 transition-colors"
               aria-label="Back"
             >
@@ -147,18 +172,22 @@ export default function LifestylePage() {
                     <button
                       key={item}
                       type="button"
-                      onClick={() => setSmoking(item)}
+                      onClick={() => {
+                        setSmoking(item)
+                        if (smokingError) setSmokingError("")
+                      }}
                       className={`cursor-pointer flex-1 sm:h-[52px] h-[36px] rounded-[8px]  text-sm font-medium transition
                 ${
                   smoking === item
-                    ? "bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01]"
-                    : "bg-[#FBFAF9] text-[#1A1A1A]"
+                    ? "bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] border border-[#C8A851] text-[#913C01]"
+                    : "bg-[linear-gradient(180deg,rgba(167,139,218,0.22)_0%,rgba(55,35,95,0.65)_100%)] border border-[#a78bda]/40"
                 }`}
                     >
                       {item}
                     </button>
                   ))}
                 </div>
+                {smokingError && <p className="mt-2 text-sm text-red-300">{smokingError}</p>}
               </div>
 
               {/* Alcohol */}
@@ -169,18 +198,22 @@ export default function LifestylePage() {
                     <button
                       key={item}
                       type="button"
-                      onClick={() => setAlcohol(item)}
+                      onClick={() => {
+                        setAlcohol(item)
+                        if (alcoholError) setAlcoholError("")
+                      }}
                       className={`cursor-pointer flex-1 sm:h-[52px] h-[36px] rounded-[8px] text-sm font-medium transition
                 ${
                   alcohol === item
-                    ? "bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01]"
-                    : "bg-[#FBFAF9] text-[#1A1A1A]"
+                    ? "bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] border border-[#C8A851] text-[#913C01]"
+                    : "bg-[linear-gradient(180deg,rgba(167,139,218,0.22)_0%,rgba(55,35,95,0.65)_100%)] border border-[#a78bda]/40"
                 }`}
                     >
                       {item}
                     </button>
                   ))}
                 </div>
+                {alcoholError && <p className="mt-2 text-sm text-red-300">{alcoholError}</p>}
               </div>
 
               {/* Dietary Preferences */}
@@ -188,8 +221,14 @@ export default function LifestylePage() {
                 <p className="mb-3 sm:text-[20px] text-[16px] font-light">
                   Dietary Preferences
                 </p>
-                <Select value={diet} onValueChange={(v) => setDiet(v as DietaryPreferenceValue)}>
-                  <SelectTrigger className="w-full bg-[#FBFAF9] !h-[52px] rounded-[8px] text-[#1A1A1A] text-sm">
+                <Select
+                  value={diet}
+                  onValueChange={(v) => {
+                    setDiet(v as DietaryPreferenceValue)
+                    if (dietError) setDietError("")
+                  }}
+                >
+                  <SelectTrigger className="w-full border-[#C8A851]/18 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] !h-[52px] rounded-[8px] text-white text-sm">
                     <SelectValue placeholder="Select diet" />
                   </SelectTrigger>
                   <SelectContent>
@@ -200,6 +239,7 @@ export default function LifestylePage() {
                     ))}
                   </SelectContent>
                 </Select>
+                {dietError && <p className="mt-2 text-sm text-red-300">{dietError}</p>}
               </div>
             </>
           )}
@@ -208,13 +248,13 @@ export default function LifestylePage() {
             type="button"
             onClick={handleSave}
             disabled={loading || saving}
-            className="cursor-pointer w-full h-[52px] mb-4 text-[#913C01] font-semibold bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] disabled:opacity-60"
+            className="cursor-pointer w-full h-[52px] text-[#913C01] font-semibold bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] disabled:opacity-60"
           >
             {saving ? "Saving…" : "Save Changes"}
           </Button>
 
           <Link
-            href="/dashboard"
+            href="/dashboard/quiz/introduction"
             className="cursor-pointer w-full h-[52px] rounded-[12px] md:rounded-[8px] border border-[#913C01] text-[#913C01] font-medium flex items-center justify-center"
           >
             Cancel

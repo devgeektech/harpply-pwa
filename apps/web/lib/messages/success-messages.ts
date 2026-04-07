@@ -14,6 +14,7 @@ export const SUCCESS_MESSAGES = {
     PASSWORD_RESET_SUCCESS: 'Password updated successfully.',
     FORGOT_PASSWORD_GENERIC:
       'If this email exists, an OTP has been sent.',
+    ACCOUNT_DELETED: "Account deleted successfully."
   },
   ONBOARDING: {
     IDENTITY_SAVED: 'Identity saved successfully.',
@@ -29,6 +30,7 @@ export const SUCCESS_MESSAGES = {
     PROFILE_UPDATED: 'Basic profile updated.',
     FAITH_LIFESTYLE_UPDATED: 'Faith & lifestyle updated.',
     LIFESTYLE_UPDATED: 'Lifestyle updated.',
+    EVERYDAY_LIFE_UPDATED: 'Everyday life data updated.',
     FAITH_UPDATED: 'Faith values updated.',
     PHOTO_SAVED: 'Photo saved successfully.',
     PHOTO_DELETED: 'Photo deleted successfully.',

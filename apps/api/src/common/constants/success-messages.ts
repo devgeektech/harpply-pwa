@@ -14,7 +14,7 @@ export const SUCCESS_MESSAGES = {
     EMAIL_VERIFIED: 'Email verified successfully.',
     COMPLETE_SIGNUP_SET_PASSWORD:
       'Your email is already verified. Please set your password to complete signup.',
-    VERIFICATION_EMAIL_SENT: 'Verification link sent. Please check your email.',
+    VERIFICATION_EMAIL_SENT: 'Verification link resent. Please check your email.',
     EMAIL_ALREADY_VERIFIED: 'This email is already verified.',
   },
   ONBOARDING: {
@@ -24,6 +24,7 @@ export const SUCCESS_MESSAGES = {
     FAITH_LIFESTYLE: 'Faith & lifestyle saved successfully.',
     ATTRIBUTES: 'Attributes saved successfully.',
     PARTNER_ATTRIBUTES: 'Partbner attributes saved successfully.',
+    EVERYDAY_LIFE: 'Everyday life profile saved successfully.',
     ONBOARDING_COMPLETED: 'Onboarding completed successfully.',
     REVIEW_DATA: 'Onboarding review data fetched.',
   },

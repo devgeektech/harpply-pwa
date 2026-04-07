@@ -1,4 +1,5 @@
 import { signIn as apiSignIn, AUTH_STORAGE_KEYS } from "@/lib/api/auth";
+import { getResumeOnboardingPath } from "@/lib/onboarding-resume";
 import { hydrateOnboardingStores } from "@/store/onboardingStore";
 import { create } from "zustand";
 
@@ -40,7 +41,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         }
       }
       const onboardingCompleted = result?.data?.user?.onboardingCompleted ?? false;
-      return onboardingCompleted ? "/profile/identity" : "/auth/onboarding/identity";
+      const token = result?.data?.accessToken;
+      return onboardingCompleted
+        ? "/dashboard/quiz/introduction"
+        : token
+          ? getResumeOnboardingPath(token)
+          : "/auth/onboarding/identity";
     } finally {
       set({ loading: false });
     }

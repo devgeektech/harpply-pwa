@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { AUTH_STORAGE_KEYS, getOnboardingData } from "@/lib/api/auth";
+import { rememberOnboardingStep } from "@/lib/onboarding-resume";
 import {
   hydrateOnboardingStores,
   useOnboardingStore,
@@ -9,6 +11,7 @@ import {
   useFaithStore,
 } from "@/store/onboardingStore";
 import { useFaithAttributesStore } from "@/store/faithAttributesStore";
+import { useEverydayLifeStore } from "@/store/everydayLifeStore";
 
 /**
  * When onboarding stores are empty (e.g. after refresh) but user has a token,
@@ -17,7 +20,9 @@ import { useFaithAttributesStore } from "@/store/faithAttributesStore";
 function useHydrateOnboardingOnLoad() {
   const lastTokenRef = useRef<string | null>(null);
 
-  useEffect(() => {
+  // Use layout effect so previous user's in-memory Zustand state doesn't flash on screen
+  // when a different user signs in and is routed into onboarding.
+  useLayoutEffect(() => {
     if (typeof window === "undefined") return;
 
     const token = window.localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN);
@@ -31,6 +36,7 @@ function useHydrateOnboardingOnLoad() {
     useOnboardingStore.getState().setName("");
     useOnboardingStore.getState().setAge("");
     useOnboardingStore.getState().setGender("");
+    useOnboardingStore.getState().setProfilePhotos([]);
     useOnboardingStore.getState().setLatitude(null);
     useOnboardingStore.getState().setLongitude(null);
     useOnboardingStore.getState().setLocation("");
@@ -48,6 +54,23 @@ function useHydrateOnboardingOnLoad() {
     useFaithAttributesStore.getState().setMyFaithValues([]);
     useFaithAttributesStore.getState().setPartnerValues([]);
 
+    useEverydayLifeStore.getState().setRelationshipHistory([]);
+    useEverydayLifeStore.getState().setHaveChildren([]);
+    useEverydayLifeStore.getState().setWantChildren([]);
+    useEverydayLifeStore.getState().setOpenToPartnerWithChildren([]);
+    useEverydayLifeStore.getState().setFreeTime([]);
+    useEverydayLifeStore.getState().setMusicTaste([]);
+    useEverydayLifeStore.getState().setSportsPlayOrFollow([]);
+    useEverydayLifeStore.getState().setFitnessLifestyle([]);
+    useEverydayLifeStore.getState().setRecharge([]);
+    useEverydayLifeStore.getState().setCommunicationStyle([]);
+    useEverydayLifeStore.getState().setFavoriteFood([]);
+    useEverydayLifeStore.getState().setTravelerType([]);
+    useEverydayLifeStore.getState().setTravelStyle([]);
+    useEverydayLifeStore.getState().setPerfectNightIn([]);
+    useEverydayLifeStore.getState().setShowsOrMovies([]);
+    useEverydayLifeStore.getState().setDayToDay([]);
+
     getOnboardingData(token)
       .then((res) => {
         if (res?.data) hydrateOnboardingStores(res.data);
@@ -64,6 +87,15 @@ export default function OnboardingLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
   useHydrateOnboardingOnLoad();
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const token = window.localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN);
+    if (!token || !pathname) return;
+    rememberOnboardingStep(token, pathname);
+  }, [pathname]);
+
   return <>{children}</>;
 }

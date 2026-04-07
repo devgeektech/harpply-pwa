@@ -26,12 +26,15 @@ import {
   type PlaceSuggestion,
 } from "@/lib/utils";
 import { useState, useEffect, useRef } from "react";
+import { SUCCESS_MESSAGES } from "@/lib/messages/success-messages";
 
 const CARD_BG = "#1A0A26";
 const GOLD_GRADIENT =
   "linear-gradient(135deg, #c58b00 0%, #e8b923 50%, #c58b00 100%)";
 const INPUT_BG = "rgba(255,255,255,0.06)";
 const BORDER_SUBTLE = "rgba(255,255,255,0.12)";
+const MIN_AGE = 18;
+const MAX_AGE = 100;
 
 function buildPhotoSrc(s3PublicUrl: string, key: string): string {
   const safeKey = key?.toString?.().trim() ?? "";
@@ -59,6 +62,10 @@ export default function EditProfilePage() {
   } = useProfileStore();
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const [nameError, setNameError] = useState("");
+  const [ageError, setAgeError] = useState("");
+  const [genderError, setGenderError] = useState("");
+  const [bioError, setBioError] = useState("");
   const s3PublicUrl = process.env.NEXT_PUBLIC_AWS_S3_URL ?? "";
   const [firstProfilePhotoSrc, setFirstProfilePhotoSrc] = useState<string | null>(
     null,
@@ -155,16 +162,53 @@ export default function EditProfilePage() {
 
   const handleSave = async () => {
     if (saving) return;
+    const trimmedName = (name ?? "").trim();
+    const trimmedBio = (bio ?? "").trim();
+    const normalizedGender = (gender ?? "").toString().trim();
+
+    let hasError = false;
+    if (!trimmedName) {
+      setNameError("Full name is required.");
+      hasError = true;
+    } else {
+      setNameError("");
+    }
+
+    if (!age || Number.isNaN(Number(age))) {
+      setAgeError("Age is required.");
+      hasError = true;
+    } else if (age < MIN_AGE || age > MAX_AGE) {
+      setAgeError(`Age must be between ${MIN_AGE} and ${MAX_AGE}.`);
+      hasError = true;
+    } else {
+      setAgeError("");
+    }
+
+    if (!normalizedGender) {
+      setGenderError("Gender is required.");
+      hasError = true;
+    } else {
+      setGenderError("");
+    }
+
+    if (!trimmedBio) {
+      setBioError("About me is required.");
+      hasError = true;
+    } else {
+      setBioError("");
+    }
+
+    if (hasError) return;
     setSaving(true);
     try {
       await updateBasicProfile({
-        fullName: name,
+        fullName: trimmedName,
         age: age || undefined,
         location: location || undefined,
-        gender: gender.toLowerCase(),
-        bio,
+        gender: normalizedGender.toLowerCase(),
+        bio: trimmedBio,
       });
-      toast.success("Profile updated successfully.");
+      toast.success(SUCCESS_MESSAGES.PROFILE.PROFILE_UPDATED);
       router.push("/profile/faithlifestyle");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to update profile. Please try again.";
@@ -244,10 +288,20 @@ export default function EditProfilePage() {
               </label>
               <Input
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (nameError) setNameError("");
+                }}
                 placeholder="Full Name"
-                className="h-[52px] rounded-[8px]  border-white/15 bg-white text-black placeholder:text-black/40 focus-visible:ring-2 focus-visible:ring-amber-500/40"
+                className="
+                h-[52px] rounded-[8px] 
+                border border-[#C8A851]/18
+                bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)]
+                text-white placeholder:text-white/40
+                focus-visible:border-[#C8A851]/60
+                focus-visible:ring-0 focus-visible:ring-transparent"
               />
+              {nameError && <p className="mt-1 text-sm text-red-300">{nameError}</p>}
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-medium text-white/80">
@@ -255,13 +309,35 @@ export default function EditProfilePage() {
               </label>
               <Input
                 type="number"
-                min={18}
-                max={120}
+                min={MIN_AGE}
+                max={MAX_AGE}
                 value={age || ""}
-                onChange={(e) => setAge(Number(e.target.value) || 0)}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  if (!raw) {
+                    setAge(0);
+                    if (ageError) setAgeError("");
+                    return;
+                  }
+                  const n = Number(raw);
+                  if (!Number.isFinite(n)) return;
+                  setAge(Math.trunc(n));
+                  if (n < MIN_AGE || n > MAX_AGE) {
+                    setAgeError(`Age must be between ${MIN_AGE} and ${MAX_AGE}.`);
+                  } else if (ageError) {
+                    setAgeError("");
+                  }
+                }}
                 placeholder="Age"
-                className="h-[52px] rounded-[8px]  border-white/15 bg-white text-black placeholder:text-black/40 focus-visible:ring-2 focus-visible:ring-amber-500/40"
+                className="
+                h-[52px] rounded-[8px] 
+                border border-[#C8A851]/18
+                bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)]
+                text-white placeholder:text-white/40
+                focus-visible:border-[#C8A851]/60
+                focus-visible:ring-0 focus-visible:ring-transparent"
               />
+              {ageError && <p className="mt-1 text-sm text-red-300">{ageError}</p>}
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-medium text-white/80">
@@ -269,7 +345,9 @@ export default function EditProfilePage() {
               </label>
               <div
                 ref={locationContainerRef}
-                className="relative flex h-[52px] items-center gap-2 rounded-xl border px-3 bg-white"
+                className="
+                relative flex h-[52px] items-center gap-2 rounded-xl border border-[#C8A851]/18 px-3 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] focus-within:border-[#C8A851]/60
+                focus-within:ring-0 transition-all duration-200"
               >
                 <MapPin className="size-4 shrink-0 text-[#C39936]" />
                 <Input
@@ -282,7 +360,7 @@ export default function EditProfilePage() {
                     if (locationSuggestions.length > 0) setShowLocationSuggestions(true);
                   }}
                   placeholder="City, State"
-                  className="h-[52px] rounded-[8px]  border-white/15 bg-white text-black placeholder:text-black/40 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="h-[52px] rounded-[8px]  border-none bg-transparent text-white placeholder:text-white/40 focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
                 {showLocationSuggestions && (
                   <div className="absolute left-0 top-full z-50 mt-1 w-full max-h-56 overflow-auto rounded-lg border border-white/20 bg-white shadow-lg">
@@ -314,7 +392,7 @@ export default function EditProfilePage() {
               Gender
             </label>
             <div
-              className="flex rounded-xl p-1 bg-white"
+              className="flex rounded-xl p-1 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)]"
               style={{
                 // backgroundColor: INPUT_BG,
                 border: `1px solid ${BORDER_SUBTLE}`,
@@ -324,8 +402,11 @@ export default function EditProfilePage() {
                 <button
                   key={g}
                   type="button"
-                  onClick={() => setGender(g)}
-                  className="cursor-pointer flex-1 py-2.5 text-sm font-medium rounded-lg transition-all"
+                  onClick={() => {
+                    setGender(g);
+                    if (genderError) setGenderError("");
+                  }}
+                  className="cursor-pointer flex-1 py-2.5 text-sm focus:outline-none focus-visible:outline-none focus-visible:border-[#C8A851]/60 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:border-[#C8A851]/60 font-medium rounded-lg transition-all"
                   style={
                     gender === g
                       ? {
@@ -334,13 +415,14 @@ export default function EditProfilePage() {
                         border: "1px solid #C39936",
                         boxShadow: "0 2px 8px rgba(197, 139, 0, 0.35)",
                       }
-                      : { color: "rgba(0,0,0,0.9)" }
+                      : { color: "#ffffff" }
                   }
                 >
                   {g}
                 </button>
               ))}
             </div>
+            {genderError && <p className="mt-1 text-sm text-red-300">{genderError}</p>}
           </div>
 
           {/* About Me */}
@@ -350,12 +432,16 @@ export default function EditProfilePage() {
             </label>
             <Textarea
               value={bio}
-              onChange={(e) => setBio(e.target.value)}
+              onChange={(e) => {
+                setBio(e.target.value);
+                if (bioError) setBioError("");
+              }}
               placeholder="I'm a believer who finds peace in..."
               maxLength={300}
               rows={4}
-              className="w-full rounded-xl border-0 bg-white text-black placeholder:text-black/40 focus-visible:ring-2 focus-visible:ring-amber-500/40 resize-y min-h-[100px] shadow-none"
+              className="w-full rounded-xl border-[#C8A851]/18 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] text-white placeholder:text-white/40 focus-visible:border-[#C8A851]/60 focus-visible:ring-0 focus-visible:ring-transparent resize-y min-h-[100px] shadow-none"
             />
+            {bioError && <p className="mt-1 text-sm text-red-300">{bioError}</p>}
             <p className="mt-1.5 text-right text-sm text-white/80">
               {bio.length} / 300 characters
             </p>

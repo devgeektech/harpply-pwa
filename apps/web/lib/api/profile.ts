@@ -24,6 +24,22 @@ export interface ProfileData {
   smokingPreference: string | null;
   alcoholPreference: string | null;
   dietaryPreference: string | null;
+  relationshipHistory: string[] | null;
+  haveChildren: string[] | null;
+  wantChildren: string[] | null;
+  openToPartnerWithChildren: string[] | null;
+  freeTime: string[] | null;
+  musicTaste: string[] | null;
+  sportsPlayOrFollow: string[] | null;
+  fitnessLifestyle: string[] | null;
+  recharge: string[] | null;
+  communicationStyle: string[] | null;
+  favoriteFood: string[] | null;
+  travelerType: string[] | null;
+  travelStyle: string[] | null;
+  perfectNightIn: string[] | null;
+  showsOrMovies: string[] | null;
+  dayToDay: string[] | null;
 }
 
 export interface ProfileResponse {
@@ -120,6 +136,16 @@ export async function updateFaithValuesProfile(
     ...fetchOptions,
   });
   return handleJson<{ message: string }>(res, "Failed to update faith values.");
+}
+
+export async function deleteMyAccount(): Promise<{ message: string }> {
+  const token = await getAuthToken();
+  const res = await fetch(`${getBaseUrl()}/profile/account`, {
+    method: "DELETE",
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    ...fetchOptions,
+  });
+  return handleJson<{ message: string }>(res, "Failed to delete account.");
 }
 
 export interface UpdateLifestylePayload {

@@ -21,8 +21,7 @@ export default function Bio() {
   const [loading, setLoading] = useState(false);
   const [bioError, setBioError] = useState<string | null>(null);
 
-  const { bio, setBio, submitBio } =
-    useBioStore();
+  const { bio, setBio, submitBio } = useBioStore();
 
   const handleSubmit = async () => {
     try {
@@ -58,7 +57,7 @@ export default function Bio() {
           </div>
           {/* Progress */}
           <div className="mb-6 w-full">
-            <p className="text-sm text-gray-300 mb-2 text-left">Step 3 of 7</p>
+            <p className="text-sm text-gray-300 mb-2 text-left">Step 3 of 8</p>
             <Progress value={60} />
           </div>
 
@@ -81,8 +80,7 @@ export default function Bio() {
               maxLength={300}
               onChange={(e) => setBio(e.target.value)}
               id="message"
-              className="bg-white resize-none h-[200px] text-sm text-[#3B3B3B] font-light 
-                focus-visible:ring-0 focus-visible:ring-offset-0 focus:!border-[#F3D35D]"
+              className="border-[#C8A851]/40 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] resize-none h-[200px] text-sm text-white placeholder:text-white/40 font-light focus-visible:border-[#C8A851]/60 focus-visible:ring-0 focus-visible:ring-transparent"
               placeholder="I’m a believer who finds peace in..."
             />
             <p className="text-sm text-white font-light flex justify-end">
@@ -90,7 +88,7 @@ export default function Bio() {
             </p>
             {bioError && <p className="text-sm text-red-400">{bioError}</p>}
           </div>
-          <div className="text-sm my-[20px] italic text-[#1A1A1A99] bg-[#FBFAF9] gap-2 p-4 border border-[#F4EFDE] rounded-[12px] flex justify-left text-left">
+          <div className="text-sm my-[20px] border-[#C8A851]/18 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] italic text-white/80 gap-2 p-4 border rounded-[12px] flex justify-left text-left">
             <label className="min-w-[25px] h-[35px] flex justify-center items-start">
               <Image
                 src="/images/bulbicon.png"
@@ -104,7 +102,8 @@ export default function Bio() {
           </div>
 
           {/* Continue Button */}
-          <Button className="cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60"
+          <Button
+            className="cursor-pointer w-full text-base h-[52px] rounded-[12px] md:rounded-[8px] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60"
             onClick={handleSubmit}
             disabled={!bio.trim() || loading}
           >

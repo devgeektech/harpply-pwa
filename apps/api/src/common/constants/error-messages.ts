@@ -11,6 +11,10 @@ export const ERROR_MESSAGES = {
     SIGNUP_NOT_PENDING:
       'No pending signup for this email, or password was already set.',
     COMPLETE_SIGNUP: 'Please complete your signup by setting your password.',
+    SOCIAL_LOGIN_ONLY:
+      'This email is registered with Google. Please sign in using Google.',
+    EMAIL_LOGIN_ONLY:
+      'This email is registered with email/password. Please sign in using email and password.',
     INVALID_CREDENTIALS: 'Invalid email or password.',
     INVALID_ROLE:
       'Invalid role selected. Please choose Admin, Employer, or Individual.',
@@ -21,6 +25,7 @@ export const ERROR_MESSAGES = {
     TOKEN_MISSING: 'Authentication token is required.',
     REFRESH_TOKEN_INVALID: 'The refresh token is invalid or has expired.',
     INVALID_OR_EXPIRED_OTP: 'Invalid or expired OTP.',
+    INVALID_CURRENT_PASSWORD: 'Invalid current password.',
   },
 
   VALIDATION: {
@@ -36,6 +41,7 @@ export const ERROR_MESSAGES = {
     ATTRIBUTES_REQUIRED:
       'Attributes is required and must contain at least one item.',
     ATTRIBUTES_MIN_ONE: 'Attributes must contain at least one item.',
+    EVERYDAY_LIFE_INVALID: 'Everyday life profile data is invalid.',
     CONFIRM_PASSWORD_REQUIRED: 'Please confirm your password.',
     PASSWORDS_DO_NOT_MATCH: 'Passwords do not match.',
     INVALID: 'Invalid.',

@@ -64,6 +64,23 @@ export interface OnboardingData {
   smokingPreference?: string | null;
   alcoholPreference?: string | null;
   dietaryPreference?: string | null;
+
+  relationshipHistory?: string[] | null;
+  haveChildren?: string[] | null;
+  wantChildren?: string[] | null;
+  openToPartnerWithChildren?: string[] | null;
+  freeTime?: string[] | null;
+  musicTaste?: string[] | null;
+  sportsPlayOrFollow?: string[] | null;
+  fitnessLifestyle?: string[] | null;
+  recharge?: string[] | null;
+  communicationStyle?: string[] | null;
+  favoriteFood?: string[] | null;
+  travelerType?: string[] | null;
+  travelStyle?: string[] | null;
+  perfectNightIn?: string[] | null;
+  showsOrMovies?: string[] | null;
+  dayToDay?: string[] | null;
 }
 
 export interface SetPasswordResponse {
@@ -394,6 +411,28 @@ export async function savePartnerValues(
   return data as { message: string };
 }
 
+/** Save or update everyday life profile (question id -> selected option values). */
+export async function saveEverydayLife(
+  answers: Record<string, string[]>,
+  accessToken: string
+): Promise<{ message: string }> {
+  const res = await fetch(`${getAuthBaseUrl()}/auth/onboarding/everyday-life`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(answers),
+  });
+  redirectIfUnauthorizedForAuthApi(res);
+  if (!res.ok) {
+    const msg = await getErrorMessage(res, "Failed to save everyday life profile.");
+    throw new Error(msg);
+  }
+  const data = await res.json().catch(() => ({}));
+  return data as { message: string };
+}
+
 /** Mark onboarding complete for the current user. */
 export async function completeOnboarding(accessToken: string): Promise<{ message: string }> {
   const res = await fetch(`${getAuthBaseUrl()}/auth/onboarding/complete`, {
@@ -433,4 +472,23 @@ export async function getOnboardingData(
   }
   const json = await res.json().catch(() => ({}));
   return json as { message: string; data: OnboardingData };
+}
+
+/** Logout current session (clears server-side token + HttpOnly cookie). */
+export async function logout(accessToken: string): Promise<{ message: string }> {
+  const res = await fetch(`${getAuthBaseUrl()}/auth/logout`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${accessToken}` },
+    ...authFetchOptions,
+  });
+  // If we got a 401, the session is already gone; treat as logged out.
+  if (res.status === 401) {
+    return { message: "Logged out." };
+  }
+  if (!res.ok) {
+    const msg = await getErrorMessage(res, "Logout failed.");
+    throw new Error(msg);
+  }
+  const json = await res.json().catch(() => ({}));
+  return json as { message: string };
 }

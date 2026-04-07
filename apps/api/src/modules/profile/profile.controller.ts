@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Get, Patch, Post, Delete, Param, UseGuards, UseInterceptors, UploadedFile, ParseIntPipe, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Delete, Param, UseGuards, UseInterceptors, UploadedFile, ParseIntPipe, BadRequestException, Res } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -10,6 +10,8 @@ import { UpdateFaithLifestyleDto } from './dto/update-faith-lifestyle.dto';
 import { UpdateFaithValuesDto } from './dto/update-faith-values.dto';
 import { UpdateLifestyleDto } from './dto/update-lifestyle.dto';
 import { successResponse } from '../../common/response/api-response';
+import { ACCESS_TOKEN_COOKIE } from '../auth/auth-cookie.constants';
+import type { Response } from 'express';
 
 @ApiTags('Profile & Photos')
 @Controller('profile')
@@ -91,5 +93,16 @@ updateBasic(
     @Param('index', ParseIntPipe) index: number,
   ) {
     return this.profileService.deletePhoto(userId, index);
+  }
+
+  @Delete('account')
+  @ApiOperation({ summary: 'Delete my account permanently (DB + S3 assets)' })
+  async deleteMyAccount(
+    @CurrentUserId() userId: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.profileService.deleteAccount(userId);
+    res.clearCookie(ACCESS_TOKEN_COOKIE, { path: '/' });
+    return result;
   }
 }

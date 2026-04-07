@@ -46,6 +46,22 @@ const profileSelect = {
   smokingPreference: true,
   alcoholPreference: true,
   dietaryPreference: true,
+  relationshipHistory: true,
+  haveChildren: true,
+  wantChildren: true,
+  openToPartnerWithChildren: true,
+  freeTime: true,
+  musicTaste: true,
+  sportsPlayOrFollow: true,
+  fitnessLifestyle: true,
+  recharge: true,
+  communicationStyle: true,
+  favoriteFood: true,
+  travelerType: true,
+  travelStyle: true,
+  perfectNightIn: true,
+  showsOrMovies: true,
+  dayToDay: true,
   onboardingCompleted: true,
   createdAt: true,
 } as const;
@@ -233,5 +249,28 @@ export class ProfileService {
     return successResponse(SUCCESS_MESSAGES.PROFILE.PHOTO_DELETED, {
       data: { photos: updated, meetsMinimum: updated.length >= MIN_PHOTOS_REQUIRED },
     });
+  }
+
+  /** Permanently delete user + all profile photo objects in S3. */
+  async deleteAccount(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { profilePhotos: true },
+    });
+    if (!user) {
+      throw new NotFoundException(ERROR_MESSAGES.USER.PROFILE_NOT_FOUND);
+    }
+
+    const photos = (user.profilePhotos as ProfilePhotoKey[] | null) ?? [];
+    const bucket = this.config.get<string>('AWS_S3_BUCKET_PROFILE_PHOTOS');
+    if (photos.length > 0 && this.awsS3.isConfigured() && bucket) {
+      await Promise.allSettled(
+        photos.map((key) => this.awsS3.delete(bucket, key)),
+      );
+    }
+
+    await this.prisma.user.delete({ where: { id: userId } });
+
+    return successResponse('Account deleted successfully.');
   }
 }
