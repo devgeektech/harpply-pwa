@@ -14,10 +14,8 @@ const registerEmailSchema = yup.object({
   email: yup
     .string()
     .required(ERROR_MESSAGES.VALIDATION.EMAIL_REQUIRED)
-    .test(
-      "is-valid-email",
-      ERROR_MESSAGES.VALIDATION.EMAIL_INVALID,
-      (value) => (typeof value === "string" ? isValidEmail(value) : false)
+    .test("is-valid-email", ERROR_MESSAGES.VALIDATION.EMAIL_INVALID, (value) =>
+      typeof value === "string" ? isValidEmail(value) : false,
     ),
 });
 
@@ -58,8 +56,13 @@ function FieldError({ name }: { name: string }) {
 
 export default function SignupPage() {
   const router = useRouter();
-  const { setEmail, setLoading, setError, loading, error: submitError } =
-    useSignupStore();
+  const {
+    setEmail,
+    setLoading,
+    setError,
+    loading,
+    error: submitError,
+  } = useSignupStore();
 
   const onEmailSubmit = async (values: { email: string }) => {
     setError(null);
@@ -68,13 +71,17 @@ export default function SignupPage() {
       const result = await apiRegisterEmail(values.email);
       setEmail(values.email);
       if (result?.data?.requiresPassword) {
-        router.push(`/auth/createpassword?email=${encodeURIComponent(values.email)}`);
+        router.push(
+          `/auth/createpassword?email=${encodeURIComponent(values.email)}`,
+        );
       } else {
         router.push(`/auth/verify?email=${encodeURIComponent(values.email)}`);
       }
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : ERROR_MESSAGES.GENERAL.REQUEST_FAILED
+        err instanceof Error
+          ? err.message
+          : ERROR_MESSAGES.GENERAL.REQUEST_FAILED,
       );
     } finally {
       setLoading(false);
@@ -82,13 +89,13 @@ export default function SignupPage() {
   };
 
   const inputClass =
-    "bg-white h-[52px] border border-[#E7ECF2] rounded-[12px] md:rounded-[8px] text-[#3B3B3B] placeholder:text-[#3B3B3B] focus-visible:ring-0 w-full";
+    "bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] border border-[#C8A851]/40  h-[52px] rounded-[12px] md:rounded-[8px] text-[#ffffff] placeholder:text-white/40 focus-visible:border-[#C8A851]/60 focus-visible:ring-0 focus-visible:ring-transparent";
 
   return (
     <>
-      <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex items-center justify-center px-4">
+      <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat md:items-center items-start bg-cover bg-center min-h-screen flex items-center justify-center px-4">
         <Card className="md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
-          <CardContent className="flex items-center flex-col sm:p-10 px-3 text-left">
+          <CardContent className="flex items-center flex-col sm:p-10 py-[50px] px-3 text-left">
             <h1 className="w-full text-[24px] font-light text-white font-serif tracking-wider mb-[32px] md:mb-0">
               Create your account
             </h1>
@@ -99,9 +106,14 @@ export default function SignupPage() {
               initialValues={{ email: "" }}
             >
               {({ handleSubmit }) => (
-                <form onSubmit={handleSubmit} className="space-y-5 md:my-[50px] w-full">
+                <form
+                  onSubmit={handleSubmit}
+                  className="space-y-5 md:my-[50px] w-full"
+                >
                   <div className="space-y-2">
-                    <Label className="text-gray-300 text-sm font-normal">Email</Label>
+                    <Label className="text-gray-300 text-sm font-normal">
+                      Email
+                    </Label>
                     <Field name="email">
                       {({ input }) => (
                         <Input

@@ -5,6 +5,7 @@ import { Button, Card, CardContent, Progress } from "@repo/ui"
 import { Trash2, Camera, ChevronLeft, Info } from "lucide-react"
 import { Uploaderrordialog } from "@/components/common/UploadErrorDialog"
 import { ERROR_MESSAGES } from "@/lib/messages/error-messages"
+import ImageCropDialog from "@/components/common/image-crop-dialog"
 import {
   addProfilePhoto,
   deleteProfilePhoto,
@@ -17,6 +18,8 @@ import Image from "next/image";
 const MAX_PHOTOS = 6
 const PHOTO_MAX_SIZE_BYTES = 5 * 1024 * 1024 // 5MB (matches API)
 const ALLOWED_PHOTO_MIMES = ["image/jpeg", "image/png", "image/webp"]
+
+
 
 function buildPhotoSrc(s3PublicUrl: string, key: string): string {
   const safeKey = key?.toString?.().trim() ?? "";
@@ -61,6 +64,10 @@ export default function ManagePhotoPage() {
 
   const [saveError, setSaveError] = useState<string | null>(null)
 
+  const [cropDialogOpen, setCropDialogOpen] = useState(false)
+  const [cropSourceFile, setCropSourceFile] = useState<File | null>(null)
+  const [cropBusy, setCropBusy] = useState(false)
+
   const progress = useMemo(() => {
     const pct = (photos.length / MAX_PHOTOS) * 100
     return Math.max(0, Math.min(100, pct))
@@ -95,7 +102,7 @@ export default function ManagePhotoPage() {
   }, [])
 
   const openFilePicker = () => {
-    if (uploading || deletingIndex !== null) return
+    if (uploading || deletingIndex !== null || cropDialogOpen) return
     fileInputRef.current?.click()
   }
 
@@ -121,9 +128,7 @@ export default function ManagePhotoPage() {
     setUploadError(null)
     setUploadDialogOpen(false)
 
-    // Always remember the file the user most recently selected.
-    // This prevents retry ("Try again") from uploading an older image when
-    // the error happened during validation.
+    // Remember the upload payload file so any future retry can reuse it safely.
     lastSelectedFileRef.current = file
 
     const validationError = validateBeforeUpload(file)
@@ -151,7 +156,20 @@ export default function ManagePhotoPage() {
     const file = e.target.files?.[0]
     e.target.value = ""
     if (!file) return
-    await handleUploadFile(file)
+
+    setSaveError(null)
+    setUploadError(null)
+    setUploadDialogOpen(false)
+
+    const validationError = validateBeforeUpload(file)
+    if (validationError) {
+      setAndOpenUploadError(validationError)
+      return
+    }
+
+    setCropSourceFile(file)
+
+    setCropDialogOpen(true)
   }
 
   const handleRemovePhoto = async (index: number) => {
@@ -316,12 +334,12 @@ export default function ManagePhotoPage() {
             onChange={handleFileInputChange}
           />
 
-          <div className="bg-[#FBFAF9] rounded-[8px] text-[#1A1A1A] p-4 text-[16px]">
+          <div className="bg-[linear-gradient(180deg,rgba(167,139,218,0.22)_0%,rgba(55,35,95,0.65)_100%)] border border-[#a78bda]/40 rounded-[8px] text-[#1A1A1A] p-4 text-[16px]">
             <p className="font-semibold text-[#C39936] mb-1 flex items-center gap-2">
               <Info size={16} /> Photo Guidelines
             </p>
 
-            <p className="text-[#1A1A1A] text-base font-light">
+            <p className="text-white/80 text-base font-light">
               Minimum 3 photos required. Clear faces, no sunglasses, and natural lighting work
               best for meaningful connections.
             </p>
@@ -369,6 +387,27 @@ export default function ManagePhotoPage() {
         onCancel={() => {
           setUploadDialogOpen(false)
           setUploadError(null)
+        }}
+      />
+
+      <ImageCropDialog
+        open={cropDialogOpen}
+        file={cropSourceFile}
+        onOpenChange={(nextOpen) => {
+          setCropDialogOpen(nextOpen)
+          if (!nextOpen) {
+            setCropSourceFile(null)
+            setCropBusy(false)
+          }
+        }}
+        onCropped={async (croppedFile) => {
+          setCropBusy(true)
+          try {
+            await handleUploadFile(croppedFile)
+          } finally {
+            setCropBusy(false)
+            setCropDialogOpen(false)
+          }
         }}
       />
     </div>

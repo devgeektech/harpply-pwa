@@ -41,6 +41,7 @@ export const ERROR_MESSAGES = {
     ATTRIBUTES_REQUIRED:
       'Attributes is required and must contain at least one item.',
     ATTRIBUTES_MIN_ONE: 'Attributes must contain at least one item.',
+    EVERYDAY_LIFE_INVALID: 'Everyday life profile data is invalid.',
     CONFIRM_PASSWORD_REQUIRED: 'Please confirm your password.',
     PASSWORDS_DO_NOT_MATCH: 'Passwords do not match.',
     INVALID: 'Invalid.',

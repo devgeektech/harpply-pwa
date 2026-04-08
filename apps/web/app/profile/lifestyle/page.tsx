@@ -146,7 +146,7 @@ export default function LifestylePage() {
         <CardContent className="flex flex-col md:gap-6 gap-3 sm:p-6 px-3 text-white">
           <div className="flex items-center px-0 pb-2 w-full">
             <Link
-              href="/profile/faithvalues"
+              href="/profile/everydaylife"
               className="flex items-center justify-center size-10 rounded-full text-white/90 hover:bg-white/10 transition-colors"
               aria-label="Back"
             >
@@ -179,8 +179,8 @@ export default function LifestylePage() {
                       className={`cursor-pointer flex-1 sm:h-[52px] h-[36px] rounded-[8px]  text-sm font-medium transition
                 ${
                   smoking === item
-                    ? "bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01]"
-                    : "bg-[#FBFAF9] text-[#1A1A1A]"
+                    ? "bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] border border-[#C8A851] text-[#913C01]"
+                    : "bg-[linear-gradient(180deg,rgba(167,139,218,0.22)_0%,rgba(55,35,95,0.65)_100%)] border border-[#a78bda]/40"
                 }`}
                     >
                       {item}
@@ -205,8 +205,8 @@ export default function LifestylePage() {
                       className={`cursor-pointer flex-1 sm:h-[52px] h-[36px] rounded-[8px] text-sm font-medium transition
                 ${
                   alcohol === item
-                    ? "bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01]"
-                    : "bg-[#FBFAF9] text-[#1A1A1A]"
+                    ? "bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] border border-[#C8A851] text-[#913C01]"
+                    : "bg-[linear-gradient(180deg,rgba(167,139,218,0.22)_0%,rgba(55,35,95,0.65)_100%)] border border-[#a78bda]/40"
                 }`}
                     >
                       {item}
@@ -228,7 +228,7 @@ export default function LifestylePage() {
                     if (dietError) setDietError("")
                   }}
                 >
-                  <SelectTrigger className="w-full bg-[#FBFAF9] !h-[52px] rounded-[8px] text-[#1A1A1A] text-sm">
+                  <SelectTrigger className="w-full border-[#C8A851]/18 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] !h-[52px] rounded-[8px] text-white text-sm">
                     <SelectValue placeholder="Select diet" />
                   </SelectTrigger>
                   <SelectContent>
@@ -248,7 +248,7 @@ export default function LifestylePage() {
             type="button"
             onClick={handleSave}
             disabled={loading || saving}
-            className="cursor-pointer w-full h-[52px] mb-4 text-[#913C01] font-semibold bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] disabled:opacity-60"
+            className="cursor-pointer w-full h-[52px] text-[#913C01] font-semibold bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] disabled:opacity-60"
           >
             {saving ? "Saving…" : "Save Changes"}
           </Button>

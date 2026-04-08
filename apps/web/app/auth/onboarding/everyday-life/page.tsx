@@ -1,517 +1,273 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronUp } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Button, Card, CardContent, Progress } from "@repo/ui";
+import { Button, Card, CardContent, cn, Progress } from "@repo/ui";
+import {
+  EVERYDAY_QUESTIONS,
+  getEverydayQuestionLucideIcon,
+  getEverydayQuestionMaxSelections,
+  getEverydaySectionLucideIcon,
+} from "@/data/everydayLifeQuestions";
+import { AUTH_STORAGE_KEYS, saveEverydayLife } from "@/lib/api/auth";
+import {
+  setQuestionAnswers,
+  useEverydayAnswersRecord,
+} from "@/store/everydayLifeStore";
 
-const MAX_PER_QUESTION = 3;
-
-type EverydayQuestion = {
-  id: string;
-  prompt: string;
-  options: readonly string[];
-};
-
-type EverydaySection = {
-  id: string;
-  title: string;
-  emoji: string;
-  questions: readonly EverydayQuestion[];
-};
-
-const SECTIONS: readonly EverydaySection[] = [
-  {
-    id: "relationship-history",
-    title: "Relationship History",
-    emoji: "💍",
-    questions: [
-      {
-        id: "relationshipHistory",
-        prompt: "What is your relationship history?",
-        options: ["Never married", "Divorced", "Widowed", "Prefer not to say"],
-      },
-    ],
-  },
-  {
-    id: "children",
-    title: "Children",
-    emoji: "👶",
-    questions: [
-      {
-        id: "haveChildren",
-        prompt: "Do you have children?",
-        options: ["Yes", "No"],
-      },
-      {
-        id: "wantChildren",
-        prompt: "Do you want children?",
-        options: ["Yes", "Yes — open to adoption", "Maybe", "Not right now", "No"],
-      },
-      {
-        id: "openToPartnerWithChildren",
-        prompt: "Open to dating someone with children?",
-        options: ["Yes", "Maybe", "Need to discuss it", "No"],
-      },
-    ],
-  },
-  {
-    id: "hobbies",
-    title: "Hobbies",
-    emoji: "🎨",
-    questions: [
-      {
-        id: "freeTime",
-        prompt: "What do you do in your free time?",
-        options: [
-          "Reading",
-          "Writing",
-          "Cooking",
-          "Baking",
-          "Gardening",
-          "Photography",
-          "Painting",
-          "Drawing",
-          "Crafting",
-          "DIY projects",
-          "Woodworking",
-          "Playing an instrument",
-          "Singing",
-          "Volunteering",
-          "Mentoring",
-          "Board games",
-          "Puzzles",
-          "Fishing",
-          "Hunting",
-          "Hiking",
-          "Traveling",
-          "Shopping",
-          "Attending local events",
-          "Going to the gym",
-          "Running",
-          "Cycling",
-          "Swimming",
-          "Dancing",
-          "Watching sports",
-          "Playing sports",
-          "Going to concerts",
-          "Trying new restaurants",
-          "Road trips",
-          "Spending time with family",
-          "Thrifting",
-          "Journaling",
-          "Content creation",
-          "Gaming",
-          "Other",
-        ],
-      },
-    ],
-  },
-  {
-    id: "music",
-    title: "Music",
-    emoji: "🎵",
-    questions: [
-      {
-        id: "musicTaste",
-        prompt: "What kind of music do you love?",
-        options: [
-          "Contemporary Christian",
-          "Gospel",
-          "Hymns",
-          "Worship and praise",
-          "R&B",
-          "Soul",
-          "Country",
-          "Hip-Hop",
-          "Classical",
-          "Jazz",
-          "Blues",
-          "Pop",
-          "Rock",
-          "Indie",
-          "Alternative",
-          "Latin",
-          "Reggae",
-          "Folk",
-          "Bluegrass",
-          "Instrumental",
-          "Soundtracks",
-          "Oldies and Motown",
-          "Electronic",
-          "Other",
-        ],
-      },
-    ],
-  },
-  {
-    id: "sports",
-    title: "Sports",
-    emoji: "🏀",
-    questions: [
-      {
-        id: "sportsPlayOrFollow",
-        prompt: "What sports do you play or follow?",
-        options: [
-          "Football",
-          "Basketball",
-          "Baseball",
-          "Softball",
-          "Soccer",
-          "Tennis",
-          "Golf",
-          "Hockey",
-          "MMA",
-          "Boxing",
-          "Kickboxing",
-          "Wrestling",
-          "Motorsports",
-          "Olympics",
-          "College sports",
-          "Track and field",
-          "Gymnastics",
-          "Figure skating",
-          "Surfing",
-          "Skateboarding",
-          "Snowboarding",
-          "Skiing",
-          "Lacrosse",
-          "Rugby",
-          "Cricket",
-          "Volleyball",
-          "Pickleball",
-          "Swimming",
-          "Cycling",
-          "Running",
-          "Bowling",
-          "Billiards",
-          "Backyard games",
-          "Rock climbing",
-          "Martial arts",
-          "CrossFit",
-          "Rowing",
-          "Badminton",
-          "Ping pong",
-          "Disc golf",
-          "Flag football",
-          "Sand volleyball",
-          "Bodybuilding",
-          "Esports",
-          "Not really into sports",
-          "Other",
-        ],
-      },
-      {
-        id: "fitnessLifestyle",
-        prompt: "What is your fitness lifestyle?",
-        options: [
-          "Gym regularly",
-          "Running",
-          "Hiking",
-          "Cycling",
-          "Swimming",
-          "Home workouts",
-          "Team sports",
-          "Outdoor adventures",
-          "Stretching",
-          "Still building a routine",
-          "Other",
-        ],
-      },
-    ],
-  },
-  {
-    id: "personality",
-    title: "Personality",
-    emoji: "🧠",
-    questions: [
-      {
-        id: "recharge",
-        prompt: "How do you recharge?",
-        options: [
-          "Alone time",
-          "Friends or family",
-          "Nature",
-          "Worship and prayer",
-          "Napping",
-          "Long drive",
-          "Reading",
-          "A good project",
-          "Exercise",
-          "Cooking",
-          "Other",
-        ],
-      },
-      {
-        id: "communicationStyle",
-        prompt: "What is your communication style?",
-        options: [
-          "Direct",
-          "Thoughtful",
-          "Expressive",
-          "Humorous",
-          "Good listener",
-          "Depends on the moment",
-        ],
-      },
-    ],
-  },
-  {
-    id: "food-drinks",
-    title: "Food and Drinks",
-    emoji: "🍽️",
-    questions: [
-      {
-        id: "favoriteFood",
-        prompt: "What are your favorite types of food?",
-        options: [
-          "Soul food",
-          "Southern cooking",
-          "American",
-          "Italian",
-          "Mexican",
-          "Caribbean",
-          "African",
-          "Asian",
-          "Mediterranean",
-          "Middle Eastern",
-          "Seafood",
-          "Barbecue",
-          "Comfort food",
-          "Breakfast all day",
-          "Healthy eating",
-          "Plant-based",
-          "Other",
-        ],
-      },
-    ],
-  },
-  {
-    id: "travel",
-    title: "Travel",
-    emoji: "✈️",
-    questions: [
-      {
-        id: "travelerType",
-        prompt: "What kind of traveler are you?",
-        options: [
-          "Beach",
-          "Mountains",
-          "City exploration",
-          "Road trips",
-          "International",
-          "Cruises",
-          "Historical sites",
-          "Food travel",
-          "Mission trips",
-          "Family visits",
-          "Staycations",
-          "Other",
-        ],
-      },
-      {
-        id: "travelStyle",
-        prompt: "How do you travel best?",
-        options: [
-          "Fully planned",
-          "Spontaneous",
-          "Slow and deep",
-          "Flexible balance",
-          "Whatever is affordable",
-        ],
-      },
-    ],
-  },
-  {
-    id: "staying-in",
-    title: "Staying In",
-    emoji: "🏠",
-    questions: [
-      {
-        id: "perfectNightIn",
-        prompt: "What does a perfect night in look like?",
-        options: [
-          "Home-cooked meal",
-          "Movie or series",
-          "Reading",
-          "Board games",
-          "Good conversation",
-          "Worship music",
-          "A creative project",
-          "Gaming",
-          "Baking",
-          "Just resting",
-          "Other",
-        ],
-      },
-      {
-        id: "showsOrMovies",
-        prompt: "What kind of shows or movies do you enjoy?",
-        options: [
-          "Faith-based films",
-          "Documentaries",
-          "Family films",
-          "Comedies",
-          "Dramas",
-          "Musicals",
-          "Action and adventure",
-          "Historical",
-          "Animated",
-          "Sports docs",
-          "True crime",
-          "Nature and wildlife",
-          "Other",
-        ],
-      },
-    ],
-  },
-  {
-    id: "lifestyle",
-    title: "Lifestyle",
-    emoji: "🌿",
-    questions: [
-      {
-        id: "dayToDay",
-        prompt: "How would you describe your day-to-day?",
-        options: [
-          "Busy and driven",
-          "Balanced",
-          "Laid back",
-          "Routine-oriented",
-          "In transition",
-          "Building and focused",
-        ],
-      },
-    ],
-  },
-];
-
-function toggleOption(current: string[], option: string): string[] {
+function toggleOption(current: string[], option: string, max: 1 | 3): string[] {
+  if (max === 1) {
+    if (current.length === 1 && current[0] === option) {
+      return [];
+    }
+    return [option];
+  }
   if (current.includes(option)) {
     return current.filter((value) => value !== option);
   }
-  if (current.length >= MAX_PER_QUESTION) {
+  if (current.length >= max) {
     return current;
   }
   return [...current, option];
 }
 
+function EverydayIconTile(
+  props:
+    | { variant: "section"; sectionId: string; size?: "md" | "lg" }
+    | { variant: "question"; questionId: string; size?: "md" | "lg" },
+) {
+  const size = props.size ?? "md";
+  const Icon =
+    props.variant === "section"
+      ? getEverydaySectionLucideIcon(props.sectionId)
+      : getEverydayQuestionLucideIcon(props.questionId);
+  const iconSize = size === "lg" ? "size-[20px] sm:size-[22px]" : "size-[18px]";
+
+  const box =
+    size === "lg" ? "h-11 w-11 sm:h-12 sm:w-12" : "h-10 w-10 sm:h-11 sm:w-11";
+  return (
+    <div
+      className={cn(
+        "flex shrink-0 items-center justify-center rounded-xl border border-[#C8A851]/40 bg-[linear-gradient(145deg,rgba(200,168,81,0.22)_0%,rgba(255,248,235,0.95)_48%,rgba(250,245,230,0.98)_100%)] text-[#7a5210] shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]",
+        box,
+      )}
+    >
+      <Icon className={cn("shrink-0", iconSize)} strokeWidth={2} aria-hidden />
+    </div>
+  );
+}
+
 export default function EverydayLifePage() {
   const router = useRouter();
-  const [answers, setAnswers] = useState<Record<string, string[]>>({});
-
-  const questionCount = useMemo(
-    () => SECTIONS.reduce((count, section) => count + section.questions.length, 0),
-    []
-  );
-
-  const answeredQuestionCount = useMemo(() => {
-    return Object.values(answers).reduce((count, selected) => {
-      if (selected.length > 0) return count + 1;
-      return count;
-    }, 0);
-  }, [answers]);
-
-  const progress = Math.min(
-    100,
-    Math.round((answeredQuestionCount / Math.max(questionCount, 1)) * 100)
+  const answers = useEverydayAnswersRecord();
+  const [submitting, setSubmitting] = useState(false);
+  const [openSectionId, setOpenSectionId] = useState<string | null>(
+    EVERYDAY_QUESTIONS[0]?.id ?? null,
   );
 
   const onToggleAnswer = (questionId: string, option: string) => {
-    setAnswers((prev) => {
-      const current = prev[questionId] ?? [];
-      return {
-        ...prev,
-        [questionId]: toggleOption(current, option),
-      };
-    });
+    const max = getEverydayQuestionMaxSelections(questionId);
+    const current = answers[questionId] ?? [];
+    const next = toggleOption(current, option, max);
+    setQuestionAnswers(questionId, next);
+  };
+
+  const handleContinue = async () => {
+    if (submitting) return;
+    const token =
+      typeof window !== "undefined"
+        ? window.localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN)
+        : null;
+    if (!token) {
+      router.push("/auth/onboarding/profile");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await saveEverydayLife(answers, token);
+    } catch {
+      // soft-fail, still move forward
+    } finally {
+      setSubmitting(false);
+      router.push("/auth/onboarding/profile");
+    }
   };
 
   return (
-    <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex sm:items-center items-start justify-center px-3 sm:px-4 py-5 sm:py-6">
-      <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
-        <CardContent className="flex flex-col md:gap-6 gap-3 sm:p-10 px-3">
-          <div className="text-left text-white w-full">
+    <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex  sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
+      <Card className="w-full min-w-0 max-w-[620px] rounded-2xl border-0 bg-transparent bg-cover bg-center bg-no-repeat py-0 md:border md:border-white/10 md:bg-[url('/images/bg_auth_center.png')] md:shadow-2xl md:shadow-[0px_4px_4px_0px_#00000014] md:backdrop-blur-xl">
+        <CardContent className="flex w-full min-w-0 flex-col gap-3 px-3 sm:p-10">
+          <div className="text-left text-white w-full ">
             <Link href="/auth/onboarding/partner-attributes">
               <ChevronLeft size={24} />
             </Link>
           </div>
 
-          <div className="mb-2 w-full">
-            <p className="text-xs text-gray-300 mb-2 text-left">
-              Step 7 of 8
-            </p>
-            <Progress value={90} className="h-2" />
+          {/* Progress */}
+          <div className="mb-6 w-full">
+            <p className="text-xs text-gray-300 mb-2 text-left">Step 7 of 8</p>
+            <Progress value={80} className="h-2" />
           </div>
 
-          <h1 className="text-[24px] font-serif text-white font-normal leading-snug text-left">
+          {/* Title */}
+          <h2 className="text-[24px] font-serif text-white justify-start font-normal leading-snug !text-left">
             Everyday Life
-          </h1>
+          </h2>
 
-            <div
-              className="space-y-4 max-h-[55vh] overflow-y-auto pr-1 scroll-smooth [scrollbar-width:thin] [scrollbar-color:#C8A851_#1A1A1A22] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-[#1A1A1A22] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[linear-gradient(180deg,#964400_0%,#F3D35D_50%,#8C4202_100%)] [&::-webkit-scrollbar-thumb:hover]:bg-[linear-gradient(180deg,#8C4202_0%,#F3D35D_50%,#964400_100%)]"
-            >
-              {SECTIONS.map((section) => (
+          <p className="text-sm text-white mt-0 mb-6 text-left w-full">
+            Tell us how you live day to day — pick what fits you best.
+          </p>
+
+          <div className="w-full min-w-0 space-y-4">
+            {EVERYDAY_QUESTIONS.map((section) => {
+              const isOpen = openSectionId === section.id;
+              const headerId = `onboarding-everyday-section-${section.id}`;
+              const panelId = `onboarding-everyday-panel-${section.id}`;
+              return (
                 <section
                   key={section.id}
-                  className="rounded-xl border border-black/10 bg-white p-3 sm:p-4"
+                  className="w-full min-w-0 overflow-hidden rounded-2xl border border-[#C8A851]/22 bg-[#FBFAF914] shadow-[0_16px_40px_rgba(0,0,0,0.18)] ring-1 ring-black/[0.04]"
                 >
-                  <h2 className="text-base sm:text-lg font-semibold text-[#1A1A1A] mb-3">
-                    <span className="mr-2" aria-hidden>
-                      {section.emoji}
+                  <button
+                    type="button"
+                    id={headerId}
+                    aria-expanded={isOpen}
+                    aria-controls={panelId}
+                    onClick={() =>
+                      setOpenSectionId((prev) =>
+                        prev === section.id ? null : section.id,
+                      )
+                    }
+                    className={cn(
+                      "flex w-full items-center gap-3 px-4 py-3.5 text-left transition sm:px-5 sm:py-4",
+                      isOpen && "border-b border-[#C8A851]/12",
+                    )}
+                  >
+                    <EverydayIconTile
+                      variant="section"
+                      sectionId={section.id}
+                      size="lg"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-base font-semibold tracking-tight text-white sm:text-lg">
+                        {section.title}
+                      </h2>
+                      <p className="mt-0.5 text-xs text-white/60">
+                        {section.questions.length}{" "}
+                        {section.questions.length === 1
+                          ? "question"
+                          : "questions"}
+                      </p>
+                    </div>
+                    <span className="shrink-0 text-[#7a6b8c]">
+                      {isOpen ? (
+                        <ChevronUp
+                          className="size-5"
+                          strokeWidth={2}
+                          aria-hidden
+                        />
+                      ) : (
+                        <ChevronDown
+                          className="size-5"
+                          strokeWidth={2}
+                          aria-hidden
+                        />
+                      )}
                     </span>
-                    {section.title}
-                  </h2>
+                  </button>
 
-                  <div className="space-y-4">
-                    {section.questions.map((question) => {
-                      const selected = answers[question.id] ?? [];
-                      const limitReached = selected.length >= MAX_PER_QUESTION;
-                      return (
-                        <div key={question.id}>
-                          <p className="text-sm sm:text-base font-medium text-[#1A1A1A] mb-2">
-                            {question.prompt}
-                          </p>
-                          <div className="flex flex-wrap gap-2">
-                            {question.options.map((option) => {
-                              const isActive = selected.includes(option);
-                              const isDisabled = !isActive && limitReached;
-                              return (
-                                <button
-                                  key={option}
-                                  type="button"
-                                  onClick={() => onToggleAnswer(question.id, option)}
-                                  disabled={isDisabled}
-                                  className={`rounded-full border px-3 py-1.5 text-xs sm:text-sm transition ${isActive
-                                      ? "border-[#C8A851] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] font-semibold"
-                                      : "border-black/15 bg-white text-[#1A1A1A]"
-                                    } ${isDisabled ? "opacity-45 cursor-not-allowed" : "cursor-pointer hover:border-[#C8A851]"}`}
-                                >
-                                  {option}
-                                </button>
-                              );
-                            })}
+                  {isOpen ? (
+                    <div
+                      id={panelId}
+                      role="region"
+                      aria-labelledby={headerId}
+                      className="space-y-0 px-3.5 pb-4 pt-1 sm:px-5"
+                    >
+                      {section.questions.map((question, qIdx) => {
+                        const selected = answers[question.id] ?? [];
+                        const max = getEverydayQuestionMaxSelections(
+                          question.id,
+                        );
+                        const limitReached =
+                          max === 3 && selected.length >= max;
+                        return (
+                          <div
+                            key={question.id}
+                            className={cn(
+                              "pt-4",
+                              qIdx > 0 && "mt-1 border-t border-[#C8A851]/10",
+                            )}
+                          >
+                            <div className="flex gap-3">
+                              <EverydayIconTile
+                                variant="question"
+                                questionId={question.id}
+                              />
+                              <div className="min-w-0 flex-1 pb-1">
+                                <p className="text-sm font-semibold leading-snug text-white sm:text-[15px]">
+                                  {question.prompt}
+                                </p>
+                                <p className="mb-2 text-xs text-white/60">
+                                  {max === 3 ? "Choose up to 3" : "Choose one"}
+                                </p>
+                                <div className="mt-2.5 flex flex-wrap gap-2">
+                                  {question.options.map((option) => {
+                                    const isActive = selected.includes(
+                                      option.value,
+                                    );
+                                    const isDisabled =
+                                      max === 3 && !isActive && limitReached;
+                                    return (
+                                      <button
+                                        key={option.value}
+                                        type="button"
+                                        onClick={() =>
+                                          onToggleAnswer(
+                                            question.id,
+                                            option.value,
+                                          )
+                                        }
+                                        disabled={isDisabled}
+                                        className={cn(
+                                          "rounded-full cursor-pointer border px-3 py-2 text-left text-xs transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C8A851]/80 sm:px-3.5 sm:text-sm",
+                                          isActive
+                                            ? "border-[#C8A851] bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] font-semibold text-[#5c2e04] shadow-sm"
+                                            : "border-[#a78bda]/40 bg-[linear-gradient(180deg,rgba(167,139,218,0.22)_0%,rgba(55,35,95,0.65)_100%)] text-white",
+                                          isDisabled &&
+                                            "cursor-not-allowed opacity-45",
+                                        )}
+                                      >
+                                        {option.label}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                        );
+                      })}
+                    </div>
+                  ) : null}
                 </section>
-              ))}
-            </div>
+              );
+            })}
+          </div>
 
           <Button
             type="button"
-            onClick={() => router.push("/auth/onboarding/profile")}
-            className="cursor-pointer mt-1 w-full h-[52px] text-base text-[#913C01] font-semibold bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] hover:opacity-90"
+            disabled={submitting}
+            onClick={handleContinue}
+            className="mt-1 h-[52px] w-full cursor-pointer bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-base font-semibold text-[#913C01] hover:opacity-90 disabled:opacity-60"
           >
-            Continue
+            {submitting ? "Saving..." : "Continue"}
           </Button>
           <Button
             type="button"
             onClick={() => router.push("/auth/onboarding/profile")}
-            className="cursor-pointer text-base bg-transparent hover:bg-transparent text-white font-semibold hover:opacity-90 transition disabled:opacity-60"
+            className="mt-1 h-[52px] w-full cursor-pointer bg-transparent text-base font-semibold text-white/90 transition hover:bg-transparent hover:text-white hover:opacity-90 disabled:opacity-60"
           >
             Skip for now
           </Button>
@@ -520,4 +276,3 @@ export default function EverydayLifePage() {
     </div>
   );
 }
-

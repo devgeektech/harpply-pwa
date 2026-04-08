@@ -13,10 +13,10 @@ const FooterResponsive = () => {
   const pathname = usePathname()
 
   const menu = [
-    { icon: HomeIcon, label: "Home", href: "/dashboard/quiz/introduction" },
-    { icon: HeartIcon, label: "Matches", href: "/dashboard/quiz/introduction" },
-    { icon: MessageIcon, label: "Messages", href: "/dashboard/messages" },
-    { icon: ProfileIcon, label: "Profile", href: "/dashboard/profile" },
+    { icon: HomeIcon, label: "Discover", href: "/dashboard/quiz/introduction" },
+    { icon: HeartIcon, label: "Connections", href: "/connection" },
+    { icon: MessageIcon, label: "Chat", href: "/chat" },
+    { icon: ProfileIcon, label: "Profile", href: "/profile" },
   ]
 
   return (

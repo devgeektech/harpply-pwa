@@ -52,6 +52,24 @@ model User {
   alcoholPreference    String?   // Never, Socially, Regularly
   dietaryPreference    String?
 
+  // Onboarding - Everyday life questions
+  relationshipHistory   Json?     // array of strings
+  haveChildren          Json?     // array of strings
+  wantChildren          Json?     // array of strings
+  openToPartnerWithChildren Json?     // array of strings
+  freeTime              Json?     // array of strings
+  musicTaste            Json?     // array of strings
+  sportsPlayOrFollow    Json?     // array of strings
+  fitnessLifestyle      Json?     // array of strings
+  recharge              Json?     // array of strings
+  communicationStyle    Json?     // array of strings
+  favoriteFood          Json?     // array of strings
+  travelerType          Json?     // array of strings
+  travelStyle           Json?     // array of strings
+  perfectNightIn        Json?     // array of strings
+  showsOrMovies         Json?     // array of strings
+  dayToDay              Json?     // array of strings
+
   onboardingCompleted  Boolean @default(false)
 
   @@schema("auth")

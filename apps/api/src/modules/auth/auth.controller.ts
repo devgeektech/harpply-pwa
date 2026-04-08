@@ -56,6 +56,7 @@ import * as Express from 'express';
 import { ConfigService } from '@nestjs/config';
 import { successResponse } from '../../common/response/api-response';
 import { AttributeDto } from './dto/attribute.dto';
+import type  { EverydayLifeProfileDto } from './dto/everyday-life-profile.dto';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -610,6 +611,20 @@ export class AuthController {
     @Body() dto: AttributeDto,
   ) {
     return this.onboardingService.savePartnerValues(userId, dto);
+  }
+
+  @Post('onboarding/everyday-life')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary:
+      'Save or update everyday life profile answers – auth by token, update user by decoded sub',
+  })
+  async saveEverydayLife(
+    @CurrentUserId() userId: string,
+    @Body() body: EverydayLifeProfileDto,
+  ) {
+    return this.onboardingService.saveEverydayLife(userId, body);
   }
 
   @Get('onboarding/review')

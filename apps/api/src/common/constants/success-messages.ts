@@ -24,6 +24,7 @@ export const SUCCESS_MESSAGES = {
     FAITH_LIFESTYLE: 'Faith & lifestyle saved successfully.',
     ATTRIBUTES: 'Attributes saved successfully.',
     PARTNER_ATTRIBUTES: 'Partbner attributes saved successfully.',
+    EVERYDAY_LIFE: 'Everyday life profile saved successfully.',
     ONBOARDING_COMPLETED: 'Onboarding completed successfully.',
     REVIEW_DATA: 'Onboarding review data fetched.',
   },
