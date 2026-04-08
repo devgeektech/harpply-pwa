@@ -148,7 +148,7 @@ export default function FaithLifestylePage() {
                   value={item}
                   selected={churchAttendance}
                   onSelect={setChurchAttendance}
-                  className="h-[52px] rounded-[8px]"
+                  className="h-[42px] rounded-[8px]"
                 />
               ))}
             </div>
@@ -169,7 +169,7 @@ export default function FaithLifestylePage() {
                     value={item}
                     selected={smokingSelection}
                     onSelect={setSmokingSelection}
-                    className="h-[52px] rounded-[8px] flex-1 min-w-[90px]"
+                    className="h-[42px] rounded-[8px] flex-1 min-w-[90px]"
                   />
                 ))}
               </div>
@@ -184,7 +184,7 @@ export default function FaithLifestylePage() {
                     value={item}
                     selected={alcoholSelection}
                     onSelect={setAlcoholSelection}
-                    className="h-[52px] rounded-[8px] flex-1 min-w-[90px]"
+                    className="h-[42px] rounded-[8px] flex-1 min-w-[90px]"
                   />
                 ))}
               </div>

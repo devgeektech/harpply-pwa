@@ -113,7 +113,6 @@ export default function Identity() {
               <p className="text-sm text-red-400 mt-2">{ageError}</p>
             )}
           </div>
-
           {/* Gender */}
           <div className="mb-6 w-full">
             <label className="text-white font-normal text-sm">Gender</label>
@@ -124,7 +123,7 @@ export default function Identity() {
                     type="button"
                     key={g}
                     onClick={() => setGender(g)}
-                    className={`flex-1 rounded-full sm:rounded-lg py-2 text-base font-medium border transition cursor-pointer ${
+                    className={`flex-1 rounded-full sm:rounded-lg py-2 text-sm font-medium border transition cursor-pointer ${
                       gender === g
                         ? "bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] text-[#913C01] border-[#C39936]"
                         : "bg-[linear-gradient(180deg,rgba(167,139,218,0.22)_0%,rgba(55,35,95,0.65)_100%)] text-white border-[#a78bda]/40"

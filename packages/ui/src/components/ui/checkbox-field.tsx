@@ -27,7 +27,7 @@ const CheckboxField = React.forwardRef<HTMLInputElement, CheckboxFieldProps>(
         className={cn(
           "inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-foreground",
           disabled && "cursor-not-allowed opacity-50",
-          className
+          className,
         )}
       >
         <span className="relative inline-flex shrink-0">
@@ -43,12 +43,12 @@ const CheckboxField = React.forwardRef<HTMLInputElement, CheckboxFieldProps>(
           />
           <span
             className={cn(
-              "flex size-5 items-center justify-center rounded-full border border-input bg-background shadow-xs transition-colors",
+              "flex md:size-5 size-4 items-center justify-center rounded-full border border-input bg-background shadow-xs transition-colors",
               "peer-focus-visible:outline-none peer-focus-visible:border-ring peer-focus-visible:ring-ring/50 peer-focus-visible:ring-[3px]",
               "peer-disabled:pointer-events-none peer-disabled:opacity-50",
               "peer-checked:border-[#C39936] peer-checked:bg-[#C39936] peer-checked:text-primary-foreground peer-checked:[&_svg]:opacity-100",
               error &&
-                "border-destructive ring-destructive/20 dark:ring-destructive/40"
+                "border-destructive ring-destructive/20 dark:ring-destructive/40",
             )}
           >
             <Check
@@ -60,7 +60,7 @@ const CheckboxField = React.forwardRef<HTMLInputElement, CheckboxFieldProps>(
         {label}
       </label>
     );
-  }
+  },
 );
 
 CheckboxField.displayName = "CheckboxField";

@@ -91,7 +91,7 @@ export default function FaithValuesPage() {
   return (
     <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex  sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
       <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
-        <CardContent className="flex flex-col md:gap-6 gap-3 sm:p-6 px-3 text-white">
+        <CardContent className="flex flex-col md:gap-6 gap-3 sm:p-6 px-0 text-white">
           <div className="flex items-center px-0 pb-2 w-full">
             <Link
               href="/profile/faithlifestyle"
