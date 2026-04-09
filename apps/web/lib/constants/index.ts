@@ -57,3 +57,7 @@ export const DIETARY_PREFERENCE_OPTIONS = [
 
 export type DietaryPreferenceValue =
   (typeof DIETARY_PREFERENCE_OPTIONS)[number]["value"];
+
+export const MAX_AGE = 100;
+export const MIN_AGE = 18;
+

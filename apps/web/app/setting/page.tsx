@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@repo/ui";
 import Link from "next/link";
 import Profile from "@/icons/profile";
@@ -16,15 +16,51 @@ import { toast } from "sonner";
 import { SUCCESS_MESSAGES } from "@/lib/messages/success-messages";
 import { clearClientAuthSession } from "@/lib/api/session-expired";
 import { useRouter } from "next/navigation";
-import { deleteMyAccount } from "@/lib/api/profile";
+import { deleteMyAccount, fetchProfile, fetchProfilePhotos } from "@/lib/api/profile";
 import { ERROR_MESSAGES } from "@/lib/messages/error-messages";
+import { buildPhotoSrc } from "@/lib/utils/buildPhotoSrc";
 
 const Settings = () => {
   const router = useRouter();
   const [modalType, setModalType] = useState<"deleteAccount" | "logout">("logout");
   const [modalOpen, setModalOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [displayName, setDisplayName] = useState<string>("");
+  const [displayEmail, setDisplayEmail] = useState<string>("");
+  const [firstProfilePhotoSrc, setFirstProfilePhotoSrc] = useState<string | null>(null);
+  const s3PublicUrl = process.env.NEXT_PUBLIC_AWS_S3_URL ?? "";
 
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchProfile()
+      .then((res) => {
+        if (cancelled) return;
+        const name = (res?.data?.fullName ?? "").trim();
+        const email = (res?.data?.email ?? "").trim();
+        setDisplayName(name);
+        setDisplayEmail(email);
+      })
+      .catch(() => {
+        // ignore — header can still render with fallback
+      });
+
+    fetchProfilePhotos()
+      .then((res) => {
+        const firstKey = res?.photos?.[0];
+        setFirstProfilePhotoSrc(
+          firstKey ? buildPhotoSrc(s3PublicUrl, firstKey) : null,
+        );
+      })
+      .catch(() => {
+        // Keep placeholder on error.
+        setFirstProfilePhotoSrc(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [s3PublicUrl]);
 
   const handleLogout = async () => {
     if (confirmLoading) return;
@@ -83,14 +119,14 @@ const Settings = () => {
             <div className="flex flex-col items-center gap-1">
               <img
                 className="w-[100px] h-[100px] rounded-full mb-3"
-                src="/images/match-pro-1.png"
+                src={firstProfilePhotoSrc ?? "/images/accountCircle.png"}
                 alt="match-pro-1.png"
               />
               <p className="text-[#C39936] text-base leading-[140%]">
-                Sarah Jensen
+                {displayName}
               </p>
               <p className="text-[#C39936] text-base leading-[140%]">
-                sarahjensen@gmail.com
+                {displayEmail}
               </p>
             </div>
 
@@ -127,7 +163,7 @@ const Settings = () => {
                 </Link>
 
                 <Link
-                  href="/dashboard/setting/profile"
+                  href="/notifications"
                   className="border-b border-[#C8A851]/18 flex justify-between gap-2 text-white/80 py-3 px-4 hover:bg-[#C8A851]/10 transition-colors"
                 >
                   <p className="flex items-center gap-2">
@@ -147,7 +183,9 @@ const Settings = () => {
                 </Link>
 
                 <Link
-                  href="/dashboard/setting/profile"
+                  href="/privacy-policy"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="border-b border-[#C8A851]/18 flex justify-between gap-2 text-white/80 py-3 px-4 hover:bg-[#C8A851]/10 transition-colors"
                 >
                   <p className="flex items-center gap-2">
@@ -157,7 +195,9 @@ const Settings = () => {
                 </Link>
 
                 <Link
-                  href="/dashboard/setting/profile"
+                  href="/terms-and-conditions"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="border-b border-[#C8A851]/18 flex justify-between gap-2 text-white/80 py-3 px-4 hover:bg-[#C8A851]/10 transition-colors"
                 >
                   <p className="flex items-center gap-2">

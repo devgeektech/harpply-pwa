@@ -21,29 +21,16 @@ import {
   updateBasicProfile,
 } from "@/lib/api/profile";
 import {
+  buildPhotoSrc,
   fetchCityStateFromPlaceId,
   fetchGooglePlaceSuggestions,
   type PlaceSuggestion,
 } from "@/lib/utils";
 import { useState, useEffect, useRef } from "react";
 import { SUCCESS_MESSAGES } from "@/lib/messages/success-messages";
+import { MAX_AGE, MIN_AGE } from "@/lib/constants";
 
-const CARD_BG = "#1A0A26";
-const GOLD_GRADIENT =
-  "linear-gradient(135deg, #c58b00 0%, #e8b923 50%, #c58b00 100%)";
-const INPUT_BG = "rgba(255,255,255,0.06)";
 const BORDER_SUBTLE = "rgba(255,255,255,0.12)";
-const MIN_AGE = 18;
-const MAX_AGE = 100;
-
-function buildPhotoSrc(s3PublicUrl: string, key: string): string {
-  const safeKey = key?.toString?.().trim() ?? "";
-  if (!safeKey) return "/images/accountCircle.png";
-  if (/^https?:\/\//i.test(safeKey)) return safeKey;
-  const base = (s3PublicUrl ?? "").replace(/\/$/, "");
-  if (!base) return "/images/accountCircle.png";
-  return `${base}/${safeKey.replace(/^\/+/, "")}`;
-}
 
 export default function EditProfilePage() {
   const {
@@ -418,7 +405,6 @@ export default function EditProfilePage() {
           <div
             className="flex rounded-xl p-1 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)]"
             style={{
-              // backgroundColor: INPUT_BG,
               border: `1px solid ${BORDER_SUBTLE}`,
             }}
           >
@@ -434,7 +420,6 @@ export default function EditProfilePage() {
                 style={
                   gender === g
                     ? {
-                      // background: GOLD_GRADIENT,
                       color: "#C39936",
                       border: "1px solid #C39936",
                       boxShadow: "0 2px 8px rgba(197, 139, 0, 0.35)",

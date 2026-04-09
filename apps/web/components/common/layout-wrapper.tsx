@@ -13,7 +13,7 @@ export default function LayoutWrapper({
   const pathname = usePathname();
 
   // ✅ Routes where layout SHOULD be visible
-  const showRoutes = ["/dashboard", "/setting", "/connection", "/chat"];
+  const showRoutes = ["/dashboard", "/setting", "/connection", "/chat", "/notifications"];
 
   const isShowLayout = showRoutes.some(route =>
     pathname.startsWith(route)

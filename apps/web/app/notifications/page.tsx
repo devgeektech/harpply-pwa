@@ -63,7 +63,7 @@ export default function NotificationPage() {
         <CardContent className="p-4 sm:p-6">
           {/* Header */}
           <div className="flex justify-between mb-6">
-            <Link href="/dashboard/setting">
+            <Link href="/setting">
               <ArrowLeft className="text-white cursor-pointer" />
             </Link>
             <h2 className="text-white text-xl font-normal">Notification</h2>
