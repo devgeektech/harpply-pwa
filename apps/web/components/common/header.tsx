@@ -39,13 +39,13 @@ export default function Header() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"deleteAccount" | "logout">(
-    "logout",
+    "logout"
   );
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [displayName, setDisplayName] = useState<string>("Account");
   const router = useRouter();
   const filteredSuggestions = suggestionsData.filter((item) =>
-    item.toLowerCase().includes(query.toLowerCase()),
+    item.toLowerCase().includes(query.toLowerCase())
   );
 
   const initials = useMemo(() => {
@@ -105,7 +105,7 @@ export default function Header() {
       toast.error(
         e instanceof Error
           ? e.message
-          : ERROR_MESSAGES.AUTH.FAILED_TO_DELETE_ACCOUNT,
+          : ERROR_MESSAGES.AUTH.FAILED_TO_DELETE_ACCOUNT
       );
     } finally {
       setConfirmLoading(false);
@@ -324,7 +324,7 @@ export default function Header() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="border-none h-auto relative bg-[#F5F3ED] py-[10px] px-[10px] md:rounded-[8px] rounded-full cursor-pointer whitespace-nowrap"
+                className="border-none md:min-w-[95px] h-auto relative bg-[#F5F3ED] py-[10px] px-[10px] md:rounded-[8px] rounded-full cursor-pointer whitespace-nowrap"
               >
                 <span className="hidden md:flex text-sm font-medium text-[#C39936] flex items-center gap-2 whitespace-nowrap">
                   {displayName}{" "}
@@ -351,18 +351,20 @@ export default function Header() {
               <DropdownMenuItem asChild>
                 <Link
                   href="/profile/identity"
-                  className="cursor-pointer text-sm font-medium text-[#C39936]"
+                  className="cursor-pointer group text-sm font-medium text-[#C39936]"
                 >
-                  <CircleUserRound className="text-[#C39936]" /> Profile
+                  <CircleUserRound className="text-[#C39936] group-hover:text-[#171717]" />{" "}
+                  Profile
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-white/10" />
               <DropdownMenuItem asChild>
                 <Link
                   href="/settings"
-                  className="cursor-pointer text-sm font-medium text-[#C39936]"
+                  className="cursor-pointer group text-sm font-medium text-[#C39936]"
                 >
-                  <Settings className="text-[#C39936]" /> Settings
+                  <Settings className="text-[#C39936] group-hover:text-[#171717]" />{" "}
+                  Settings
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-white/10" />
@@ -372,9 +374,10 @@ export default function Header() {
                   setModalType("deleteAccount");
                   setModalOpen(true);
                 }}
-                className="cursor-pointer text-sm font-medium text-[#C39936]"
+                className="cursor-pointer group text-sm font-medium text-[#C39936]"
               >
-                <Trash className="text-[#C39936]" /> Delete Account
+                <Trash className="text-[#C39936] group-hover:text-[#171717]" />{" "}
+                Delete Account
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-white/10" />
               <DropdownMenuItem
@@ -383,9 +386,10 @@ export default function Header() {
                   setModalType("logout");
                   setModalOpen(true);
                 }}
-                className="cursor-pointer text-sm font-medium text-[#C39936]"
+                className="cursor-pointer group text-sm font-medium text-[#C39936]"
               >
-                <LogOut className="text-[#C39936]" /> Logout
+                <LogOut className="text-[#C39936] group-hover:text-[#171717]" />{" "}
+                Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
