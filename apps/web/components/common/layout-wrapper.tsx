@@ -1,9 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import Header from "@/components/common/header";
 import Sidebar from "@/components/common/sidebar";
 import FooterResponsive from "@/components/common/footerresponsive";
+import Header from "./header";
 
 export default function LayoutWrapper({
   children,
@@ -12,25 +12,27 @@ export default function LayoutWrapper({
 }) {
   const pathname = usePathname();
 
-  // ✅ auth routes check
-  const isAuthRoute = pathname.startsWith("/auth");
-  // OR:
-  // const hideRoutes = ["/login", "/signup"];
-  // const isAuthRoute = hideRoutes.includes(pathname);
+  // ✅ Routes where layout SHOULD be visible
+  const showRoutes = ["/dashboard", "/setting", "/connection", "/chat"];
+
+  const isShowLayout = showRoutes.some(route =>
+    pathname.startsWith(route)
+  );
+
 
   return (
     <div className="flex flex-col min-h-screen">
-      {!isAuthRoute && <Header />}
+      {isShowLayout && <Header />}
 
       <div className="flex flex-1">
-        {!isAuthRoute && <Sidebar />}
+        {isShowLayout && <Sidebar />}
 
         <div className="flex flex-col flex-1 bg-[url('/images/bg_blue.jpg')] bg-cover p-3">
           <main className="flex-1 flex justify-center items-center">
             {children}
           </main>
 
-          {!isAuthRoute && <FooterResponsive />}
+          {isShowLayout && <FooterResponsive />}
         </div>
       </div>
     </div>

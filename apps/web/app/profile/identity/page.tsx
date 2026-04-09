@@ -119,7 +119,7 @@ export default function ProfileIdentityPage() {
             hydrateFromApi(res.data);
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     }
 
     fetchProfilePhotos()
@@ -130,7 +130,7 @@ export default function ProfileIdentityPage() {
           .filter(Boolean);
         setProfileImages(images);
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setPhotosLoaded(true));
   }, [loaded, hydrateFromApi, setProfileImages, s3PublicUrl]);
 
@@ -270,7 +270,7 @@ export default function ProfileIdentityPage() {
   }, []);
 
   return (
-    <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex items-center justify-center px-4">
+    <>
       <style>
         {`
           @keyframes identity-shimmer {
@@ -714,7 +714,7 @@ export default function ProfileIdentityPage() {
                                   key={`${idx}-${item.questionId}`}
                                   className={cn(
                                     idx < everydayLifeItems.length - 1 &&
-                                      "border-b border-[#C8A851]/12",
+                                    "border-b border-[#C8A851]/12",
                                   )}
                                 >
                                   <button
@@ -807,6 +807,6 @@ export default function ProfileIdentityPage() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </>
   );
 }
