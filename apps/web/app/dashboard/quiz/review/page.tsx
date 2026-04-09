@@ -74,7 +74,7 @@ export default function Review() {
   };
 
   return (
-    <div className="min-h-screen pb-[50px] sm:pb-0 w-full bg-gradient-to-b from-[#140034] to-[#01010D] flex items-center justify-center px-4">
+    <div className="min-h-screen flex sm:items-center items-start justify-center px-3 sm:px-4 pb-[50px] md:py-[50px] sm:py-4 w-full">
       <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
         <CardContent className="flex flex-col gap-2 sm:p-10 sm:px-6 px-0 text-left">
           <div className="text-left text-white w-full">

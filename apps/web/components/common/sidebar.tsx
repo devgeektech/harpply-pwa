@@ -24,8 +24,9 @@ export default function Sidebar() {
       <nav className="flex flex-col gap-6 items-center justify-center">
         {menu.map((item, i) => {
           const Icon = item.icon;
-          // const isActive = pathname === item.href;
           const isActive = pathname.startsWith(item.href);
+          console.log('isActive >>>>> ', isActive);
+          
 
           return (
             <Link
