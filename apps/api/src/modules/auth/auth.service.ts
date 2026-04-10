@@ -502,7 +502,6 @@ export class AuthService implements OnModuleInit {
       data: {
         password: hashed,
         token: null,
-        loggedOutAt: new Date(),
         resetToken: null,
         resetTokenExpires: null,
       } as Prisma.UserUpdateInput,
@@ -543,7 +542,6 @@ export class AuthService implements OnModuleInit {
       data: {
         password: hashed,
         token: null,
-        loggedOutAt: new Date(),
       } as Prisma.UserUpdateInput,
     });
 
