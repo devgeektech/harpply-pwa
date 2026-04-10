@@ -32,7 +32,10 @@ const page = () => {
           >
             Begin Assessment
           </Button>
-          <button className="text-white text-base font-medium cursor-pointer w-full text-center mt-4">
+          <button
+            onClick={() => router.push("/dashboard/quiz/discover")}
+           className="text-white text-base font-medium cursor-pointer w-full text-center mt-4"
+           >
             Skip for Now
           </button>
         </CardContent>
