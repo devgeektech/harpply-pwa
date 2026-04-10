@@ -49,34 +49,62 @@ export default function DiscoverPage() {
 
   return (
     <>
-    <div className="min-h-screen pb-[50px] sm:pb-0 bg-[linear-gradient(180deg,#140034_0%,#01010D_100%)] flex items-center justify-center sm:p-6 px-0">
-      
-      <div className="max-w-[620px] w-full rounded-3xl border border-white/10 bg-[#0f0225]/60  border-0 md:border md:border-white/10 backdrop-blur-xl sm:p-6 p-0 space-y-6">
-      <div className="text-left text-white w-full flex items-center justify-between ">
-            <Link href="/">
+      <style jsx global>{`
+        /* Apply only when body has 'no-scroll' class */
+        body.no-scroll .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+
+        body .no-scrollbar {
+          -ms-overflow-style: none;  /* IE & Edge */
+          scrollbar-width: none;     /* Firefox */
+        }
+          body:has(.no-scrollbar) {
+            overflow: hidden;
+          }
+            .scroll-show {
+              overflow-y: scroll;
+            }
+              .scrollbar-hide {
+              -ms-overflow-style: none;  /* IE & Edge */
+              scrollbar-width: none;     /* Firefox */
+            }
+
+            .scrollbar-hide::-webkit-scrollbar {
+              display: none;             /* Chrome, Safari */
+              -webkit-overflow-scrolling: touch !important;
+            }
+      `}</style>
+
+      <div className="no-scrollbar overflow-auto h-screen max-w-[620px] w-full rounded-3xl border border-white/10 bg-[#0f0225]/60  border border border-white/10 backdrop-blur-xl my-6 space-y-6 no-scrollbar scroll-show">
+        <div className="sticky top-0 z-10 m-0 sm:p-6 p-5 !pb-3 bg-[#0f0225] space-y-2">
+          <div className="text-left text-white w-full flex items-center justify-between ">
+            <Link href="/dashboard/quiz/introduction">
               <ChevronLeft size={24} />
             </Link>
-            <Link href="/">
-            <SlidersHorizontal size={24} />
+            <Link href="/dashboard/quiz/filters">
+              <SlidersHorizontal size={24} />
             </Link>
           </div>
-        {/* Filters */}
-        <div className="flex items-center gap-2 flex-wrap  overflow-x-auto items-center pb-2">
-          <span className="px-3 py-1 rounded-full border border-[#C39936] bg-white text-base font-normal text-[#C39936] whitespace-nowrap">
-            Denomination
-          </span>
 
-          <span className="px-3 py-1 rounded-full border border-white bg-white text-normal text-base text-[#1A1A1A] whitespace-nowrap">
-            90% + Compatibility
-          </span>
+          {/* Filters */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            <span className="flex-shrink-0 px-3 py-1 rounded-full border border-[#C39936] bg-white text-base font-normal text-[#C39936] whitespace-nowrap">
+              Denomination
+            </span>
 
-          <span className="px-3 py-1 rounded-full border border-white bg-white text-normal text-base text-[#1A1A1A] whitespace-nowrap">
-            Near by
-          </span>
+            <span className="px-3 py-1 rounded-full border border-white bg-white text-normal text-base text-[#1A1A1A] whitespace-nowrap">
+              90% + Compatibility
+            </span>
+
+            <span className="px-3 py-1 rounded-full border border-white bg-white text-normal text-base text-[#1A1A1A] whitespace-nowrap">
+              Near by
+            </span>
+          </div>
         </div>
 
         {/* Cards */}
-        <div className="space-y-6">
+        <div className="space-y-6 sm:p-6 p-5 !pt-0">
           {profiles.map((profile, index) => (
             <div
               key={index}
@@ -107,10 +135,10 @@ export default function DiscoverPage() {
               {/* Content */}
               <div className="p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-[20px] text-[#1A1A1A]">
-                  {profile.name}, {profile.age}
-                </h3>
-                <img src={profile.awardImage} alt={profile.name} className="w-[1rem] h-[1rem]" />
+                  <h3 className="font-semibold text-[20px] text-[#1A1A1A]">
+                    {profile.name}, {profile.age}
+                  </h3>
+                  <img src={profile.awardImage} alt={profile.name} className="w-[1rem] h-[1rem]" />
                 </div>
                 <p className="text-base font-normal text-[#1A1A1A] line-clamp-2">
                   {profile.description}
@@ -125,9 +153,9 @@ export default function DiscoverPage() {
         </div>
 
       </div>
-    </div>
-    <NoProfilesModal open={open} setOpen={setOpen} />
 
-      </>
+      {/* <NoProfilesModal open={open} setOpen={setOpen} /> */}
+
+    </>
   )
 }

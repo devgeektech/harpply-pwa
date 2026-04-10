@@ -5,6 +5,7 @@
     "build": "turbo run build",
     "db": "docker compose up -d db",
     "dev": "docker compose up -d db && turbo run dev",
+    "start:all": "docker compose up -d db && turbo run start --filter=api --filter=web --filter=admin",
     "docker:up": "docker compose up -d --build",
     "docker:up:logs": "docker compose up --build",
     "docker:down": "docker compose down",

@@ -87,149 +87,147 @@ function SigninForm() {
   };
 
   return (
-    <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex md:items-center justify-center px-4">
-      <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
-        <CardContent className="flex items-center flex-col sm:p-10 px-3 py-[50px] text-left">
-          <div className="w-full space-y-6">
-            <div className="text-left w-full">
-              <button
-                type="button"
-                onClick={() => router.push("/auth/signupemail")}
-                className="cursor-pointer text-white hover:opacity-90"
-                aria-label="Back"
-              >
-                <ChevronLeft size={24} />
-              </button>
-            </div>
-            <h2 className="w-full text-[24px] font-light text-white font-serif tracking-wider mb-[32px] md:mb-0">
-              Sign In
-            </h2>
-
-            {(apiError || googleError) && (
-              <p className="text-sm text-amber-200 bg-amber-500/20 rounded-lg px-3 py-2">
-                {apiError ??
-                  (googleError
-                    ? googleFailReason
-                      ? (() => {
-                          const reason = googleFailReason.trim();
-                          const cancelledReasons = new Set([
-                            "access_denied",
-                            "user_denied",
-                            "user_cancelled",
-                            "user_cancelled_by_user",
-                            "user_cancelled_by_user",
-                            "cancelled",
-                            "cancelled_by_user",
-                            "popup_closed",
-                            "popup_closed_by_user",
-                            "request_canceled",
-                            "consent_denied",
-                            "oauth_canceled",
-                            "google_denied",
-                            "google_cancelled",
-                            "google_cancelled_by_user",
-                          ]);
-                          if (cancelledReasons.has(reason)) {
-                            return "Google sign-in was cancelled.";
-                          }
-                          return `Google sign-in failed (${reason}). Please try again.`;
-                        })()
-                      : "Google sign-in failed. Please try again."
-                    : null)}
-              </p>
-            )}
-            <form
-              className="space-y-5 md:my-[50px] w-full"
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleLogin();
-              }}
+    <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
+      <CardContent className="flex items-center flex-col sm:p-10 px-3 py-[50px] text-left">
+        <div className="w-full space-y-6">
+          <div className="text-left w-full">
+            <button
+              type="button"
+              onClick={() => router.push("/auth/signupemail")}
+              className="cursor-pointer text-white hover:opacity-90"
+              aria-label="Back"
             >
-              {error && (
-                <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">
-                  {error}
-                </div>
+              <ChevronLeft size={24} />
+            </button>
+          </div>
+          <h2 className="w-full text-[24px] font-light text-white font-serif tracking-wider mb-[32px] md:mb-0">
+            Sign In
+          </h2>
+
+          {(apiError || googleError) && (
+            <p className="text-sm text-amber-200 bg-amber-500/20 rounded-lg px-3 py-2">
+              {apiError ??
+                (googleError
+                  ? googleFailReason
+                    ? (() => {
+                      const reason = googleFailReason.trim();
+                      const cancelledReasons = new Set([
+                        "access_denied",
+                        "user_denied",
+                        "user_cancelled",
+                        "user_cancelled_by_user",
+                        "user_cancelled_by_user",
+                        "cancelled",
+                        "cancelled_by_user",
+                        "popup_closed",
+                        "popup_closed_by_user",
+                        "request_canceled",
+                        "consent_denied",
+                        "oauth_canceled",
+                        "google_denied",
+                        "google_cancelled",
+                        "google_cancelled_by_user",
+                      ]);
+                      if (cancelledReasons.has(reason)) {
+                        return "Google sign-in was cancelled.";
+                      }
+                      return `Google sign-in failed (${reason}). Please try again.`;
+                    })()
+                    : "Google sign-in failed. Please try again."
+                  : null)}
+            </p>
+          )}
+          <form
+            className="space-y-5 md:my-[50px] w-full"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleLogin();
+            }}
+          >
+            {error && (
+              <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">
+                {error}
+              </div>
+            )}
+            <div className="space-y-2">
+              <Label className="text-gray-300">Email</Label>
+              <Input
+                placeholder="Email"
+                value={email}
+                type="email"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (emailError) setEmailError(null);
+                }}
+                className="bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] border border-[#C8A851]/40  h-[52px] rounded-[12px] md:rounded-[8px] text-[#ffffff] placeholder:text-white/40 focus-visible:border-[#C8A851]/60 focus-visible:ring-0 focus-visible:ring-transparent"
+              />
+              {emailError && (
+                <p className="text-sm text-red-400">{emailError}</p>
               )}
-              <div className="space-y-2">
-                <Label className="text-gray-300">Email</Label>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-gray-300">Password</Label>
+              <div className="relative">
                 <Input
-                  placeholder="Email"
-                  value={email}
-                  type="email"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
+                  value={password}
                   onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (emailError) setEmailError(null);
+                    setPassword(e.target.value);
+                    if (passwordError) setPasswordError(null);
                   }}
                   className="bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] border border-[#C8A851]/40  h-[52px] rounded-[12px] md:rounded-[8px] text-[#ffffff] placeholder:text-white/40 focus-visible:border-[#C8A851]/60 focus-visible:ring-0 focus-visible:ring-transparent"
                 />
-                {emailError && (
-                  <p className="text-sm text-red-400">{emailError}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-gray-300">Password</Label>
-                <div className="relative">
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      if (passwordError) setPasswordError(null);
-                    }}
-                    className="bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] border border-[#C8A851]/40  h-[52px] rounded-[12px] md:rounded-[8px] text-[#ffffff] placeholder:text-white/40 focus-visible:border-[#C8A851]/60 focus-visible:ring-0 focus-visible:ring-transparent"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-                {passwordError && (
-                  <p className="text-sm text-red-400">{passwordError}</p>
-                )}
-              </div>
-
-              <div className="text-right text-sm">
-                <Link
-                  href="/auth/forgotpassword"
-                  className="text-yellow-400 hover:underline"
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
                 >
-                  Forgot Password?
-                </Link>
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
+              {passwordError && (
+                <p className="text-sm text-red-400">{passwordError}</p>
+              )}
+            </div>
 
-              <Button
-                type="submit"
-                disabled={loading}
-                className="cursor-pointer w-full text-base h-[52px] mt-[12px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60"
-              >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Signing in...
-                  </span>
-                ) : (
-                  "Sign In"
-                )}
-              </Button>
-            </form>
-            <p className="text-center text-sm text-gray-300">
-              Don’t have an account?
+            <div className="text-right text-sm">
               <Link
-                href="/auth/signup"
-                className="text-yellow-400 ml-1 hover:underline"
+                href="/auth/forgotpassword"
+                className="text-yellow-400 hover:underline"
               >
-                Sign Up
+                Forgot Password?
               </Link>
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="cursor-pointer w-full text-base h-[52px] mt-[12px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60"
+            >
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Signing in...
+                </span>
+              ) : (
+                "Sign In"
+              )}
+            </Button>
+          </form>
+          <p className="text-center text-sm text-gray-300">
+            Don’t have an account?
+            <Link
+              href="/auth/signup"
+              className="text-yellow-400 ml-1 hover:underline"
+            >
+              Sign Up
+            </Link>
+          </p>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 

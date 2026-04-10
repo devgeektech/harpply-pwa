@@ -38,9 +38,7 @@ export default function Header() {
   const [query, setQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalType, setModalType] = useState<"deleteAccount" | "logout">(
-    "logout"
-  );
+  const [modalType, setModalType] = useState<"deleteAccount" | "logout">("logout");
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [displayName, setDisplayName] = useState<string>("Account");
   const router = useRouter();
@@ -360,7 +358,7 @@ export default function Header() {
               <DropdownMenuSeparator className="bg-white/10" />
               <DropdownMenuItem asChild>
                 <Link
-                  href="/settings"
+                  href="/setting"
                   className="cursor-pointer group text-sm font-medium text-[#C39936]"
                 >
                   <Settings className="text-[#C39936] group-hover:text-[#171717]" />{" "}

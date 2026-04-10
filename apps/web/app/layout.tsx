@@ -138,12 +138,10 @@ export default function RootLayout({
           content="black-translucent"
         />
       </head>
-      {/* <body className={`${inter.variable} font-sans antialiased`}> */}
       <body
         className={`${inter.variable} ${cormorant.variable} antialiased`}
         style={{ margin: 0, padding: 0 }}
       >
-        {/* {children} */}
         <LayoutWrapper>{children}</LayoutWrapper>
 
         <ToasterProvider />

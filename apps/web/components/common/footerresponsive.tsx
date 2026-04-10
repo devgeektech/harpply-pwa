@@ -16,7 +16,7 @@ const FooterResponsive = () => {
     { icon: HomeIcon, label: "Discover", href: "/dashboard/quiz/introduction" },
     { icon: HeartIcon, label: "Connections", href: "/connection" },
     { icon: MessageIcon, label: "Chat", href: "/chat" },
-    { icon: ProfileIcon, label: "Profile", href: "/profile" },
+    { icon: ProfileIcon, label: "Profile", href: "/setting" },
   ]
 
   return (

@@ -81,6 +81,7 @@ export interface OnboardingData {
   perfectNightIn?: string[] | null;
   showsOrMovies?: string[] | null;
   dayToDay?: string[] | null;
+  biblicalPreferences?: Record<string, string> | null;
 }
 
 export interface SetPasswordResponse {
@@ -405,6 +406,28 @@ export async function savePartnerValues(
   redirectIfUnauthorizedForAuthApi(res);
   if (!res.ok) {
     const msg = await getErrorMessage(res, "Failed to save partner-attributes.");
+    throw new Error(msg);
+  }
+  const data = await res.json().catch(() => ({}));
+  return data as { message: string };
+}
+
+/** Save dashboard biblical preferences quiz answers (question id -> selected label). */
+export async function saveBiblicalPreferences(
+  preferences: Record<string, string>,
+  accessToken: string
+): Promise<{ message: string }> {
+  const res = await fetch(`${getAuthBaseUrl()}/auth/onboarding/biblical-preferences`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ preferences }),
+  });
+  redirectIfUnauthorizedForAuthApi(res);
+  if (!res.ok) {
+    const msg = await getErrorMessage(res, "Failed to save biblical preferences.");
     throw new Error(msg);
   }
   const data = await res.json().catch(() => ({}));

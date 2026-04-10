@@ -93,73 +93,71 @@ export default function SignupPage() {
 
   return (
     <>
-      <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat md:items-center items-start bg-cover bg-center min-h-screen flex items-center justify-center px-4">
-        <Card className="md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
-          <CardContent className="flex items-center flex-col sm:p-10 py-[50px] px-3 text-left">
-            <h1 className="w-full text-[24px] font-light text-white font-serif tracking-wider mb-[32px] md:mb-0">
-              Create your account
-            </h1>
+      <Card className="md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
+        <CardContent className="flex items-center flex-col sm:p-10 py-[50px] px-3 text-left">
+          <h1 className="w-full text-[24px] font-light text-white font-serif tracking-wider mb-[32px] md:mb-0">
+            Create your account
+          </h1>
 
-            <Form
-              onSubmit={onEmailSubmit}
-              validate={validateEmail}
-              initialValues={{ email: "" }}
-            >
-              {({ handleSubmit }) => (
-                <form
-                  onSubmit={handleSubmit}
-                  className="space-y-5 md:my-[50px] w-full"
-                >
-                  <div className="space-y-2">
-                    <Label className="text-gray-300 text-sm font-normal">
-                      Email
-                    </Label>
-                    <Field name="email">
-                      {({ input }) => (
-                        <Input
-                          {...input}
-                          type="email"
-                          placeholder="Email"
-                          className={inputClass}
-                        />
-                      )}
-                    </Field>
-                    <FieldError name="email" />
-                  </div>
-
-                  {submitError && (
-                    <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">
-                      {submitError}
-                    </div>
-                  )}
-
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className="cursor-pointer w-full text-base h-[52px] mt-[12px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60"
-                  >
-                    {loading ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Creating...
-                      </span>
-                    ) : (
-                      "Sign up"
+          <Form
+            onSubmit={onEmailSubmit}
+            validate={validateEmail}
+            initialValues={{ email: "" }}
+          >
+            {({ handleSubmit }) => (
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-5 md:my-[50px] w-full"
+              >
+                <div className="space-y-2">
+                  <Label className="text-gray-300 text-sm font-normal">
+                    Email
+                  </Label>
+                  <Field name="email">
+                    {({ input }) => (
+                      <Input
+                        {...input}
+                        type="email"
+                        placeholder="Email"
+                        className={inputClass}
+                      />
                     )}
-                  </Button>
-                </form>
-              )}
-            </Form>
+                  </Field>
+                  <FieldError name="email" />
+                </div>
 
-            <p className="text-center text-sm text-white mt-[20px]">
-              Already have an account?{" "}
-              <a href="/auth/signin" className="text-yellow-400 underline">
-                Sign In
-              </a>
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+                {submitError && (
+                  <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">
+                    {submitError}
+                  </div>
+                )}
+
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="cursor-pointer w-full text-base h-[52px] mt-[12px] rounded-[12px] md:rounded-[8px] bg-gradient-to-r from-[#c58b00] via-[#f5d76e] to-[#c58b00] text-[#913C01] font-semibold hover:opacity-90 transition disabled:opacity-60"
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Creating...
+                    </span>
+                  ) : (
+                    "Sign up"
+                  )}
+                </Button>
+              </form>
+            )}
+          </Form>
+
+          <p className="text-center text-sm text-white mt-[20px]">
+            Already have an account?{" "}
+            <a href="/auth/signin" className="text-yellow-400 underline">
+              Sign In
+            </a>
+          </p>
+        </CardContent>
+      </Card>
     </>
   );
 }

@@ -6,6 +6,7 @@ import MessageIcon from "@/app/icons/message";
 import HeartIcon from "@/app/icons/heart";
 import HomeIcon from "@/app/icons/home";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -14,7 +15,7 @@ export default function Sidebar() {
     { icon: HomeIcon, label: "Discover", href: "/dashboard/quiz/introduction" },
     { icon: HeartIcon, label: "Connections", href: "/connection" },
     { icon: MessageIcon, label: "Chat", href: "/chat" },
-    { icon: ProfileIcon, label: "Profile", href: "/profile" },
+    { icon: ProfileIcon, label: "Profile", href: "/setting" },
   ];
 
   return (
@@ -23,13 +24,16 @@ export default function Sidebar() {
       <nav className="flex flex-col gap-6 items-center justify-center">
         {menu.map((item, i) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
+          const isActive = pathname.startsWith(item.href);
+          console.log('isActive >>>>> ', isActive);
+          
 
           return (
-            <button
+            <Link
               key={i}
+              href={item.href}
               className={cn(
-                "w-10 h-10 flex items-center justify-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white transition",
+                "w-10 h-10 flex items-center justify-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white transition"
               )}
             >
               <Icon
@@ -37,7 +41,7 @@ export default function Sidebar() {
                   isActive ? "w-6 h-6 text-[#f5d76e]" : "w-6 h-6 text-white"
                 }
               />
-            </button>
+            </Link>
           );
         })}
       </nav>

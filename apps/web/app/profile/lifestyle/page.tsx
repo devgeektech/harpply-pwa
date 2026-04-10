@@ -141,126 +141,122 @@ export default function LifestylePage() {
   };
 
   return (
-    <div className="bg-[url('/images/bg_blue.jpg')] bg-no-repeat bg-cover bg-center min-h-screen flex  sm:items-center items-start justify-center px-4 py-[50px] sm:py-4">
-      <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
-        <CardContent className="flex flex-col md:gap-6 gap-3 sm:p-6 px-3 text-white">
-          <div className="flex items-center px-0 pb-2 w-full">
-            <Link
-              href="/profile/everydaylife"
-              className="flex items-center justify-center size-10 rounded-full text-white/90 hover:bg-white/10 transition-colors"
-              aria-label="Back"
-            >
-              <ChevronLeft className="size-6" />
-            </Link>
-          </div>
-
-          <div className="flex items-center gap-2 ">
-            <h1 className="text-[24px] font-normal font-serif">Lifestyle</h1>
-          </div>
-
-          <p className="text-[20px] font-light">Lifestyle Basics</p>
-
-          {loading ? (
-            <p className="text-sm text-white/70">Loading…</p>
-          ) : (
-            <>
-              {/* Smoking */}
-              <div className="">
-                <p className="mb-3 sm:text-[20px] text-[16px] font-light">Smoking</p>
-                <div className="flex gap-3">
-                  {SMOKING_OPTIONS.map((item) => (
-                    <button
-                      key={item}
-                      type="button"
-                      onClick={() => {
-                        setSmoking(item)
-                        if (smokingError) setSmokingError("")
-                      }}
-                      className={`cursor-pointer flex-1 sm:h-[52px] h-[36px] rounded-[8px]  text-sm font-medium transition
-                ${
-                  smoking === item
-                    ? "bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] border border-[#C8A851] text-[#913C01]"
-                    : "bg-[linear-gradient(180deg,rgba(167,139,218,0.22)_0%,rgba(55,35,95,0.65)_100%)] border border-[#a78bda]/40 text-white/80"
-                }`}
-                    >
-                      {item}
-                    </button>
-                  ))}
-                </div>
-                {smokingError && <p className="mt-2 text-sm text-red-300">{smokingError}</p>}
-              </div>
-
-              {/* Alcohol */}
-              <div className="">
-                <p className="mb-3 sm:text-[20px] text-[16px] font-light">Alcohol</p>
-                <div className="flex gap-3">
-                  {ALCOHOL_OPTIONS.map((item) => (
-                    <button
-                      key={item}
-                      type="button"
-                      onClick={() => {
-                        setAlcohol(item)
-                        if (alcoholError) setAlcoholError("")
-                      }}
-                      className={`cursor-pointer flex-1 sm:h-[52px] h-[36px] rounded-[8px] text-sm font-medium transition
-                ${
-                  alcohol === item
-                    ? "bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] border border-[#C8A851] text-[#913C01]"
-                    : "bg-[linear-gradient(180deg,rgba(167,139,218,0.22)_0%,rgba(55,35,95,0.65)_100%)] border border-[#a78bda]/40 text-white/80"
-                }`}
-                    >
-                      {item}
-                    </button>
-                  ))}
-                </div>
-                {alcoholError && <p className="mt-2 text-sm text-red-300">{alcoholError}</p>}
-              </div>
-
-              {/* Dietary Preferences */}
-              <div className="">
-                <p className="mb-3 sm:text-[20px] text-[16px] font-light">
-                  Dietary Preferences
-                </p>
-                <Select
-                  value={diet}
-                  onValueChange={(v) => {
-                    setDiet(v as DietaryPreferenceValue)
-                    if (dietError) setDietError("")
-                  }}
-                >
-                  <SelectTrigger className="w-full border-[#C8A851]/18 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] !h-[52px] rounded-[8px] text-white text-sm">
-                    <SelectValue placeholder="Select diet" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DIETARY_PREFERENCE_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {dietError && <p className="mt-2 text-sm text-red-300">{dietError}</p>}
-              </div>
-            </>
-          )}
-
-          <Button
-            type="button"
-            onClick={handleSave}
-            disabled={loading || saving}
-            className="cursor-pointer w-full h-[52px] text-[#913C01] font-semibold bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] disabled:opacity-60"
-          >
-            {saving ? "Saving…" : "Save Changes"}
-          </Button>
-
+    <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-white/10 rounded-2xl md:shadow-2xl">
+      <CardContent className="flex flex-col md:gap-6 gap-3 sm:p-6 px-3 text-white">
+        <div className="flex items-center px-0 pb-2 w-full">
           <Link
-            href="/dashboard/quiz/introduction"
-            className="cursor-pointer w-full h-[52px] rounded-[12px] md:rounded-[8px] border border-[#913C01] text-[#913C01] font-medium flex items-center justify-center"
+            href="/profile/everydaylife"
+            className="flex items-center justify-center size-10 rounded-full text-white/90 hover:bg-white/10 transition-colors"
+            aria-label="Back"
           >
-            Cancel
+            <ChevronLeft className="size-6" />
           </Link>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+
+        <div className="flex items-center gap-2 ">
+          <h1 className="text-[24px] font-normal font-serif">Lifestyle</h1>
+        </div>
+
+        <p className="text-[20px] font-light">Lifestyle Basics</p>
+
+        {loading ? (
+          <p className="text-sm text-white/70">Loading…</p>
+        ) : (
+          <>
+            {/* Smoking */}
+            <div className="">
+              <p className="mb-3 sm:text-[20px] text-[16px] font-light">Smoking</p>
+              <div className="flex gap-3">
+                {SMOKING_OPTIONS.map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => {
+                      setSmoking(item)
+                      if (smokingError) setSmokingError("")
+                    }}
+                    className={`cursor-pointer flex-1 sm:h-[52px] h-[36px] rounded-[8px]  text-sm font-medium transition
+                ${smoking === item
+                        ? "bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] border border-[#C8A851] text-[#913C01]"
+                        : "bg-[linear-gradient(180deg,rgba(167,139,218,0.22)_0%,rgba(55,35,95,0.65)_100%)] border border-[#a78bda]/40 text-white/80"
+                      }`}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+              {smokingError && <p className="mt-2 text-sm text-red-300">{smokingError}</p>}
+            </div>
+
+            {/* Alcohol */}
+            <div className="">
+              <p className="mb-3 sm:text-[20px] text-[16px] font-light">Alcohol</p>
+              <div className="flex gap-3">
+                {ALCOHOL_OPTIONS.map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => {
+                      setAlcohol(item)
+                      if (alcoholError) setAlcoholError("")
+                    }}
+                    className={`cursor-pointer flex-1 sm:h-[52px] h-[36px] rounded-[8px] text-sm font-medium transition
+                ${alcohol === item
+                        ? "bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] border border-[#C8A851] text-[#913C01]"
+                        : "bg-[linear-gradient(180deg,rgba(167,139,218,0.22)_0%,rgba(55,35,95,0.65)_100%)] border border-[#a78bda]/40 text-white/80"
+                      }`}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+              {alcoholError && <p className="mt-2 text-sm text-red-300">{alcoholError}</p>}
+            </div>
+
+            {/* Dietary Preferences */}
+            <div className="">
+              <p className="mb-3 sm:text-[20px] text-[16px] font-light">
+                Dietary Preferences
+              </p>
+              <Select
+                value={diet}
+                onValueChange={(v) => {
+                  setDiet(v as DietaryPreferenceValue)
+                  if (dietError) setDietError("")
+                }}
+              >
+                <SelectTrigger className="w-full border-[#C8A851]/18 bg-[linear-gradient(160deg,rgba(200,168,81,0.10)_0%,rgba(35,22,58,0.85)_45%,rgba(18,10,35,0.92)_100%)] !h-[52px] rounded-[8px] text-white text-sm">
+                  <SelectValue placeholder="Select diet" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DIETARY_PREFERENCE_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {dietError && <p className="mt-2 text-sm text-red-300">{dietError}</p>}
+            </div>
+          </>
+        )}
+
+        <Button
+          type="button"
+          onClick={handleSave}
+          disabled={loading || saving}
+          className="cursor-pointer w-full h-[52px] text-[#913C01] font-semibold bg-[linear-gradient(90deg,#964400_0%,#F3D35D_25%,#F3D35D_50%,#8C4202_100%)] disabled:opacity-60"
+        >
+          {saving ? "Saving…" : "Save Changes"}
+        </Button>
+
+        <Link
+          href="/dashboard/quiz/introduction"
+          className="cursor-pointer w-full h-[52px] rounded-[12px] md:rounded-[8px] border border-[#913C01] text-[#913C01] font-medium flex items-center justify-center"
+        >
+          Cancel
+        </Link>
+      </CardContent>
+    </Card>
   );
 }

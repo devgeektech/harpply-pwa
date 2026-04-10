@@ -6,12 +6,14 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { MAX_AGE } from "@/lib/constants";
+
+
 export default function Identity() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
   const [ageError, setAgeError] = useState<string | null>(null);
-  const MAX_AGE = 100;
 
   const { name, age, gender, setName, setAge, setGender, submitIdentity } =
     useOnboardingStore();
