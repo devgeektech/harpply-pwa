@@ -13,12 +13,16 @@ export default function LayoutWrapper({
   const pathname = usePathname();
 
   // ✅ Routes where layout SHOULD be visible
-  const showRoutes = ["/dashboard", "/setting", "/connection", "/chat", "/notifications"];
+  const showRoutes = [
+    "/dashboard",
+    "/setting",
+    "/connection",
+    "/chat",
+    "/notifications",
+    "/verification",
+  ];
 
-  const isShowLayout = showRoutes.some(route =>
-    pathname.startsWith(route)
-  );
-
+  const isShowLayout = showRoutes.some((route) => pathname.startsWith(route));
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -28,7 +32,7 @@ export default function LayoutWrapper({
         {isShowLayout && <Sidebar />}
 
         <div className="flex flex-col flex-1 bg-[url('/images/bg_blue.jpg')] bg-cover p-3">
-          <main className="flex-1 flex justify-center items-center">
+          <main className="flex-1 flex justify-center md:items-center items-start">
             {children}
           </main>
 
