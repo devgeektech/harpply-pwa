@@ -24,6 +24,7 @@ const page = () => {
             Your traits reveal timeless patterns that shape how we lead, love,
             and serve. Let us guide you through this discovery.
           </p>
+
           <Button
             type="submit"
             onClick={() => router.push("/dashboard/quiz/biblical-preferences")}
