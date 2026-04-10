@@ -91,7 +91,7 @@ export default function ChatPage() {
                 <div className="text-xs sm:text-base bg-[#C39936] text-white px-4 py-2 rounded-tl-xl rounded-tr-xl rounded-bl-xl rounded-br-0 max-w-[90%]">
                   Yes, I'm reviewing them now. Everything looks beautiful and
                   well-aligned with our mission.
-                </div> 
+                </div>
                 <span className="text-[#C39936] text-xs flex gap-1">SEEN<img src='/images/doubletick.png' alt="doubletick" /> </span>
               </div>
 
@@ -99,22 +99,14 @@ export default function ChatPage() {
                 <div className="text-xs sm:text-base bg-[#C39936] text-white px-4 py-2 rounded-tl-xl rounded-tr-xl rounded-bl-xl rounded-br-0 max-w-[90%]">
                   Yes, I'm reviewing them now. Everything looks beautiful and
                   well-aligned with our mission.
-                </div> 
+                </div>
                 <span className="text-[#C39936] text-xs flex gap-1">SEEN<img src='/images/doubletick.png' alt="doubletick" /> </span>
               </div>
               <div className="flex justify-end flex-col items-end">
                 <div className="text-xs sm:text-base bg-[#C39936] text-white px-4 py-2 rounded-tl-xl rounded-tr-xl rounded-bl-xl rounded-br-0 max-w-[90%]">
                   Yes, I'm reviewing them now. Everything looks beautiful and
                   well-aligned with our mission.
-                </div> 
-                <span className="text-[#C39936] text-xs flex gap-1">SEEN<img src='/images/doubletick.png' alt="doubletick" /> </span>
-              </div>
-
-              <div className="flex justify-end flex-col items-end">
-                <div className="text-xs sm:text-base bg-[#C39936] text-white px-4 py-2 rounded-tl-xl rounded-tr-xl rounded-bl-xl rounded-br-0 max-w-[90%]">
-                  Yes, I'm reviewing them now. Everything looks beautiful and
-                  well-aligned with our mission.
-                </div> 
+                </div>
                 <span className="text-[#C39936] text-xs flex gap-1">SEEN<img src='/images/doubletick.png' alt="doubletick" /> </span>
               </div>
 
@@ -122,7 +114,15 @@ export default function ChatPage() {
                 <div className="text-xs sm:text-base bg-[#C39936] text-white px-4 py-2 rounded-tl-xl rounded-tr-xl rounded-bl-xl rounded-br-0 max-w-[90%]">
                   Yes, I'm reviewing them now. Everything looks beautiful and
                   well-aligned with our mission.
-                </div> 
+                </div>
+                <span className="text-[#C39936] text-xs flex gap-1">SEEN<img src='/images/doubletick.png' alt="doubletick" /> </span>
+              </div>
+
+              <div className="flex justify-end flex-col items-end">
+                <div className="text-xs sm:text-base bg-[#C39936] text-white px-4 py-2 rounded-tl-xl rounded-tr-xl rounded-bl-xl rounded-br-0 max-w-[90%]">
+                  Yes, I'm reviewing them now. Everything looks beautiful and
+                  well-aligned with our mission.
+                </div>
                 <span className="text-[#C39936] text-xs flex gap-1">SEEN<img src='/images/doubletick.png' alt="doubletick" /> </span>
               </div>
 
@@ -159,11 +159,9 @@ export default function ChatPage() {
                   placeholder="Type your message..."
                   className="text-[#767676] rounded-full pr-10 h-[52px] bg-white focus-visible:ring-0 focus-visible:outline-none focus-visible:border-[#c39936] focus-visible:border-1 focus-visible:border-solid"
                 />
-                {/* <Paperclip className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" /> */}
-                <button className="cursor-pointer absolute right-16 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" ><img src='/images/attachicon.svg' alt="attachicon"/> </button>
                 <Button className="cursor-pointer rounded-full bg-[#C39936] hover:bg-[#C39936] w-[36px] h-[36px] absolute right-2 top-1/2 -translate-y-1/2">
-                <Send className="w-4 h-4" />
-              </Button>
+                  <Send className="w-4 h-4" />
+                </Button>
               </div>
             </div>
           </div>

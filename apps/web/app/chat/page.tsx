@@ -229,8 +229,10 @@ const ChatPage = () => {
                 {connectionsData.map((item, index) => (
                   <div
                     key={index}
-                    className="flex flex-col gap-4 w-full border-b-2 border-[#E7ECF214] py-[1rem]"
+                    className="flex flex-col gap-4 w-full border-b-2 border-[#E7ECF214] py-[1rem] cursor-pointer hover:bg-white/5 rounded-lg p-2 transition-all"
+                    onClick={() => router.push(`/chat/chatbox`)}
                   >
+
                     <div className="flex items-center gap-2 w-full">
                       <div className="rounded-full">
                         <Image
@@ -270,8 +272,10 @@ const ChatPage = () => {
                 {unreadConnectionsData.map((item, index) => (
                   <div
                     key={index}
-                    className="flex flex-col gap-4 w-full border-b-2 border-[#E7ECF214] py-[1rem]"
+                    className="flex flex-col gap-4 w-full border-b-2 border-[#E7ECF214] py-[1rem] cursor-pointer hover:bg-white/5 rounded-lg p-2 transition-all"
+                    onClick={() => router.push(`/chat/chatbox`)}
                   >
+
                     <div className="flex items-center gap-2 w-full">
                       <div className="rounded-full">
                         <Image
