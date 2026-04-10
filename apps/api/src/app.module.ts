@@ -15,6 +15,7 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { NotEmptyBodyGuard } from './common/guards/not-empty-body.guard';
 import { NotEmptyBodyMiddleware } from './common/middleware/not-empty-body.middleware';
 import { AwsS3Module } from './common/aws-s3/aws-s3.module';
+import { AwsRekognitionModule } from './common/aws-rekognition/aws-rekognition.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { AwsS3Module } from './common/aws-s3/aws-s3.module';
       ],
     }),
     AwsS3Module,
+    AwsRekognitionModule,
     AuthModule,
     ProfileModule,
     // ... other modules

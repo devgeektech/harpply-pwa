@@ -54,6 +54,8 @@ export const ERROR_MESSAGES = {
     FORBIDDEN: 'You do not have permission to access this resource.',
     NOT_FOUND: 'The requested resource was not found.',
     CONFLICT: 'This action could not be completed due to a conflict.',
+    CONTENT_MODERATION_UNAVAILABLE:
+      'Photo safety check is temporarily unavailable. Please try again in a moment.',
   },
 
   USER: {
@@ -68,6 +70,8 @@ export const ERROR_MESSAGES = {
     INVALID_FILE_TYPE:
       'Invalid file type. Only JPEG, PNG and WebP are allowed.',
     FILE_TOO_LARGE: 'File size must not exceed 5MB.',
+    INAPPROPRIATE_CONTENT:
+      'Photo violates community guidelines. Please upload a different image.',
     MIN_PHOTOS_REQUIRED: 'Minimum 3 photos are required.',
   },
 

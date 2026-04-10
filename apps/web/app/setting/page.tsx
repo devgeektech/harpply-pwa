@@ -33,6 +33,7 @@ const Settings = () => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [displayName, setDisplayName] = useState<string>("");
   const [displayEmail, setDisplayEmail] = useState<string>("");
+  const [isGoogleAuthUser, setIsGoogleAuthUser] = useState(false);
   const [firstProfilePhotoSrc, setFirstProfilePhotoSrc] = useState<
     string | null
   >(null);
@@ -47,6 +48,7 @@ const Settings = () => {
         const email = (res?.data?.email ?? "").trim();
         setDisplayName(name);
         setDisplayEmail(email);
+        setIsGoogleAuthUser(Boolean(res?.data?.googleId));
       })
       .catch(() => {
         // ignore — header can still render with fallback
@@ -111,18 +113,17 @@ const Settings = () => {
 
   return (
     <>
-      <div className="w-full max-w-[620px] py-4 bg-no-repeat bg-cover bg-center min-h-screen flex items-center justify-center px-4">
-        <style>
-          {`
+      <style>
+        {`
           @keyframes identity-shimmer {
             0% { transform: translateX(-100%); }
             100% { transform: translateX(100%); }
           }
         `}
-        </style>
+      </style>
 
-        <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] sm:py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-[#C8A851]/18  rounded-2xl md:shadow-2xl">
-          <CardContent className="flex items-center flex-col sm:p-10 px-3 text-left">
+      <Card className="md:d-block md:bg-[url('/images/bg_auth_center.png')] sm:py-0 bg-no-repeat bg-cover bg-center w-full max-w-[620px] md:shadow-[0px_4px_4px_0px_#00000014] bg-transparent md:backdrop-blur-xl border-0 md:border md:border-[#C8A851]/18  rounded-2xl md:shadow-2xl">
+        <CardContent className="flex items-center flex-col sm:p-10 px-3 text-left">
             <div className="flex flex-col items-center gap-1">
               <img
                 className="w-[100px] h-[100px] rounded-full mb-3"
@@ -149,15 +150,17 @@ const Settings = () => {
                   <ChevronRight />
                 </Link>
 
-                <Link
-                  href="/dashboard/setting/profile"
-                  className="border-b border-[#C8A851]/18 flex justify-between gap-2 text-white/80 py-3 px-4 hover:bg-[#C8A851]/10 transition-colors"
-                >
-                  <p className="flex items-center gap-2">
-                    <Password /> Change Password
-                  </p>
-                  <ChevronRight />
-                </Link>
+                {!isGoogleAuthUser ? (
+                  <Link
+                    href="/setting/change-password"
+                    className="border-b border-[#C8A851]/18 flex justify-between gap-2 text-white/80 py-3 px-4 hover:bg-[#C8A851]/10 transition-colors"
+                  >
+                    <p className="flex items-center gap-2">
+                      <Password /> Change Password
+                    </p>
+                    <ChevronRight />
+                  </Link>
+                ) : null}
 
                 <Link
                   href="/dashboard/setting/profile"
@@ -252,9 +255,8 @@ const Settings = () => {
                 </button>
               </ul>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+        </CardContent>
+      </Card>
 
       <GlobalModal
         open={modalOpen}

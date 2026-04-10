@@ -9,6 +9,7 @@ const fetchOptions: RequestInit = { credentials: "include" };
 export interface ProfileData {
   id: string;
   email: string;
+  googleId: string | null;
   fullName: string | null;
   age: number | null;
   gender: string | null;

@@ -541,7 +541,52 @@ export class AuthService implements OnModuleInit {
       where: { id: user.id },
       data: {
         password: hashed,
-        token: null,
+      } as Prisma.UserUpdateInput,
+    });
+
+    return successResponse(SUCCESS_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS);
+  }
+
+  async changePasswordAuth(
+    userId: string,
+    dto: {
+      currentPassword: string;
+      newPassword: string;
+      confirmPassword: string;
+    },
+  ) {
+    const { currentPassword, newPassword, confirmPassword } = dto;
+    if (newPassword !== confirmPassword) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.PASSWORD_MISMATCH);
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, password: true, googleId: true },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException(ERROR_MESSAGES.GENERAL.UNAUTHORIZED);
+    }
+
+    if (!user.password && user.googleId) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.SOCIAL_LOGIN_ONLY);
+    }
+
+    if (!user.password) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS);
+    }
+
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordValid) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH.INVALID_CURRENT_PASSWORD);
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashed,
       } as Prisma.UserUpdateInput,
     });
 

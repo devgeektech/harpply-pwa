@@ -37,6 +37,7 @@ import { AdminSignInDto } from './dto/admin-sign-in.dto';
 import { AdminForgotPasswordDto } from './dto/admin-forgot-password.dto';
 import { AdminChangePasswordDto } from './dto/admin-change-password.dto';
 import { AdminChangePasswordAuthDto } from './dto/admin-change-password-auth.dto';
+import { ChangePasswordAuthDto } from './dto/change-password-auth.dto';
 import { IdentityDto } from './dto/identity.dto';
 import { LocationDto } from './dto/location.dto';
 import { StoryDto } from './dto/story.dto';
@@ -464,6 +465,18 @@ export class AuthController {
     const result = await this.authService.adminLogout(jti, userId);
     res.clearCookie(ACCESS_TOKEN_COOKIE, { path: '/' });
     return result;
+  }
+
+  @Post('change-password-auth')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'User change password (authenticated)' })
+  async changePasswordAuth(
+    @CurrentUserId() userId: string,
+    @Body() dto: ChangePasswordAuthDto,
+  ) {
+    return this.authService.changePasswordAuth(userId, dto);
   }
 
   @Post('forgot-password')

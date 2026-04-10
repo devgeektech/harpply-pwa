@@ -515,3 +515,28 @@ export async function logout(accessToken: string): Promise<{ message: string }> 
   const json = await res.json().catch(() => ({}));
   return json as { message: string };
 }
+
+/** Change password for authenticated user from settings page. */
+export async function changePasswordAuth(
+  currentPassword: string,
+  newPassword: string,
+  confirmPassword: string,
+  accessToken: string
+): Promise<{ message: string }> {
+  const res = await fetch(`${getAuthBaseUrl()}/auth/change-password-auth`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ currentPassword, newPassword, confirmPassword }),
+    ...authFetchOptions,
+  });
+  redirectIfUnauthorizedForAuthApi(res);
+  if (!res.ok) {
+    const msg = await getErrorMessage(res, "Failed to change password.");
+    throw new Error(msg);
+  }
+  const json = await res.json().catch(() => ({}));
+  return json as { message: string };
+}

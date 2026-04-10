@@ -16,6 +16,7 @@ import { ERROR_MESSAGES } from '../../common/constants/error-messages';
 import { SUCCESS_MESSAGES } from '../../common/constants/success-messages';
 import { decodeEmailSafe } from '../../common/utils/email-encode';
 import { AwsS3Service } from '../../common/aws-s3/aws-s3.service';
+import { AwsRekognitionService } from '../../common/aws-rekognition/aws-rekognition.service';
 
 const PHOTO_MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 const ALLOWED_PHOTO_MIMES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -28,6 +29,7 @@ export type ProfilePhotoKey = string;
 const profileSelect = {
   id: true,
   email: true,
+  googleId: true,
   fullName: true,
   age: true,
   gender: true,
@@ -71,6 +73,7 @@ export class ProfileService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly awsS3: AwsS3Service,
+    private readonly awsRekognition: AwsRekognitionService,
     private readonly config: ConfigService,
   ) { }
 
@@ -82,9 +85,10 @@ export class ProfileService {
     if (!user) {
       throw new NotFoundException(ERROR_MESSAGES.USER.PROFILE_NOT_FOUND);
     }
-    const data = user.email
-      ? { ...user, email: decodeEmailSafe(user.email) }
-      : user;
+    const data =
+      typeof user.email === 'string' && user.email
+        ? { ...user, email: decodeEmailSafe(String(user.email)) }
+        : user;
     return successResponse(SUCCESS_MESSAGES.PROFILE.PROFILE_RETRIEVED, { data });
   }
 
@@ -193,21 +197,26 @@ export class ProfileService {
     if (!user) {
       throw new NotFoundException(ERROR_MESSAGES.USER.PROFILE_NOT_FOUND);
     }
-    console.log('file==>>', file)
+    // Block inappropriate images before storing in S3 or DB.
+    if (this.awsRekognition.isConfigured()) {
+      const moderation = await this.awsRekognition.moderateImage(file.buffer);
+      if (!moderation.isAppropriate) {
+        throw new BadRequestException(ERROR_MESSAGES.PHOTOS.INAPPROPRIATE_CONTENT);
+      }
+    }
+
     const keyPrefix = this.config.get<string>('AWS_S3_KEY_PREFIX_PROFILE_PHOTOS') ?? 'profile-photos';
     const ext = file.mimetype === 'image/png' ? 'png' : file.mimetype === 'image/webp' ? 'webp' : 'jpg';
     const key = `${keyPrefix}/${userId}/${Date.now()}.${ext}`;
 
     const publicBaseUrl = this.config.get<string>('AWS_S3_PUBLIC_URL_PROFILE_PHOTOS') ?? null;
-    const { key: uploadedKey, url } = await this.awsS3.upload(
+    const { key: uploadedKey } = await this.awsS3.upload(
       bucket,
       key,
       file.buffer,
       file.mimetype,
       { publicBaseUrl },
     );
-    console.log('===>>>', uploadedKey)
-    console.log('===>>>url', url)
     const current = (user.profilePhotos as string[] | null) ?? [];
     const updated: string[] = [...current, uploadedKey];
 
