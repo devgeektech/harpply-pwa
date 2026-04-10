@@ -31,7 +31,6 @@ export default function StartVerification() {
       icon: ReviewProcess,
     },
   ];
-
   return (
     <>
       <style jsx global>{`
