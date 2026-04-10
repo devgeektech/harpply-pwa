@@ -16,20 +16,27 @@ import { toast } from "sonner";
 import { SUCCESS_MESSAGES } from "@/lib/messages/success-messages";
 import { clearClientAuthSession } from "@/lib/api/session-expired";
 import { useRouter } from "next/navigation";
-import { deleteMyAccount, fetchProfile, fetchProfilePhotos } from "@/lib/api/profile";
+import {
+  deleteMyAccount,
+  fetchProfile,
+  fetchProfilePhotos,
+} from "@/lib/api/profile";
 import { ERROR_MESSAGES } from "@/lib/messages/error-messages";
 import { buildPhotoSrc } from "@/lib/utils/buildPhotoSrc";
 
 const Settings = () => {
   const router = useRouter();
-  const [modalType, setModalType] = useState<"deleteAccount" | "logout">("logout");
+  const [modalType, setModalType] = useState<"deleteAccount" | "logout">(
+    "logout",
+  );
   const [modalOpen, setModalOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [displayName, setDisplayName] = useState<string>("");
   const [displayEmail, setDisplayEmail] = useState<string>("");
-  const [firstProfilePhotoSrc, setFirstProfilePhotoSrc] = useState<string | null>(null);
+  const [firstProfilePhotoSrc, setFirstProfilePhotoSrc] = useState<
+    string | null
+  >(null);
   const s3PublicUrl = process.env.NEXT_PUBLIC_AWS_S3_URL ?? "";
-
 
   useEffect(() => {
     let cancelled = false;
@@ -94,7 +101,7 @@ const Settings = () => {
       toast.error(
         e instanceof Error
           ? e.message
-          : ERROR_MESSAGES.AUTH.FAILED_TO_DELETE_ACCOUNT
+          : ERROR_MESSAGES.AUTH.FAILED_TO_DELETE_ACCOUNT,
       );
     } finally {
       setConfirmLoading(false);
@@ -207,7 +214,7 @@ const Settings = () => {
                 </Link>
 
                 <Link
-                  href="/dashboard/setting/profile"
+                  href="/setting/contact-support"
                   className="border-b border-[#C8A851]/18 flex justify-between gap-2 text-white/80 py-3 px-4 hover:bg-[#C8A851]/10 transition-colors"
                 >
                   <p className="flex items-center gap-2">
