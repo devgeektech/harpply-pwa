@@ -18,7 +18,6 @@ model User {
 
   // Auth
   token              String?     // current session token (jti); cleared on logout
-  loggedOutAt        DateTime?
   resetOtp           String?
   resetOtpExpires    DateTime?
   resetToken         String?
